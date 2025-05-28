@@ -1,0 +1,18 @@
+// src/mock/module/_notify-message.bundled_1748308234887_mws48tesrtf.mjs
+var notify_message_default = [
+  {
+    url: "/admin-api/system/notify-message/get-unread-count",
+    type: "get",
+    response: () => {
+      return {
+        code: 0,
+        data: 0,
+        msg: ""
+      };
+    }
+  }
+];
+export {
+  notify_message_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsic3JjL21vY2svbW9kdWxlL3NyYy9tb2NrL21vZHVsZS9ub3RpZnktbWVzc2FnZS50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiY29uc3QgX19pbmplY3RlZF9maWxlbmFtZV9fID0gXCJDOlxcXFxVc2Vyc1xcXFxhZG1pblxcXFxUaWFuQ2hlbmdXZWlZZVxcXFxjb2RlXFxcXHl1ZGFvXFxcXHNyY1xcXFxtb2NrXFxcXG1vZHVsZVxcXFxub3RpZnktbWVzc2FnZS50c1wiO2NvbnN0IF9faW5qZWN0ZWRfZGlybmFtZV9fID0gXCJDOlxcXFxVc2Vyc1xcXFxhZG1pblxcXFxUaWFuQ2hlbmdXZWlZZVxcXFxjb2RlXFxcXHl1ZGFvXFxcXHNyY1xcXFxtb2NrXFxcXG1vZHVsZVwiO2NvbnN0IF9faW5qZWN0ZWRfaW1wb3J0X21ldGFfdXJsX18gPSBcImZpbGU6Ly8vQzovVXNlcnMvYWRtaW4vVGlhbkNoZW5nV2VpWWUvY29kZS95dWRhby9zcmMvbW9jay9tb2R1bGUvbm90aWZ5LW1lc3NhZ2UudHNcIjtleHBvcnQgZGVmYXVsdCBbXG4gIHtcbiAgICB1cmw6ICcvYWRtaW4tYXBpL3N5c3RlbS9ub3RpZnktbWVzc2FnZS9nZXQtdW5yZWFkLWNvdW50JyxcbiAgICB0eXBlOiAnZ2V0JyxcbiAgICByZXNwb25zZTogKCkgPT4ge1xuICAgICAgcmV0dXJuIHtcbiAgICAgICAgY29kZTogMCxcbiAgICAgICAgZGF0YTogMCxcbiAgICAgICAgbXNnOiAnJ1xuICAgICAgfVxuICAgIH1cbiAgfSxcbl0iXSwKICAibWFwcGluZ3MiOiAiO0FBQThVLElBQU8seUJBQVE7RUFDM1Y7SUFDRSxLQUFLO0lBQ0wsTUFBTTtJQUNOLFVBQVUsTUFBTTtBQUNkLGFBQU87UUFDTCxNQUFNO1FBQ04sTUFBTTtRQUNOLEtBQUs7TUFDUDtJQUNGO0VBQ0Y7QUFDRjsiLAogICJuYW1lcyI6IFtdCn0K

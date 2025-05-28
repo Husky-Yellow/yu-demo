@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "christian-kohler.path-intellisense",
+    "davidanson.vscode-markdownlint",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "mrmlnc.vscode-less",
+    "lokalise.i18n-ally",
+    "redhat.vscode-yaml",
+    "csstools.postcss",
+    "mikestead.dotenv",
+    "eamodio.gitlens",
+    "antfu.iconify",
+    "antfu.unocss",
+    "Vue.volar"
+  ]
+}
