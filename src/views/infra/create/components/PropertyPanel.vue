@@ -1,7 +1,6 @@
 <template>
   <div class="w-1/3 bg-white p-2 rounded shadow border">
     <h2 class="text-lg font-bold mb-4">属性设置</h2>
-    {{ selectedItem }}
     <template v-if="selectedItem">
       <div class="space-y-4">
         <div class="form-item">
@@ -19,15 +18,15 @@
         </div>
 
         <!-- 根据类型显示不同的属性设置 -->
-        <template v-if="selectedItem.type === 'select' || selectedItem.type === 'radio' || selectedItem.type === 'checkbox'">
+        <template v-if="hasOptions">
           <div class="form-item">
             <label class="block mb-1">选项设置</label>
-            <div v-for="(option, index) in selectedItem.props.options" :key="index" class="flex gap-2 mb-2">
+            <div v-for="(option, index) in selectedItem.props?.options || []" :key="index" class="flex gap-2 mb-2">
               <el-input v-model="option.label" placeholder="选项文本"/>
-              <el-input v-model="option.value" placeholder="选项值"/>
-              <el-button type="danger" @click="removeOption(index)">删除</el-button>
+              <el-input :model-value="String(option.value)" @update:model-value="(val) => option.value = val" placeholder="选项值"/>
+              <el-button type="danger" @click="removeOptionFromSelectedItem(index)">删除</el-button>
             </div>
-            <el-button type="primary" @click="addOption">添加选项</el-button>
+            <el-button type="primary" @click="addOptionToSelectedItem">添加选项</el-button>
           </div>
         </template>
       </div>
@@ -40,17 +39,32 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineOptions({ name: 'InfraCreatePropertyPanel' })
 import { useFormDesigner } from '@/hooks/web/useFormDesigner'
+import { useFormDesignerStore } from '@/store/modules/formDesigner';
+const {addOptionToSelectedItem, removeOptionFromSelectedItem } = useFormDesignerStore();
 const { 
   selectedItem,
-  addOption,
-  removeOption 
 } = useFormDesigner()
-watch(selectedItem, (newVal) => {
-  console.log('selectedItem changed:', newVal);
-  // 执行其他操作
-});
 
+// 计算属性：是否显示选项设置
+const hasOptions = computed(() => {
+  const type = selectedItem.value?.type
+  return type === 'select' || type === 'radio' || type === 'checkbox'
+})
+
+watch(selectedItem, (newItem) => {
+  if (newItem && !newItem.props) {
+    newItem.props = { 
+      label: '',
+      placeholder: '',
+      required: false,
+      options: [] 
+    }
+  }
+  if (newItem?.props && !newItem.props.options) {
+    newItem.props.options = []
+  }
+}, { immediate: true, deep: true })
 </script>

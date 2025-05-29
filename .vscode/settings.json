@@ -2,12 +2,12 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "npm.packageManager": "pnpm",
   "editor.tabSize": 2,
-  
+  "editor.stickyScroll.enabled": false,
   "editor.fontFamily": "'JetBrains Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace",
   "editor.fontLigatures": true,
   "editor.minimap.enabled": true,
   "editor.minimap.size": "fill",
-  "editor.fontSize": 14,
+  "editor.fontSize": 12,
   "prettier.printWidth": 100, // 超过最大值换行
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "files.eol": "\n",

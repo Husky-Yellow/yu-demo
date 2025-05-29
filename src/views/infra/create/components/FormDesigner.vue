@@ -26,7 +26,6 @@
                   v-for="(item, colIndex) in row.columns"
                   :key="colIndex"
                   class="grid-item relative p-2 border rounded border-2 border-dashed border-gray-300"
-                  @click="selectItem(item)"
                   @dragover.prevent.stop
                   @drop.stop="(e) => handleDrop(e, rowIndex, colIndex)"
                 >
@@ -73,15 +72,30 @@
   </el-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Delete, Rank } from '@element-plus/icons-vue'
 import { useFormDesigner } from '@/hooks/web/useFormDesigner'
-import OptionsRenderer from './OptionsRenderer.vue'
+import { useFormDesignerStore } from '@/store/modules/formDesigner';
 import FormItemRenderer from './FormItemRenderer.vue'
 defineOptions({ name: 'InfraCreateFormDesigner' })
 
+const formDesignerStore = useFormDesignerStore();
 const { selectedItem, updateItem, getComponent } = useFormDesigner()
 
+const {
+  formItems,
+  handleDrop,
+  removeItem,
+  removeGridItem,
+  handleDragStartRow,
+  handleDragOverRow,
+  handleDropRow
+} = useFormDesigner()
+
+
+const selectItem = (row) => {
+  formDesignerStore.selectItem(row)
+}
 
 // Helper functions for grid columns (assuming selectedItem is a grid)
 const addGridColumn = () => {
@@ -102,19 +116,7 @@ const removeLastGridColumn = () => {
    }
 }
 
-const {
-  formItems,
-  // selectedItem,
-  handleDrop,
-  selectItem,
-  removeItem,
-  removeGridItem,
-  // getComponent,
 
-  handleDragStartRow,
-  handleDragOverRow,
-  handleDropRow
-} = useFormDesigner()
 </script>
 
 <style scoped>

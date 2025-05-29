@@ -6,7 +6,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ComponentList from './components/ComponentList.vue'
 import FormDesigner from './components/FormDesigner.vue'
 import PropertyPanel from './components/PropertyPanel.vue'

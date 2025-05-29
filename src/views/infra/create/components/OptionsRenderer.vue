@@ -12,22 +12,17 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
-
-interface Option {
-  value: string | number | boolean
-  label: string
-  disabled?: boolean
-}
+import { FormDesignerOption, FormDesignerComponentType } from "@/types/formDesigner";
 
 defineProps({
   type: {
-    type: String as PropType<'select' | 'radio' | 'checkbox'>,
+    type: String as PropType<FormDesignerComponentType>,
     required: true
   },
   options: {
-    type: Array as PropType<Option[]>,
+    type: Array as PropType<FormDesignerOption[]>,
     required: true,
-    validator: (value: Option[]) => value.every(opt => 'value' in opt && 'label' in opt)
+    validator: (value: FormDesignerOption[]) => value.every(opt => 'value' in opt && 'label' in opt)
   }
 })
 

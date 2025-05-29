@@ -8,7 +8,7 @@
         <OptionsRenderer 
           v-if="['select','radio','checkbox'].includes(item.type)" 
           :type="item.type" 
-          :options="item.props.options" />
+          :options="item.props?.options || []" />
       </component>
       
       <el-button 
@@ -22,13 +22,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useFormDesigner } from '@/hooks/web/useFormDesigner'
 import OptionsRenderer from './OptionsRenderer.vue'
 import { Delete } from '@element-plus/icons-vue'
+import {FormDesignerFormItem } from "@/types/formDesigner";
+
+defineProps<{
+  item: FormDesignerFormItem
+  index: number
+}>()
+
+defineEmits<{
+  select: [item: FormDesignerFormItem]
+  remove: [index: number]
+}>()
+
 const { getComponent } = useFormDesigner()
-defineProps({
-  item: Object,
-  index: Number
-})
 </script>

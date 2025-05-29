@@ -29,7 +29,7 @@
     </el-tabs>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 defineOptions({ name: 'InfraCreateComponentList' })
 import {
   Document,
