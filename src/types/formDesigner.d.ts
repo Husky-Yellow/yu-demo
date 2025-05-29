@@ -23,17 +23,20 @@ export interface FormDesignerFormItemProps {
 }
 
 // 组件类型
-export type FormDesignerComponentType = 'input' | 'select' | 'radio' | 'checkbox' | 'textarea' | 'date' | 'time' | 'number'
+export type FormDesignerComponentType = 'input' | 'select' | 'radio' | 'checkbox' | 'textarea' | 'date' | 'time' | 'number' | 'grid' | 'div'
 
 // 表单项
 export interface FormDesignerFormItem {
+  id?: string
   label?: string
   type: FormDesignerComponentType
   props: FormDesignerFormItemProps
   placeholder?: string
   isGrid?: boolean
   id?: string
-  required?: boolean
+  required?: boolean,
+  icon: any
+  columns?: Array<FormDesignerFormItem>
 }
 
 // 选项组件类型
@@ -43,7 +46,7 @@ export type FormDesignerOptionComponentType = 'select' | 'radio' | 'checkbox'
 export interface FormDesignerComponentConfig {
   type: FormDesignerComponentType
   label: string
-  icon: any
+  icon: never
   props: FormDesignerFormItemProps
 }
 

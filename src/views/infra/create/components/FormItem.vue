@@ -26,7 +26,7 @@
 import { useFormDesigner } from '@/hooks/web/useFormDesigner'
 import OptionsRenderer from './OptionsRenderer.vue'
 import { Delete } from '@element-plus/icons-vue'
-import {FormDesignerFormItem } from "@/types/formDesigner";
+import { FormDesignerFormItem } from "@/types/formDesigner";
 
 defineProps<{
   item: FormDesignerFormItem

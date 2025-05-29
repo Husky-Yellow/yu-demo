@@ -41,30 +41,12 @@
 
 <script setup lang="ts">
 defineOptions({ name: 'InfraCreatePropertyPanel' })
-import { useFormDesigner } from '@/hooks/web/useFormDesigner'
 import { useFormDesignerStore } from '@/store/modules/formDesigner';
-const {addOptionToSelectedItem, removeOptionFromSelectedItem } = useFormDesignerStore();
-const { 
-  selectedItem,
-} = useFormDesigner()
+const {selectedItem, addOptionToSelectedItem, removeOptionFromSelectedItem } = useFormDesignerStore();
 
 // 计算属性：是否显示选项设置
 const hasOptions = computed(() => {
-  const type = selectedItem.value?.type
+  const type = selectedItem?.type
   return type === 'select' || type === 'radio' || type === 'checkbox'
 })
-
-watch(selectedItem, (newItem) => {
-  if (newItem && !newItem.props) {
-    newItem.props = { 
-      label: '',
-      placeholder: '',
-      required: false,
-      options: [] 
-    }
-  }
-  if (newItem?.props && !newItem.props.options) {
-    newItem.props.options = []
-  }
-}, { immediate: true, deep: true })
 </script>

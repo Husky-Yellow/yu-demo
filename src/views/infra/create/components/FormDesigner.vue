@@ -1,7 +1,7 @@
 <template>
   <el-form class="container flex gap-4 border rounded-lg">
     <div class="flex-1 bg-white p-1 rounded shadow min-h-[600px] border">
-      <div class="p-1 min-h-[760px]" @dragover.prevent @drop="handleDrop">
+      <div class="p-1 min-h-[760px]" @dragover.prevent @drop="(e) => handleDrop(e)">
         <template v-if="formItems.length === 0">
           <div class="h-full flex items-center justify-center text-gray-400"> 拖拽组件到这里 </div>
         </template>
@@ -27,7 +27,7 @@
                   :key="colIndex"
                   class="grid-item relative p-2 border rounded border-2 border-dashed border-gray-300"
                   @dragover.prevent.stop
-                  @drop.stop="(e) => handleDrop(e, rowIndex, colIndex)"
+                  @drop.stop="(e) => handleDropGridItem(e, rowIndex, colIndex)"
                 >
                   <FormItemRenderer :item="item" :index="colIndex" @select="selectItem(row)" />
                   <div
@@ -42,15 +42,15 @@
                     />
                   </div>
                 </div>
-                <div class="absolute -top-8 -right-10 p-1">
-                  <el-button type="danger" :icon="Delete" circle @click="removeItem(rowIndex)" />
+                <div class="absolute -top-5 -right-4 p-1">
+                  <el-button size="small" type="danger" :icon="Delete" circle @click="removeFormItem(row, rowIndex)" />
                 </div>
               </template>
               <template v-else>
                 <div class="drag-handle cursor-move p-t-1">
                   <el-icon><Rank /></el-icon>
                 </div>
-                <FormItemRenderer :item="row" :index="colIndex" @select="selectItem(row)">
+                <FormItemRenderer :item="row" :index="rowIndex" @select="selectItem(row)">
                   <template #delete-btn>
                     <div class="absolute -top-10 -right-9 p-1">
                       <el-button
@@ -58,7 +58,7 @@
                         size="small"
                         :icon="Delete"
                         circle
-                        @click="removeItem(rowIndex)"
+                        @click.stop="removeFormItem(row)"
                       />
                     </div>
                   </template>
@@ -79,42 +79,15 @@ import { useFormDesignerStore } from '@/store/modules/formDesigner';
 import FormItemRenderer from './FormItemRenderer.vue'
 defineOptions({ name: 'InfraCreateFormDesigner' })
 
-const formDesignerStore = useFormDesignerStore();
-const { selectedItem, updateItem, getComponent } = useFormDesigner()
+const { formItems, selectItem, removeFormItem, removeGridItem } = useFormDesignerStore();
 
 const {
-  formItems,
   handleDrop,
-  removeItem,
-  removeGridItem,
   handleDragStartRow,
   handleDragOverRow,
-  handleDropRow
+  handleDropRow,
+  handleDropGridItem
 } = useFormDesigner()
-
-
-const selectItem = (row) => {
-  formDesignerStore.selectItem(row)
-}
-
-// Helper functions for grid columns (assuming selectedItem is a grid)
-const addGridColumn = () => {
-   if (selectedItem.value && selectedItem.value.isGrid) {
-      const placeholder = getComponent('placeholder');
-      if(placeholder) {
-         (selectedItem.value).columns.push(placeholder);
-         updateItem(selectedItem.value);
-      }
-   }
-}
-
-const removeLastGridColumn = () => {
-   if (selectedItem.value && selectedItem.value.isGrid && (selectedItem.value).columns.length > 1) {
-      const removedCol = (selectedItem.value).columns.pop();
-      // TODO: Check usage of components inside the removed column if any
-      updateItem(selectedItem.value);
-   }
-}
 
 
 </script>

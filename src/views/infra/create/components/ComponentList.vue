@@ -13,8 +13,8 @@
                 v-for="item in section.list" 
                 :key="item.type"
                 class="p-2 border rounded cursor-move transition-colors" 
-                :class="{ 'opacity-50': isComponentUsed(item.type) }"
-                :draggable="!isComponentUsed(item.type)"
+                :class="{ 'opacity-50': isComponentUsed(item.id) }"
+                :draggable="!isComponentUsed(item.id)"
                 @dragstart="handleDragStart($event, item)" 
                 @dragend="handleDragEnd">
                 <div class="flex items-center">
@@ -39,20 +39,21 @@ import {
 } from '@element-plus/icons-vue'
 import { useFormDesigner } from '@/hooks/web/useFormDesigner'
 import { useFormDesignerStore } from '@/store/modules/formDesigner';
+import { FormDesignerFormItem } from "@/types/formDesigner";
 
 const activeName = ref('components')
 const activeNames = ref(['1'])
 const { handleDragStart, handleDragEnd } = useFormDesigner()
 
-const formDesignerStore = useFormDesignerStore();
+const { usedComponents } = useFormDesignerStore();
 
 const isComponentUsed = (type) => {
-  return formDesignerStore.getUsedComponents.has(type);
+  return usedComponents.has(type);
 };
 
-
-const componentList = shallowRef([
+const componentList = shallowRef<FormDesignerFormItem[]>([
   {
+    id: '1',
     type: 'input',
     label: '姓名',
     icon: Document,
@@ -62,6 +63,7 @@ const componentList = shallowRef([
     }
   },
   {
+    id: '2',
     type: 'select',
     label: '身份',
     icon: List,
@@ -75,6 +77,7 @@ const componentList = shallowRef([
     }
   },
   {
+    id: '3',
     type: 'radio',
     label: '政治面貌',
     icon: Check,
@@ -88,6 +91,7 @@ const componentList = shallowRef([
     }
   },
   {
+    id: '4',
     type: 'checkbox',
     label: '复选框组',
     icon: Check,
@@ -103,6 +107,7 @@ const componentList = shallowRef([
 ])
 const styleList = shallowRef([
   {
+    id: 'grid',
     type: 'grid',
     label: '栅格布局',
     icon: Grid,
