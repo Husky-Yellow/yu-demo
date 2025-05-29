@@ -1,6 +1,7 @@
 <script lang="tsx">
 import { defineComponent, computed } from 'vue'
-import { Message } from '@/layout/components//Message'
+import { TopNav } from '@/layout/components/TopNav'
+import { Message } from '@/layout/components/Message'
 import { Collapse } from '@/layout/components/Collapse'
 import { UserInfo } from '@/layout/components/UserInfo'
 import { Screenfull } from '@/layout/components/Screenfull'
@@ -43,6 +44,8 @@ const locale = computed(() => appStore.getLocale)
 // 消息图标
 const message = computed(() => appStore.getMessage)
 
+const topNav = computed(() => appStore.getTopNav)
+
 // 租户切换权限
 const hasTenantVisitPermission = computed(
   () => import.meta.env.VITE_APP_TENANT_ENABLE === 'true' && checkPermi(['system:tenant:visit'])
@@ -65,9 +68,15 @@ export default defineComponent({
             {hamburger.value && layout.value !== 'cutMenu' ? (
               <Collapse class="custom-hover" color="var(--top-header-text-color)"></Collapse>
             ) : undefined}
+            {
+              topNav.value ? (
+                  <TopNav />
+                ) : undefined
+            }
             {breadcrumb.value ? <Breadcrumb class="lt-md:hidden"></Breadcrumb> : undefined}
           </div>
         ) : undefined}
+        
         <div class="h-full flex items-center">
           {hasTenantVisitPermission.value ? <TenantVisit /> : undefined}
           {screenfull.value ? (

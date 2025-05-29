@@ -6,7 +6,7 @@ import { pathResolve } from '@/utils/routerHelper'
 
 const { renderMenuTitle } = useRenderMenuTitle()
 
-export const useRenderMenuItem = () =>
+export const useRenderMenuItem = (menuMode, topNav) =>
   // allRouters: AppRouteRecordRaw[] = [],
   {
     const renderMenuItem = (routers: AppRouteRecordRaw[], parentPath = '/') => {

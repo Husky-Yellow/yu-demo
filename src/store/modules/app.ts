@@ -37,6 +37,7 @@ interface AppState {
   footer: boolean
   theme: ThemeTypes
   fixedMenu: boolean
+  topNav: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -48,14 +49,15 @@ export const useAppStore = defineStore('app', {
       title: import.meta.env.VITE_APP_TITLE, // 标题
       pageLoading: false, // 路由跳转loading
 
-      breadcrumb: true, // 面包屑
-      breadcrumbIcon: true, // 面包屑图标
+      breadcrumb: false, // 面包屑
+      breadcrumbIcon: false, // 面包屑图标
       collapse: false, // 折叠菜单
       uniqueOpened: true, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
       search: true, // 搜索图标
       size: true, // 尺寸图标
+      topNav: true, // 顶部导航
       locale: true, // 多语言图标
       message: true, // 消息图标
       tagsView: true, // 标签页
@@ -180,6 +182,9 @@ export const useAppStore = defineStore('app', {
     },
     getFooter(): boolean {
       return this.footer
+    },
+    getTopNav(): boolean {
+      return this.topNav
     }
   },
   actions: {
@@ -234,6 +239,9 @@ export const useAppStore = defineStore('app', {
     },
     setPageLoading(pageLoading: boolean) {
       this.pageLoading = pageLoading
+    },
+    setTopNav(topNav: boolean) {
+      this.topNav = topNav
     },
     setLayout(layout: LayoutType) {
       if (this.mobile && layout !== 'classic') {

@@ -25,6 +25,7 @@ export default defineComponent({
     const appStore = useAppStore()
 
     const layout = computed(() => appStore.getLayout)
+    const topNav = computed(() => appStore.getTopNav)
 
     const { push, currentRoute } = useRouter()
 
@@ -41,8 +42,13 @@ export default defineComponent({
       }
     })
 
-    const routers = computed(() =>
-      unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
+    const routers = computed(() => {
+        if (topNav.value) {
+         return permissionStore.getShowChildRouter
+        } else {
+          return unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
+        }
+      }
     )
 
     const collapse = computed(() => appStore.getCollapse)
@@ -66,7 +72,11 @@ export default defineComponent({
       if (isUrl(index)) {
         window.open(index)
       } else {
-        push(index)
+        if (!topNav.value) {
+          push(index)
+        } else {
+          push(`${permissionStore.fatherRouter}${index}`)
+        }
       }
     }
 
@@ -99,7 +109,7 @@ export default defineComponent({
         >
           {{
             default: () => {
-              const { renderMenuItem } = useRenderMenuItem(unref(menuMode))
+              const { renderMenuItem } = useRenderMenuItem(unref(menuMode), topNav)
               return renderMenuItem(unref(routers))
             }
           }}

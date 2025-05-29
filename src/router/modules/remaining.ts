@@ -62,7 +62,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
         component: () => import('@/views/Home/Index.vue'),
         name: 'Index',
         meta: {
-          title: t('router.home'),
+          title: '首页',
           icon: 'ep:home-filled',
           noCache: false,
           affix: true

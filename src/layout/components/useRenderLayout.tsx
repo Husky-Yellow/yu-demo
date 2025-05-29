@@ -4,6 +4,7 @@ import { Menu } from '@/layout/components/Menu'
 import { TabMenu } from '@/layout/components/TabMenu'
 import { TagsView } from '@/layout/components/TagsView'
 import { Logo } from '@/layout/components/Logo'
+import { TopNav } from '@/layout/components/TopNav'
 import AppView from './AppView.vue'
 import ToolHeader from './ToolHeader.vue'
 import { ElScrollbar } from 'element-plus'
@@ -284,8 +285,64 @@ export const useRenderLayout = () => {
       </>
     )
   }
+  const renderTopNav = () => {
+    return (
+      <>
+        <div class="relative flex items-center bg-[var(--top-header-bg-color)] layout-border__bottom dark:bg-[var(--el-bg-color)]">
+          {logo.value ? <Logo class="custom-hover"></Logo> : undefined}
+          <ToolHeader class="flex-1"></ToolHeader>
+        </div>
+        <div class="absolute left-0 top-[var(--logo-height)] h-[calc(100%-var(--logo-height))] w-full flex">
+          <Menu class="relative layout-border__right !h-full"></Menu>
+          <div
+            class={[
+              `${prefixCls}-content`,
+              'h-[100%]',
+              {
+                'w-[calc(100%-var(--left-menu-min-width))] left-[var(--left-menu-min-width)]':
+                  collapse.value,
+                'w-[calc(100%-var(--left-menu-max-width))] left-[var(--left-menu-max-width)]':
+                  !collapse.value
+              }
+            ]}
+            style="transition: all var(--transition-time-02);"
+          >
+            <ElScrollbar
+              v-loading={pageLoading.value}
+              class={[
+                `${prefixCls}-content-scrollbar`,
+                {
+                  '!h-[calc(100%-var(--tags-view-height))] mt-[calc(var(--tags-view-height))]':
+                    fixedHeader.value && tagsView.value
+                }
+              ]}
+            >
+              {tagsView.value ? (
+                <TagsView
+                  class={[
+                    'layout-border__bottom absolute',
+                    {
+                      '!fixed top-0 left-0 z-10': fixedHeader.value,
+                      'w-[calc(100%-var(--left-menu-min-width))] !left-[var(--left-menu-min-width)] mt-[var(--logo-height)]':
+                        collapse.value && fixedHeader.value,
+                      'w-[calc(100%-var(--left-menu-max-width))] !left-[var(--left-menu-max-width)] mt-[var(--logo-height)]':
+                        !collapse.value && fixedHeader.value
+                    }
+                  ]}
+                  style="transition: width var(--transition-time-02), left var(--transition-time-02);"
+                ></TagsView>
+              ) : undefined}
+
+              <AppView></AppView>
+            </ElScrollbar>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   return {
+    renderTopNav,
     renderClassic,
     renderTopLeft,
     renderTop,

@@ -12,8 +12,11 @@ const prefixCls = getPrefixCls('layout')
 
 const appStore = useAppStore()
 
+appStore.setLayout('topLeft')
+
 // 是否是移动端
 const mobile = computed(() => appStore.getMobile)
+const topNav = computed(() => appStore.getTopNav)
 
 // 菜单折叠
 const collapse = computed(() => appStore.getCollapse)
@@ -30,8 +33,8 @@ const renderLayout = () => {
       const { renderClassic } = useRenderLayout()
       return renderClassic()
     case 'topLeft':
-      const { renderTopLeft } = useRenderLayout()
-      return renderTopLeft()
+      const { renderTopLeft , renderTopNav } = useRenderLayout()
+      return topNav.value ? renderTopNav() : renderTopLeft()
     case 'top':
       const { renderTop } = useRenderLayout()
       return renderTop()
