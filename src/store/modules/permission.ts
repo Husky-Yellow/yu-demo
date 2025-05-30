@@ -8,16 +8,20 @@ import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 
 export interface PermissionState {
+  fatherRouter: string
   routers: AppRouteRecordRaw[]
   addRouters: AppRouteRecordRaw[]
   menuTabRouters: AppRouteRecordRaw[]
+  showChildRouter: AppRouteRecordRaw[]
 }
 
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionState => ({
+    fatherRouter: '',
     routers: [],
     addRouters: [],
-    menuTabRouters: []
+    menuTabRouters: [],
+    showChildRouter: [] // 当 TopNav 为 true 时，显示子路由
   }),
   getters: {
     getRouters(): AppRouteRecordRaw[] {
@@ -28,6 +32,12 @@ export const usePermissionStore = defineStore('permission', {
     },
     getMenuTabRouters(): AppRouteRecordRaw[] {
       return this.menuTabRouters
+    },
+    getShowChildRouter(): AppRouteRecordRaw[] {
+      return this.showChildRouter
+    },
+    getFatherRouter(): string {
+      return this.fatherRouter
     }
   },
   actions: {
@@ -61,6 +71,11 @@ export const usePermissionStore = defineStore('permission', {
     },
     setMenuTabRouters(routers: AppRouteRecordRaw[]): void {
       this.menuTabRouters = routers
+    },
+    setShowChildRouter(path: string): void {
+      this.fatherRouter = path
+      const matchedRouter = this.addRouters.find((item) => item.path === path)
+      this.showChildRouter = matchedRouter?.children || []
     }
   },
   persist: false

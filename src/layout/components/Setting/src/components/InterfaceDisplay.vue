@@ -22,6 +22,13 @@ const breadcrumbChange = (show: boolean) => {
   appStore.setBreadcrumb(show)
 }
 
+// 面包屑
+const topNav = ref(appStore.getTopNav)
+
+const setTopNavbChange = (topNav: boolean) => {
+  appStore.setTopNav(topNav)
+}
+
 // 面包屑图标
 const breadcrumbIcon = ref(appStore.getBreadcrumbIcon)
 
@@ -148,6 +155,10 @@ watch(
 
 <template>
   <div :class="prefixCls">
+    <div class="flex items-center justify-between">
+      <span class="text-14px">开启 TopNav </span>
+      <ElSwitch v-model="topNav" @change="setTopNavbChange" />
+    </div>
     <div class="flex items-center justify-between">
       <span class="text-14px">{{ t('setting.breadcrumb') }}</span>
       <ElSwitch v-model="breadcrumb" @change="breadcrumbChange" />

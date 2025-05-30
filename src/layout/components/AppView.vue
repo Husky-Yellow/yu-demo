@@ -1,15 +1,11 @@
 <script lang="ts" setup>
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useAppStore } from '@/store/modules/app'
-import { Footer } from '@/layout/components/Footer'
+// import { Footer } from '@/layout/components/Footer'
 
 defineOptions({ name: 'AppView' })
 
 const appStore = useAppStore()
-
-const layout = computed(() => appStore.getLayout)
-
-const fixedHeader = computed(() => appStore.getFixedHeader)
 
 const footer = computed(() => appStore.getFooter)
 
@@ -51,5 +47,5 @@ provide('reload', reload)
       </template>
     </router-view>
   </section>
-  <Footer v-if="footer" />
+   <!--  <Footer v-if="footer" /> ---->
 </template>
