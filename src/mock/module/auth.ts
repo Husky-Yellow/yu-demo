@@ -824,6 +824,19 @@ export default [
                             "children": null
                         },
                         {
+                            "id": 1099,
+                            "parentId": 1,
+                            "name": "标签管理",
+                            "path": "label",
+                            "component": "system/label/index",
+                            "componentName": "SystemLabel",
+                            "icon": "ep:collection",
+                            "visible": true,
+                            "keepAlive": true,
+                            "alwaysShow": true,
+                            "children": null
+                        },
+                        {
                             "id": 2739,
                             "parentId": 1,
                             "name": "消息中心",
