@@ -7,7 +7,6 @@
     background-color="var(--top-header-bg-color)"
     text-color="var(--left-menu-text-color)"
     active-text-color="var(--left-menu-text-active-color)"
-    :popper-class="popperClass"
     @select="handleMenuSelect"
   >
     <el-menu-item
@@ -23,7 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useDesign } from '@/hooks/web/useDesign'
 import MenuTitle from './MenuTitle.vue'
@@ -38,19 +36,17 @@ const menuClass = computed(() => [
   `${prefixCls}__horizontal`,
   'h-[var(--top-tool-height)]'
 ])
-const popperClass = computed(() => `${prefixCls}-popper--horizontal`)
 const routers = computed(() => permissionStore.getRouters)
+
 const topLevelRoutes = computed(() => 
   routers.value.filter(route => !route.meta?.hidden)
 )
-console.log('topLevelRoutes', topLevelRoutes.value);
 
 // state
 const activeMenu = ref('/')
 // methods
 const handleMenuSelect = (path: string) => {
   activeMenu.value = path
-  // router.push(path)
   usePermissionStore().setShowChildRouter(path)
 }
 </script>
