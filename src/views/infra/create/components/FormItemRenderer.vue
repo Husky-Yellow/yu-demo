@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="item.label" @click.stop="$emit('select', item)"  class="relative select-none">
+  <el-form-item :label="item.label" @click.stop="$emit('select', item)"  class="relative select-none" :required="item.required">
     <component
       :is="getComponent(item.type)"
       v-bind="item.props"
@@ -21,6 +21,7 @@ defineProps<{
   item: FormDesignerFormItem
   index: number
   showDelete?: boolean
+  required?: boolean
 }>()
 
 defineEmits<{

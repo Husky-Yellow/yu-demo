@@ -4,11 +4,6 @@
     <template v-if="selectedItem">
       <div class="space-y-4">
         <div class="form-item">
-          <label class="block mb-1">标签文本</label>
-          <el-input v-model="selectedItem.props.label" placeholder="请输入标签文本"/>
-        </div>
-        
-        <div class="form-item">
           <label class="block mb-1">占位提示</label>
           <el-input v-model="selectedItem.placeholder" placeholder="请输入占位提示"/>
         </div>
@@ -41,12 +36,15 @@
 
 <script setup lang="ts">
 defineOptions({ name: 'InfraCreatePropertyPanel' })
+import { storeToRefs } from 'pinia'
 import { useFormDesignerStore } from '@/store/modules/formDesigner';
-const {selectedItem, addOptionToSelectedItem, removeOptionFromSelectedItem } = useFormDesignerStore();
+const store = useFormDesignerStore()
+const { selectedItem } = storeToRefs(store)
 
-// 计算属性：是否显示选项设置
+const { addOptionToSelectedItem, removeOptionFromSelectedItem } = store
+
 const hasOptions = computed(() => {
-  const type = selectedItem?.type
+  const type = selectedItem.value?.type
   return type === 'select' || type === 'radio' || type === 'checkbox'
 })
 </script>

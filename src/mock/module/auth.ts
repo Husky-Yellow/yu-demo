@@ -825,16 +825,31 @@ export default [
                         },
                         {
                             "id": 1099,
+
                             "parentId": 1,
                             "name": "标签管理",
                             "path": "label",
-                            "component": "system/label/index",
-                            "componentName": "SystemLabel",
+                            "component": null,
+                            "componentName": null,
                             "icon": "ep:collection",
                             "visible": true,
                             "keepAlive": true,
                             "alwaysShow": true,
-                            "children": null
+                            "children": [
+                                {
+                                    "id": 107,
+                                    "parentId": 1099,
+                                    "name": "自定义标签",
+                                    "path": "custom",
+                                    "component": "system/label/custom/index",
+                                    "componentName": "SystemCustomLabel",
+                                    "icon": "ep:takeaway-box",
+                                    "visible": true,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                            ]
                         },
                         {
                             "id": 2739,
@@ -1082,46 +1097,6 @@ export default [
                                     "component": "system/oauth2/token/index",
                                     "componentName": "SystemTokenClient",
                                     "icon": "fa:key",
-                                    "visible": true,
-                                    "keepAlive": true,
-                                    "alwaysShow": true,
-                                    "children": null
-                                }
-                            ]
-                        },
-                        {
-                            "id": 2447,
-                            "parentId": 1,
-                            "name": "三方登录",
-                            "path": "social",
-                            "component": "",
-                            "componentName": "",
-                            "icon": "fa:rocket",
-                            "visible": true,
-                            "keepAlive": true,
-                            "alwaysShow": true,
-                            "children": [
-                                {
-                                    "id": 2448,
-                                    "parentId": 2447,
-                                    "name": "三方应用",
-                                    "path": "client",
-                                    "component": "system/social/client/index.vue",
-                                    "componentName": "SocialClient",
-                                    "icon": "ep:set-up",
-                                    "visible": true,
-                                    "keepAlive": true,
-                                    "alwaysShow": true,
-                                    "children": null
-                                },
-                                {
-                                    "id": 2453,
-                                    "parentId": 2447,
-                                    "name": "三方用户",
-                                    "path": "user",
-                                    "component": "system/social/user/index.vue",
-                                    "componentName": "SocialUser",
-                                    "icon": "ep:avatar",
                                     "visible": true,
                                     "keepAlive": true,
                                     "alwaysShow": true,

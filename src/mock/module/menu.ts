@@ -979,18 +979,6 @@ export default [
             type: 3
           },
           {
-            id: 2448,
-            name: '三方应用',
-            parentId: 2447,
-            type: 2
-          },
-          {
-            id: 2449,
-            name: '三方应用查询',
-            parentId: 2448,
-            type: 3
-          },
-          {
             id: 2478,
             name: '单表（增删改查）',
             parentId: 1070,
@@ -2095,18 +2083,6 @@ export default [
             type: 3
           },
           {
-            id: 2450,
-            name: '三方应用创建',
-            parentId: 2448,
-            type: 3
-          },
-          {
-            id: 2453,
-            name: '三方用户',
-            parentId: 2447,
-            type: 2
-          },
-          {
             id: 2480,
             name: '示例联系人创建',
             parentId: 2478,
@@ -2995,12 +2971,6 @@ export default [
             type: 3
           },
           {
-            id: 2451,
-            name: '三方应用更新',
-            parentId: 2448,
-            type: 3
-          },
-          {
             id: 2481,
             name: '示例联系人更新',
             parentId: 2478,
@@ -3790,12 +3760,6 @@ export default [
             id: 2446,
             name: '装修页面删除',
             parentId: 2442,
-            type: 3
-          },
-          {
-            id: 2452,
-            name: '三方应用删除',
-            parentId: 2448,
             type: 3
           },
           {
@@ -5017,12 +4981,6 @@ export default [
             type: 2
           },
           {
-            id: 2447,
-            name: '三方登录',
-            parentId: 1,
-            type: 1
-          },
-          {
             id: 2490,
             name: '主子表（标准）',
             parentId: 1070,
@@ -6122,6 +6080,23 @@ export default [
           createTime: 1609837428000
         },
         {
+          id: 1001,
+          name: '标签管理',
+          permission: 'system:user:list',
+          type: 2,
+          sort: 1,
+          parentId: 1,
+          path: 'user',
+          icon: 'ep:avatar',
+          component: 'system/label/index',
+          componentName: 'SystemLabel',
+          status: 0,
+          visible: true,
+          keepAlive: true,
+          alwaysShow: true,
+          createTime: 1609837428000
+        },
+        {
           id: 111,
           name: 'MySQL 监控',
           permission: '',
@@ -6149,6 +6124,23 @@ export default [
           icon: 'ep:document-copy',
           component: 'infra/codegen/index',
           componentName: 'InfraCodegen',
+          status: 0,
+          visible: true,
+          keepAlive: true,
+          alwaysShow: true,
+          createTime: 1609837428000
+        },
+        {
+          id: 50011,
+          name: '自定义标签',
+          permission: '',
+          type: 2,
+          sort: 1,
+          parentId: 108,
+          path: 'custom',
+          icon: 'ep:position',
+          component: 'system/label/custom/index',
+          componentName: 'SystemLabelCustom',
           status: 0,
           visible: true,
           keepAlive: true,
@@ -8194,40 +8186,6 @@ export default [
           keepAlive: true,
           alwaysShow: true,
           createTime: 1698560365000
-        },
-        {
-          id: 2448,
-          name: '三方应用',
-          permission: '',
-          type: 2,
-          sort: 1,
-          parentId: 2447,
-          path: 'client',
-          icon: 'ep:set-up',
-          component: 'system/social/client/index.vue',
-          componentName: 'SocialClient',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699071439000
-        },
-        {
-          id: 2449,
-          name: '三方应用查询',
-          permission: 'system:social-client:query',
-          type: 3,
-          sort: 1,
-          parentId: 2448,
-          path: '',
-          icon: '',
-          component: '',
-          componentName: '',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699072992000
         },
         {
           id: 2478,
@@ -11375,40 +11333,6 @@ export default [
           createTime: 1698560366000
         },
         {
-          id: 2450,
-          name: '三方应用创建',
-          permission: 'system:social-client:create',
-          type: 3,
-          sort: 2,
-          parentId: 2448,
-          path: '',
-          icon: '',
-          component: '',
-          componentName: '',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699073038000
-        },
-        {
-          id: 2453,
-          name: '三方用户',
-          permission: 'system:social-user:query',
-          type: 2,
-          sort: 2,
-          parentId: 2447,
-          path: 'user',
-          icon: 'ep:avatar',
-          component: 'system/social/user/index.vue',
-          componentName: 'SocialUser',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699077665000
-        },
-        {
           id: 2480,
           name: '示例联系人创建',
           permission: 'infra:demo01-contact:create',
@@ -13263,7 +13187,7 @@ export default [
         },
         {
           id: 2093,
-          name: '标签管理',
+          name: '标签管理1',
           permission: '',
           type: 2,
           sort: 3,
@@ -13906,23 +13830,6 @@ export default [
           keepAlive: true,
           alwaysShow: true,
           createTime: 1698560366000
-        },
-        {
-          id: 2451,
-          name: '三方应用更新',
-          permission: 'system:social-client:update',
-          type: 3,
-          sort: 3,
-          parentId: 2448,
-          path: '',
-          icon: '',
-          component: '',
-          componentName: '',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699073067000
         },
         {
           id: 2481,
@@ -16167,23 +16074,6 @@ export default [
           keepAlive: true,
           alwaysShow: true,
           createTime: 1698560366000
-        },
-        {
-          id: 2452,
-          name: '三方应用删除',
-          permission: 'system:social-client:delete',
-          type: 3,
-          sort: 4,
-          parentId: 2448,
-          path: '',
-          icon: '',
-          component: '',
-          componentName: '',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699073083000
         },
         {
           id: 2482,
@@ -19618,23 +19508,6 @@ export default [
           keepAlive: true,
           alwaysShow: true,
           createTime: 1698541461000
-        },
-        {
-          id: 2447,
-          name: '三方登录',
-          permission: '',
-          type: 1,
-          sort: 10,
-          parentId: 1,
-          path: 'social',
-          icon: 'fa:rocket',
-          component: '',
-          componentName: '',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1699071121000
         },
         {
           id: 2490,

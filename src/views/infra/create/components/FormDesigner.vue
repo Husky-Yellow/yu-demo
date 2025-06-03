@@ -50,7 +50,7 @@
                 <div class="drag-handle cursor-move p-t-1">
                   <el-icon><Rank /></el-icon>
                 </div>
-                <FormItemRenderer :item="row" :index="rowIndex" @select="selectItem(row)">
+                <FormItemRenderer :key="rowIndex" :item="row" :index="rowIndex" @select="selectItem(row)">
                   <template #delete-btn>
                     <div class="absolute -top-10 -right-9 p-1">
                       <el-button
@@ -74,12 +74,15 @@
 
 <script setup lang="ts">
 import { Delete, Rank } from '@element-plus/icons-vue'
+import { storeToRefs } from 'pinia'
 import { useFormDesigner } from '@/hooks/web/useFormDesigner'
 import { useFormDesignerStore } from '@/store/modules/formDesigner';
 import FormItemRenderer from './FormItemRenderer.vue'
 defineOptions({ name: 'InfraCreateFormDesigner' })
+const store = useFormDesignerStore()
+const { formItems } = storeToRefs(store)
 
-const { formItems, selectItem, removeFormItem, removeGridItem } = useFormDesignerStore();
+const { selectItem, removeFormItem, removeGridItem } = store
 
 const {
   handleDrop,

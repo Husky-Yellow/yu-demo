@@ -21,7 +21,6 @@
             preIcon="ep:basketball"
             title="菜单权限"
             type="primary"
-            @click="openAssignMenuForm(scope.row)"
           >
           编辑
           </el-button>
@@ -31,7 +30,6 @@
             preIcon="ep:coin"
             title="数据权限"
             type="primary"
-            @click="openDataPermissionForm(scope.row)"
           >
             删除
           </el-button>
@@ -39,10 +37,13 @@
       </el-table-column>
     </el-table>
   </ContentWrap>
+  <!-- 表单弹窗：添加/修改 -->
+  <DialogForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
 defineOptions({ name: 'SystemLabel' })
 import * as RoleApi from '@/api/system/role'
+import DialogForm from './DialogForm.vue'
 
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
@@ -74,19 +75,6 @@ const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
-
-/** 数据权限操作 */
-const dataPermissionFormRef = ref()
-const openDataPermissionForm = async (row: RoleApi.RoleVO) => {
-  dataPermissionFormRef.value.open(row)
-}
-
-/** 菜单权限操作 */
-const assignMenuFormRef = ref()
-const openAssignMenuForm = async (row: RoleApi.RoleVO) => {
-  assignMenuFormRef.value.open(row)
-}
-
 
 /** 初始化 **/
 onMounted(() => {

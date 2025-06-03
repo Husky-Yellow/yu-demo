@@ -25,6 +25,8 @@ export const useFormDesignerStore = defineStore('formDesigner', {
      */
     addFormItem(item: FormDesignerFormItem) {
       this.formItems.push(item)
+      console.log('addFormItem', this.formItems);
+      
     },
 
     /**
