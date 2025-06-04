@@ -15,8 +15,6 @@ const getCaches = computed((): string[] => {
   return tagsViewStore.getCachedViews
 })
 
-const tagsView = computed(() => appStore.getTagsView)
-
 //region 无感刷新
 const routerAlive = ref(true)
 // 无感刷新，防止出现页面闪烁白屏

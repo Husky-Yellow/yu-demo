@@ -55,7 +55,7 @@
   <CustomForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { handleTree } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
 import CustomForm from './CustomForm.vue'
