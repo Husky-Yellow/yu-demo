@@ -849,6 +849,19 @@ export default [
                                     "alwaysShow": true,
                                     "children": null
                                 },
+                                {
+                                    "id": 108,
+                                    "parentId": 107,
+                                    "name": "自定义标签详情",
+                                    "path": "custom/detail",
+                                    "component": "system/label/custom/detail/index",
+                                    "componentName": "SystemCustomLabelDetail",
+                                    "icon": "ep:document",
+                                    "visible": false,
+                                    "keepAlive": true,
+                                    "alwaysShow": false,
+                                    "children": null
+                                },
                             ]
                         },
                         {
@@ -1459,59 +1472,6 @@ export default [
                                     "children": null
                                 }
                             ]
-                        }
-                    ]
-                },
-                {
-                    "id": 1281,
-                    "parentId": 0,
-                    "name": "报表管理",
-                    "path": "/report",
-                    "component": null,
-                    "componentName": null,
-                    "icon": "ep:pie-chart",
-                    "visible": true,
-                    "keepAlive": true,
-                    "alwaysShow": true,
-                    "children": [
-                        {
-                            "id": 1282,
-                            "parentId": 1281,
-                            "name": "报表设计器",
-                            "path": "jimu-report",
-                            "component": "report/jmreport/index",
-                            "componentName": "JimuReport",
-                            "icon": "ep:trend-charts",
-                            "visible": true,
-                            "keepAlive": true,
-                            "alwaysShow": true,
-                            "children": null
-                        },
-                        {
-                            "id": 5009,
-                            "parentId": 1281,
-                            "name": "仪表盘设计器",
-                            "path": "jimu-bi",
-                            "component": "report/jmreport/bi",
-                            "componentName": "JimuBI",
-                            "icon": "fa:y-combinator",
-                            "visible": true,
-                            "keepAlive": true,
-                            "alwaysShow": true,
-                            "children": null
-                        },
-                        {
-                            "id": 2153,
-                            "parentId": 1281,
-                            "name": "大屏设计器",
-                            "path": "go-view",
-                            "component": "report/goview/index",
-                            "componentName": "GoView",
-                            "icon": "fa:area-chart",
-                            "visible": true,
-                            "keepAlive": true,
-                            "alwaysShow": true,
-                            "children": null
                         }
                     ]
                 },

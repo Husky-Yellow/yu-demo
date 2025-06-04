@@ -37,13 +37,13 @@
       <el-table-column prop="name" label="统计配置" />
       <el-table-column label="操作" align="center" :width="300">
         <template #default="scope">
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">
-            修改
+          <el-button link type="primary" @click="openDetail()">
+            配置
           </el-button>
           <el-button link type="danger" @click="handleDelete(scope.row.id)">
-            删除
+            编辑
           </el-button>
-          <el-button link type="danger" @click="handleDelete(scope.row.id)">
+          <el-button link type="danger" @click="openForm('update', scope.row.id)">
             添加子标签
           </el-button>
         </template>
@@ -55,6 +55,7 @@
   <CustomForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
+import { useRoute, useRouter } from 'vue-router'
 import { handleTree } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
 import CustomForm from './CustomForm.vue'
@@ -64,6 +65,7 @@ defineOptions({ name: 'SystemLabelCustom' })
 
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
+const router = useRouter()
 
 const loading = ref(true) // 列表的加载中
 const list = ref() // 列表的数据
@@ -105,6 +107,14 @@ const resetQuery = () => {
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
+}
+
+/** 添加/修改操作 */
+const openDetail = () => {
+  console.log('跳转');
+  router.push(`/system/label/custom/detail`)
+  // router.push(`/system/label/custom/detail?id=${id}`);
+  // router.push(`/system/label/custom/detail?id=${id}`);
 }
 
 /** 删除按钮操作 */

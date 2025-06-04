@@ -6879,23 +6879,6 @@ export default [
           createTime: 1652171193000
         },
         {
-          id: 1282,
-          name: '报表设计器',
-          permission: '',
-          type: 2,
-          sort: 1,
-          parentId: 1281,
-          path: 'jimu-report',
-          icon: 'ep:trend-charts',
-          component: 'report/jmreport/index',
-          componentName: 'JimuReport',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1657455996000
-        },
-        {
           id: 2003,
           name: '分类查询',
           permission: 'product:category:query',
@@ -9446,23 +9429,6 @@ export default [
           createTime: 1742867471000
         },
         {
-          id: 5009,
-          name: '仪表盘设计器',
-          permission: '',
-          type: 2,
-          sort: 1,
-          parentId: 1281,
-          path: 'jimu-bi',
-          icon: 'fa:y-combinator',
-          component: 'report/jmreport/bi',
-          componentName: 'JimuBI',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1746237435000
-        },
-        {
           id: 5011,
           name: '转账订单查询',
           permission: 'pay:transfer:query',
@@ -10634,23 +10600,6 @@ export default [
           keepAlive: true,
           alwaysShow: true,
           createTime: 1674844002000
-        },
-        {
-          id: 2153,
-          name: '大屏设计器',
-          permission: '',
-          type: 2,
-          sort: 2,
-          parentId: 1281,
-          path: 'go-view',
-          icon: 'fa:area-chart',
-          component: 'report/goview/index',
-          componentName: 'GoView',
-          status: 0,
-          visible: true,
-          keepAlive: true,
-          alwaysShow: true,
-          createTime: 1675699399000
         },
         {
           id: 2155,

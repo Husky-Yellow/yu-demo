@@ -8,11 +8,8 @@ import { Screenfull } from '@/layout/components/Screenfull'
 import { Breadcrumb } from '@/layout/components/Breadcrumb'
 import { SizeDropdown } from '@/layout/components/SizeDropdown'
 import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
-import RouterSearch from '@/components/RouterSearch/index.vue'
-import TenantVisit from '@/layout/components/TenantVisit/index.vue'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
-import { checkPermi } from '@/utils/permission'
 
 const { getPrefixCls, variables } = useDesign()
 
@@ -29,9 +26,6 @@ const hamburger = computed(() => appStore.getHamburger)
 // 全屏图标
 const screenfull = computed(() => appStore.getScreenfull)
 
-// 搜索图片
-const search = computed(() => appStore.search)
-
 // 尺寸图标
 const size = computed(() => appStore.getSize)
 
@@ -45,11 +39,6 @@ const locale = computed(() => appStore.getLocale)
 const message = computed(() => appStore.getMessage)
 
 const topNav = computed(() => appStore.getTopNav)
-
-// 租户切换权限
-const hasTenantVisitPermission = computed(
-  () => import.meta.env.VITE_APP_TENANT_ENABLE === 'true' && checkPermi(['system:tenant:visit'])
-)
 
 export default defineComponent({
   name: 'ToolHeader',
@@ -77,11 +66,9 @@ export default defineComponent({
           </div>
         ) : undefined}
         <div class="h-full flex items-center">
-          {hasTenantVisitPermission.value ? <TenantVisit /> : undefined}
           {screenfull.value ? (
             <Screenfull class="custom-hover" color="var(--top-header-text-color)"></Screenfull>
           ) : undefined}
-          {search.value ? <RouterSearch isModal={false} /> : undefined}
           {size.value ? (
             <SizeDropdown class="custom-hover" color="var(--top-header-text-color)"></SizeDropdown>
           ) : undefined}
