@@ -17,8 +17,8 @@
         <el-tab-pane label="详情配置" name="Details">
           详情配置
         </el-tab-pane>
-        <el-tab-pane label="操作配置" name="Operation">
-          操作配置
+        <el-tab-pane label="操作配置" name="operation">
+          <Operation />
         </el-tab-pane>
         <el-tab-pane label="查询配置" name="Query">
           查询配置

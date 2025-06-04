@@ -1,17 +1,16 @@
 <template>
-  <div class="sortable-table-container">
-    <el-table
-      ref="tableRef"
-      :data="tableData"
-      stripe
-      @row-dblclick="handleRowClick">
-      <el-table-column label="操作" width="100">
-        <template #default="scope">
-          <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-icon><Rank /></el-icon>
-        </template>
-      </el-table-column>
-      
+  <div class="field-sortable-table-container">
+    <el-row :gutter="20">
+      <el-col :span="6">
+        <el-alert title="仅能删除本次新增字段，保存后字段无法再删除" type="info" :closable="false" show-icon />
+      </el-col>
+      <el-col :span="6" :offset="12">
+        <el-button>添加基础字段</el-button>
+        <el-button type="primary">编辑</el-button>
+        <el-button type="success">删除</el-button>
+      </el-col>
+    </el-row>
+    <el-table ref="tableRef" :data="tableData" stripe @row-dblclick="handleRowClick">
       <el-table-column prop="name" label="Code" />
       <el-table-column prop="name" label="字段名称" />
       <el-table-column prop="name" label="字段说明" />
@@ -22,7 +21,13 @@
       <el-table-column prop="name" label="编辑表单" />
       <el-table-column prop="name" label="移动端列表" />
       <el-table-column prop="name" label="管理端列表" />
-      <el-table-column prop="address" label="地址" />
+      <el-table-column label="排序" width="100">
+        <template #default="">
+          <el-icon>
+            <Rank />
+          </el-icon>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -30,7 +35,6 @@
 <script setup>
 import Sortable from 'sortablejs';
 import { Rank } from '@element-plus/icons-vue'
-// Rank
 
 const props = defineProps({
   data: {
@@ -53,8 +57,8 @@ const updateParentData = () => {
 // 初始化 Sortable
 const initSortable = () => {
   nextTick(() => {
-    const tableEl = tableRef.value.$el.querySelector('.el-table__body-wrapper tbody');
-    
+    const tableEl = tableRef.value.$el.querySelector('.field-sortable-table-container .el-table__body-wrapper tbody');
+
     if (tableEl && !sortable.value) {
       sortable.value = new Sortable(tableEl, {
         animation: 150,
@@ -62,12 +66,12 @@ const initSortable = () => {
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
-        
+
         // 开始拖拽
         onStart: () => {
           console.log('开始拖拽');
         },
-        
+
         // 结束拖拽
         onEnd: (evt) => {
           const { oldIndex, newIndex } = evt;
@@ -116,7 +120,7 @@ const handleRowClick = (row) => {
 </script>
 
 <style scoped>
-.sortable-table-container {
+.field-sortable-table-container {
   margin: 20px;
 }
 
@@ -133,4 +137,4 @@ const handleRowClick = (row) => {
 .sortable-drag {
   cursor: move;
 }
-</style>    
+</style>
