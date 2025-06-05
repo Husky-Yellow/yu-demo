@@ -6,10 +6,12 @@
       </div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="字段配置" name="field">
-          <Field  :data="tableData"
-        @update:data="onDataUpdate"
-        @edit="handleEdit"
-        @row-click="handleRowClick"/>
+          <Field
+            :data="tableData"
+            @update:data="onDataUpdate"
+            @edit="handleEdit"
+            @row-click="handleRowClick"
+          />
         </el-tab-pane>
         <el-tab-pane label="表单配置" name="Form">
           表单配置
@@ -20,8 +22,8 @@
         <el-tab-pane label="操作配置" name="operation">
           <Operation />
         </el-tab-pane>
-        <el-tab-pane label="查询配置" name="Query">
-          查询配置
+        <el-tab-pane label="查询配置" name="query">
+          <Query />
         </el-tab-pane>
         <el-tab-pane label="数据配置" name="Data">
           数据配置
@@ -40,14 +42,14 @@
 defineOptions({ name: 'SystemLabelCustomDetail' })
 import type { TabsPaneContext } from 'element-plus'
 import Field from './components/Field.vue'
+import Operation from './components/Operation.vue'
+import Query from './components/Query.vue'
 
 const activeName = ref('field')
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
-
-
 
 // 模拟数据
 const tableData = ref([
