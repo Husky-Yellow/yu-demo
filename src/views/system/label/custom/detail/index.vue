@@ -26,10 +26,10 @@
           <Query />
         </el-tab-pane>
         <el-tab-pane label="数据配置" name="Data">
-          数据配置
+          <Filter />
         </el-tab-pane>
         <el-tab-pane label="排序配置" name="Sorting">
-          排序配置
+          <Sort />
         </el-tab-pane>
         <el-tab-pane label="统计配置" name="Statistical">
           <Statistic />
@@ -44,6 +44,7 @@ import type { TabsPaneContext } from 'element-plus'
 import Field from './../../components/Field.vue'
 import Operation from './../../components/Operation.vue'
 import Query from './../../components/Query.vue'
+import Sort from './../../components/Sort.vue'
 import Details from './../../components/Details.vue'
 import { FormDesigner } from '@/components/FormDesigner'
 
