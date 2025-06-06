@@ -14,10 +14,10 @@
           />
         </el-tab-pane>
         <el-tab-pane label="表单配置" name="Form">
-          表单配置
+          <FormDesigner />
         </el-tab-pane>
-        <el-tab-pane label="详情配置" name="Details">
-          详情配置
+        <el-tab-pane label="详情配置" name="details">
+          <Details />
         </el-tab-pane>
         <el-tab-pane label="操作配置" name="operation">
           <Operation />
@@ -32,7 +32,7 @@
           排序配置
         </el-tab-pane>
         <el-tab-pane label="统计配置" name="Statistical">
-          统计配置
+          <Statistic />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -41,9 +41,11 @@
 <script lang="ts" setup>
 defineOptions({ name: 'SystemLabelCustomDetail' })
 import type { TabsPaneContext } from 'element-plus'
-import Field from './components/Field.vue'
-import Operation from './components/Operation.vue'
-import Query from './components/Query.vue'
+import Field from './../../components/Field.vue'
+import Operation from './../../components/Operation.vue'
+import Query from './../../components/Query.vue'
+import Details from './../../components/Details.vue'
+import { FormDesigner } from '@/components/FormDesigner'
 
 const activeName = ref('field')
 
