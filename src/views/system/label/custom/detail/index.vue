@@ -14,7 +14,7 @@
           />
         </el-tab-pane>
         <el-tab-pane label="表单配置" name="Form">
-          <FormDesigner />
+          <Form />
         </el-tab-pane>
         <el-tab-pane label="详情配置" name="details">
           <Details />
@@ -42,6 +42,7 @@
 defineOptions({ name: 'SystemLabelCustomDetail' })
 import type { TabsPaneContext } from 'element-plus'
 import Field from './../../components/Field.vue'
+import Form from './../../components/Form.vue'
 import Operation from './../../components/Operation.vue'
 import Query from './../../components/Query.vue'
 import Sort from './../../components/Sort.vue'

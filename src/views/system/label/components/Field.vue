@@ -1,11 +1,11 @@
 <template>
   <div class="field-sortable-table-container">
     <el-row :gutter="20">
-      <el-col :span="6">
+      <el-col :span="12">
         <el-alert title="仅能删除本次新增字段，保存后字段无法再删除" type="info" :closable="false" show-icon />
       </el-col>
-      <el-col :span="6" :offset="12">
-        <el-button>添加基础字段</el-button>
+      <el-col :span="6" :offset="6">
+        <el-button @click="openForm">添加基础字段</el-button>
         <el-button type="primary">编辑</el-button>
         <el-button type="success">删除</el-button>
       </el-col>
@@ -29,12 +29,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <FieldEdit ref="formRef"/>
   </div>
 </template>
 
-<script setup>
+<script setup  lang="ts">
 import Sortable from 'sortablejs';
 import { Rank } from '@element-plus/icons-vue'
+import FieldEdit from './FieldEdit.vue';
 
 const props = defineProps({
   data: {
@@ -117,6 +119,13 @@ const handleEdit = (row) => {
 const handleRowClick = (row) => {
   emits('row-click', row);
 };
+
+/** 添加/修改操作 */
+const formRef = ref()
+const openForm = () => {
+  console.log('弹窗内部');
+  formRef.value.open()
+}
 </script>
 
 <style scoped>

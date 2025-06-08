@@ -1,255 +1,239 @@
 <template>
-  <div class="drag-config-container">
-    <!-- 左侧数据字段列表 -->
-    <div class="left-panel">
-      <h3>数据字段</h3>
-      <div class="field-list" ref="leftList">
-        <div
-          v-for="item in leftListData"
-          :key="item.id"
-          class="field-item"
-          draggable="true"
-          @dragstart="handleDragStart(item)"
-          @dragend="handleDragEnd"
-        >
-          {{ item.label }}
-        </div>
-      </div>
+  <div class="container flex gap-2">
+      <div class="w-1/5 bg-white p-4 rounded shadow border">
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="组件" name="components">
+          <el-collapse v-model="activeNames">
+            <el-collapse-item 
+              v-for="section in sections" 
+              :key="section.name"
+              :title="section.title" 
+              :name="section.name">
+              <div class="space-y-2">
+                <div
+                  v-for="item in section.list" 
+                  :key="item.type"
+                  class="p-2 border rounded cursor-move transition-colors" 
+                  :class="{ 'opacity-50': isComponentUsed(item.id) }"
+                  :draggable="!isComponentUsed(item.id)"
+                  @dragstart="handleDragStart($event, item)" 
+                  @dragend="handleDragEnd">
+                  <div class="flex items-center">
+                    <el-icon class="mr-2"><component :is="item.icon" /></el-icon>
+                    <span>{{ item.label }}</span>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+      </el-tabs>
     </div>
-
-    <!-- 右侧详情配置区 -->
-    <div class="right-panel">
-      <div class="right-header">
-        <h3>详情配置</h3>
-        <el-button type="text" @click="oneKeyLayout">一键布局</el-button>
-      </div>
-      <div class="config-list" ref="rightConfigList">
-        <div
-          v-for="(item, index) in rightConfigData"
-          :key="item.id"
-          class="config-item"
-          :style="{ border: item.active ? '1px dashed #409eff' : '1px solid #ebeef5' }"
-          @click="handleItemClick(item, index)"
-        >
-        <div class="drag-handle" @mousedown.stop @touchstart.stop>
-          <el-icon><Rank /></el-icon>
+    <el-form class="container flex gap-4 border rounded-lg" disabled>
+      <div class="flex-1 bg-white p-1 rounded shadow min-h-[600px] border">
+        <div class="p-1 min-h-[760px]" @dragover.prevent @drop="(e) => handleDrop(e)">
+          <template v-if="formItems.length === 0">
+            <div class="h-full flex items-center justify-center text-gray-400"> 拖拽组件到这里 </div>
+          </template>
+          <div v-else class="space-y-4">
+            <div class="relative">
+              <div
+                v-for="(row, rowIndex) in formItems"
+                :key="rowIndex"
+                class="border-2 border-dashed relative border-gray-300 relative m-t-4 grid gap-2"
+                :class="[row.isGrid ? 'grid-row grid-cols-[20px_1fr_1fr] min-h-[100px]' : 'form-row grid-cols-[20px_1fr]']"
+                @click="selectItem(row)"
+                draggable="true"
+                @dragstart.stop="(e) => handleDragStartRow(e, rowIndex)"
+                @dragover.prevent.stop="handleDragOverRow"
+                @drop.stop="(e) => handleDropRow(e, rowIndex)"
+              >
+                <template v-if="row.isGrid">
+                  <div class="drag-handle cursor-move flex items-center h-full">
+                    <el-icon><Rank /></el-icon>
+                  </div>
+                  <div
+                    v-for="(item, colIndex) in row.columns"
+                    :key="colIndex"
+                    class="grid-item relative p-2 border rounded border-2 border-dashed border-gray-300"
+                    @dragover.prevent.stop
+                    @drop.stop="(e) => handleDropGridItem(e, rowIndex, colIndex)"
+                  >
+                    <FormItemRenderer :item="item" :index="colIndex" @select="selectItem(row)" />
+                    <div
+                      class="grid-item-tools absolute top-0 right-0 shadow-sm rounded-bl p-1"
+                    >
+                      <el-button
+                        type="danger"
+                        size="small"
+                        :icon="Delete"
+                        circle
+                        @click="removeGridItem(rowIndex, colIndex)"
+                      />
+                    </div>
+                  </div>
+                  <div class="absolute -top-5 -right-4 p-1">
+                    <el-button size="small" type="danger" :icon="Delete" circle @click="removeFormItem(row, rowIndex)" />
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="drag-handle cursor-move p-t-1">
+                    <el-icon><Rank /></el-icon>
+                  </div>
+                  <FormItemRenderer :key="rowIndex" :item="row" :index="rowIndex" @select="selectItem(row)">
+                    <template #delete-btn>
+                      <div class="absolute -top-5 -right-4 p-1">
+                        <el-button
+                          type="danger"
+                          size="small"
+                          :icon="Delete"
+                          circle
+                          @click.stop="removeFormItem(row)"
+                        />
+                      </div>
+                    </template>
+                  </FormItemRenderer>
+                </template>
+              </div>
+            </div>
+          </div>
         </div>
-          <span>{{ item.label }}：</span>
-        </div>
       </div>
-    </div>
+    </el-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
-import Sortable from 'sortablejs';
-import { ElButton, ElIcon } from 'element-plus';
-import { Rank } from '@element-plus/icons-vue'
+import {
+  Document,
+  List,
+  Check,
+  Grid,
+  Delete, 
+  Rank 
+} from '@element-plus/icons-vue'
+import { useFormDesigner } from '@/hooks/web/useFormDesigner'
+import { useFormDesignerStore } from '@/store/modules/formDesigner';
+import { FormDesignerFormItem } from "@/types/formDesigner";
+import { storeToRefs } from 'pinia'
+import FormItemRenderer from '@/components/FormDesigner/src/components/FormItemRenderer.vue'
 
-interface FieldItem {
-  id: string;
-  label: string;
-}
+const activeName = ref('components')
+const activeNames = ref(['1'])
+const { 
+  handleDragStart, 
+  handleDragEnd,   
+  handleDrop,
+  handleDragStartRow,
+  handleDragOverRow,
+  handleDropRow,
+  handleDropGridItem 
+} = useFormDesigner()
 
-interface ConfigItem {
-  id: string;
-  label: string;
-  active: boolean;
-}
 
-// 左侧列表数据
-const leftListData = ref<FieldItem[]>([
-  { id: '1', label: '证件类型' },
-  { id: '2', label: '证件号码' },
-  { id: '3', label: '姓名' },
-  { id: '4', label: '区域' },
-  { id: '5', label: '系统标签' },
-  { id: '6', label: '数据添加时间' },
-  { id: '7', label: '数据修改时间' },
-  { id: '8', label: '数据添加人' },
-  { id: '9', label: '数据修改人' },
-]);
+const store = useFormDesignerStore()
+const { formItems, usedComponents } = storeToRefs(store)
+const { selectItem, removeFormItem, removeGridItem } = store
 
-// 右侧配置项数据
-const rightConfigData = ref<ConfigItem[]>([
-  { id: '3', label: '姓名', active: false },
-  { id: '2', label: '证件号码', active: true },
-]);
-
-const leftList = ref<HTMLElement | null>(null);
-const rightConfigList = ref<HTMLElement | null>(null);
-let draggedItem: FieldItem | null = null;
-
-onMounted(() => {
-  // 初始化右侧配置项的拖拽排序
-  initRightSortable();
-  
-  // 为右侧容器添加拖拽相关事件
-  const rightEl = rightConfigList.value;
-  if (rightEl) {
-    rightEl.addEventListener('dragover', handleDragOver);
-    rightEl.addEventListener('drop', handleDrop);
-  }
-});
-
-// 处理左侧列表项拖拽开始
-const handleDragStart = (item: FieldItem) => {
-  draggedItem = item;
-  setTimeout(() => {
-    // 拖拽开始后，隐藏原元素（可选效果）
-  }, 0);
+const isComponentUsed = (type) => {
+  return usedComponents.value.has(type);
 };
 
-// 处理左侧列表项拖拽结束
-const handleDragEnd = () => {
-  draggedItem = null;
-};
-
-// 处理右侧容器拖拽经过
-const handleDragOver = (e: DragEvent) => {
-  e.preventDefault(); // 必须阻止默认行为才能触发 drop 事件
-};
-
-// 处理右侧容器放置
-const handleDrop = (e: DragEvent) => {
-  e.preventDefault();
-  if (draggedItem) {
-    const isExist = rightConfigData.value.some((item) => item.id === draggedItem?.id);
-    if (!isExist && draggedItem) {
-      rightConfigData.value.push({
-        id: draggedItem.id,
-        label: draggedItem.label,
-        active: false,
-      });
-      // 重新初始化右侧拖拽
-      nextTick(() => {
-        initRightSortable();
-      });
+const componentList = shallowRef<FormDesignerFormItem[]>([
+  {
+    id: '1',
+    type: 'input',
+    label: '姓名',
+    icon: Document,
+    props: {
+      label: '',
+      required: false
     }
-  }
-};
-
-// 初始化右侧配置项的拖拽排序
-const initRightSortable = () => {
-  nextTick(() => {
-    const el = rightConfigList.value;
-    if (el) {
-      new Sortable(el, {
-        handle: '.drag-handle',
-        animation: 150,
-        onEnd: (evt) => {
-          const { oldIndex, newIndex } = evt;
-          if (oldIndex !== newIndex) {
-            const item = rightConfigData.value.splice(oldIndex, 1)[0];
-            rightConfigData.value.splice(newIndex, 0, item);
-          }
+  },
+  {
+    id: '2',
+    type: 'select',
+    label: '身份',
+    icon: List,
+    props: {
+      label: '',
+      required: false,
+      options: [
+        { label: '选项1', value: '1' },
+        { label: '选项2', value: '2' }
+      ]
+    }
+  },
+  {
+    id: '3',
+    type: 'radio',
+    label: '政治面貌',
+    icon: Check,
+    props: {
+      label: '',
+      required: false,
+      options: [
+        { label: '选项1', value: '1' },
+        { label: '选项2', value: '2' }
+      ]
+    }
+  },
+  {
+    id: '4',
+    type: 'checkbox',
+    label: '复选框组',
+    icon: Check,
+    props: {
+      label: '',
+      required: false,
+      options: [
+        { label: '选项1', value: '1' },
+        { label: '选项2', value: '2' }
+      ]
+    }
+  },
+])
+const styleList = shallowRef<FormDesignerFormItem[]>([
+  {
+    id: 'grid',
+    type: 'grid',
+    label: '栅格布局',
+    icon: Grid,
+    isGrid: true,
+    columns: [
+      {
+        span: 12,
+        type: 'number',
+        props: undefined,
+        icon: undefined
+      },
+      {
+        span: 12,
+        type: 'number',
+        props: {
+          label: '',
         },
-      });
-    }
-  });
-};
-
-// 点击右侧配置项
-const handleItemClick = (item: ConfigItem, index: number) => {
-  rightConfigData.value.forEach((i) => (i.active = false));
-  item.active = true;
-};
-
-
-// 一键布局
-const oneKeyLayout = () => {
-  // 按左侧列表顺序重新排列右侧配置项
-  const orderedItems = leftListData.value
-    .filter((leftItem) => rightConfigData.value.some((rightItem) => rightItem.id === leftItem.id))
-    .map((leftItem) => {
-      const found = rightConfigData.value.find((rightItem) => rightItem.id === leftItem.id);
-      return found || { id: leftItem.id, label: leftItem.label, active: false };
-    });
-  
-  if (orderedItems.length > 0) {
-    rightConfigData.value = orderedItems;
-    nextTick(() => {
-      initRightSortable();
-    });
+        icon: undefined
+      }
+    ]
   }
-};
+])
+
+const sections = [
+  { 
+    name: '1', 
+    title: '业务组件', 
+    list: componentList.value 
+  },
+  { 
+    name: '2', 
+    title: '布局组件', 
+    list: styleList.value 
+  }
+]
+
+
 </script>
 
 <style scoped>
-.drag-config-container {
-  display: flex;
-  height: calc(100vh - 60px);
-}
-
-.left-panel {
-  width: 200px;
-  border-right: 1px solid #ebeef5;
-  padding: 10px;
-}
-
-.right-panel {
-  flex: 1;
-  padding: 10px;
-}
-
-.right-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.field-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.field-item {
-  padding: 8px 12px;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
-  cursor: move;
-  background-color: #fafafa;
-  transition: all 0.2s;
-}
-
-.field-item:hover {
-  background-color: #f5f7fa;
-}
-
-.config-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.config-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 4px;
-  background-color: #fff;
-  transition: all 0.2s;
-}
-
-.config-item:hover {
-  background-color: #fafafa;
-}
-
-.drag-handle {
-  cursor: grab;
-  color: #409eff;
-  font-size: 18px;
-  margin-left: 10px;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-}
-
-.add-btn, .del-btn {
-  margin-left: 5px;
-}
 </style>
