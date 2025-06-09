@@ -30,7 +30,6 @@ import type { TreeInstance } from 'element-plus'
 import { handleTree } from '@/utils/tree'
 import * as PostApi from '@/api/system/post'
 import * as DeptApi from '@/api/system/dept'
-import * as UserApi from '@/api/system/user'
 
 defineOptions({ name: 'SystemSubscriberSubPositionForm' })
 
@@ -126,7 +125,7 @@ const handleCheckChange = (
   indeterminate: boolean
 ) => {
   console.log(data, checked, indeterminate)
-  formData.value.postIds.push(data)
+formData.value.postIds.push(data as unknown as never)
   // formData.value.postIds = []
   // data.forEach((key) => {
   //   formData.value.postIds.push(key as never)

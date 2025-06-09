@@ -47,7 +47,7 @@ import Operation from './../../components/Operation.vue'
 import Query from './../../components/Query.vue'
 import Sort from './../../components/Sort.vue'
 import Details from './../../components/Details.vue'
-import { FormDesigner } from '@/components/FormDesigner'
+import Statistic from './../../components/Statistic.vue'
 
 const activeName = ref('field')
 
