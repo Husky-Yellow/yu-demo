@@ -999,7 +999,7 @@ export default [
                                     "id": 108,
                                     "parentId": 107,
                                     "name": "自定义标签详情",
-                                    "path": "custom/detail",
+                                    "path": "customDetail",
                                     "component": "system/label/custom/detail/index",
                                     "componentName": "SystemCustomLabelDetail",
                                     "icon": "ep:document",

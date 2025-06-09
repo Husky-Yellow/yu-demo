@@ -114,9 +114,7 @@ const openForm = (type: string, id?: number) => {
 /** 添加/修改操作 */
 const openDetail = () => {
   console.log('跳转');
-  router.push(`/system/label/custom/detail`)
-  // router.push(`/system/label/custom/detail?id=${id}`);
-  // router.push(`/system/label/custom/detail?id=${id}`);
+  router.push(`/system/label/customDetail`)
 }
 
 /** 删除按钮操作 */
