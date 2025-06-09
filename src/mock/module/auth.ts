@@ -706,6 +706,46 @@ export default [
                     "alwaysShow": true,
                     "children": [
                         {
+                            "id": 2001,
+                            "parentId": 1,
+                            "name": "组织架构",
+                            "path": "organization",
+                            "component": null,
+                            "componentName": null,
+                            "icon": "ep:collection",
+                            "visible": true,
+                            "keepAlive": true,
+                            "alwaysShow": true,
+                            "children": [
+                                {
+                                    "id": 2001-1,
+                                    "parentId": 2001,
+                                    "name": "用户管理",
+                                    "path": "subscriber",
+                                    "component": "system/subscriber/index",
+                                    "componentName": "SystemSubscriber",
+                                    "icon": "ep:takeaway-box",
+                                    "visible": true,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                                {
+                                    "id": 2001-3,
+                                    "parentId": 2001,
+                                    "name": "组织架构",
+                                    "path": "organization",
+                                    "component": "system/organization/index",
+                                    "componentName": "SystemOrganization",
+                                    "icon": "ep:takeaway-box",
+                                    "visible": true,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                            ]
+                        },
+                        {
                             "id": 1224,
                             "parentId": 1,
                             "name": "租户管理",
@@ -864,6 +904,7 @@ export default [
                                 },
                             ]
                         },
+                 
                         {
                             "id": 2739,
                             "parentId": 1,
