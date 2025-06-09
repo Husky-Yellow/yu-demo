@@ -53,12 +53,14 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <CustomForm ref="formRef" @success="getList" />
+  <CustomAddChildForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 import { handleTree } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
 import CustomForm from './CustomForm.vue'
+import CustomAddChildForm from './CustomAddChild.vue'
 import * as UserApi from '@/api/system/user'
 
 defineOptions({ name: 'SystemLabelCustom' })

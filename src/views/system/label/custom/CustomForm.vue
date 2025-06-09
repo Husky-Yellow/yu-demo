@@ -65,7 +65,7 @@ import * as UserApi from '@/api/system/user'
 import { CommonStatusEnum } from '@/utils/constants'
 import { FormRules } from 'element-plus'
 
-defineOptions({ name: 'SystemDeptForm' })
+defineOptions({ name: 'SystemLabelCustomForm' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
