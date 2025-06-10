@@ -8,44 +8,19 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="操作人" prop="userId">
-        <el-select
-          v-model="queryParams.userId"
-          clearable
-          filterable
-          placeholder="请输入操作人员"
-          class="!w-240px"
-        >
-          <el-option
-            v-for="user in userList"
-            :key="user.id"
-            :label="user.nickname"
-            :value="user.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="操作模块" prop="type">
-        <el-input
-          v-model="queryParams.type"
-          placeholder="请输入操作模块"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="操作名" prop="subType">
+    <el-form-item label="账户名称" prop="subType">
         <el-input
           v-model="queryParams.subType"
-          placeholder="请输入操作名"
+          placeholder="请输入账户名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="操作内容" prop="action">
+      <el-form-item label="日志标题" prop="subType">
         <el-input
-          v-model="queryParams.action"
-          placeholder="请输入操作名"
+          v-model="queryParams.subType"
+          placeholder="请输入日志标题"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -59,15 +34,6 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="业务编号" prop="bizId">
-        <el-input
-          v-model="queryParams.bizId"
-          placeholder="请输入业务编号"
-          clearable
-          @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
@@ -90,11 +56,10 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="日志编号" align="center" prop="id" width="100" />
-      <el-table-column label="操作人" align="center" prop="userName" width="120" />
+      <el-table-column label="序号" type="index" width="55" />
+      <el-table-column label="日志标题" align="center" prop="id" width="100" />
+      <el-table-column label="账户名称" align="center" prop="userName" width="120" />
       <el-table-column label="操作模块" align="center" prop="type" width="120" />
-      <el-table-column label="操作名" align="center" prop="subType" width="160" />
-      <el-table-column label="操作内容" align="center" prop="action" />
       <el-table-column
         label="操作时间"
         align="center"
@@ -102,20 +67,7 @@
         width="180"
         :formatter="dateFormatter"
       />
-      <el-table-column label="业务编号" align="center" prop="bizId" width="120" />
-      <el-table-column label="操作 IP" align="center" prop="userIp" width="120" />
-      <el-table-column label="操作" align="center" fixed="right" width="60">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openDetail(scope.row)"
-            v-hasPermi="['system:operate-log:query']"
-          >
-            详情
-          </el-button>
-        </template>
-      </el-table-column>
+      <el-table-column label="操作系统" align="center" prop="userAgent" />
     </el-table>
     <!-- 分页 -->
     <Pagination
@@ -125,17 +77,11 @@
       @pagination="getList"
     />
   </ContentWrap>
-
-  <!-- 表单弹窗：详情 -->
-  <OperateLogDetail ref="detailRef" />
 </template>
 <script lang="ts" setup>
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import * as OperateLogApi from '@/api/system/operatelog'
-import OperateLogDetail from './OperateLogDetail.vue'
-import * as UserApi from '@/api/system/user'
-const userList = ref<UserApi.UserVO[]>([]) // 用户列表
 
 defineOptions({ name: 'SystemSensitiveLog' })
 
@@ -181,12 +127,6 @@ const resetQuery = () => {
   handleQuery()
 }
 
-/** 详情操作 */
-const detailRef = ref()
-const openDetail = (data: OperateLogApi.OperateLogVO) => {
-  detailRef.value.open(data)
-}
-
 /** 导出按钮操作 */
 const handleExport = async () => {
   try {
@@ -205,7 +145,5 @@ const handleExport = async () => {
 /** 初始化 **/
 onMounted(async () => {
   await getList()
-  // 获得用户列表
-  userList.value = await UserApi.getSimpleUserList()
 })
 </script>
