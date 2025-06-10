@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="20" class="h-[calc(100vh-150px)]">
     <!-- 左侧部门树 -->
-    <el-col :span="5" :xs="24">
+    <el-col :span="4" :xs="24">
       <ContentWrap class="h-1/1">
         <TreeSelector
           :expand-all="false"
@@ -9,7 +9,7 @@
            @node-click="handleOrgNodeClick" />
       </ContentWrap>
     </el-col>
-    <el-col :span="19" :xs="24" class="h-1/1">
+    <el-col :span="20" :xs="24" class="h-1/1">
       <ContentWrap>
         <el-form :model="searchForm" inline label-width="80px" class="mt-10px">
           <el-form-item label="岗位姓名">
