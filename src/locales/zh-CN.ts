@@ -378,7 +378,6 @@ export default {
       registerButton: '注册',
       rememberMe: '记住我',
       forgetPassword: '忘记密码?',
-      otherSignIn: '其他登录方式',
       // notify
       loginSuccessTitle: '登录成功',
       loginSuccessDesc: '欢迎回来',

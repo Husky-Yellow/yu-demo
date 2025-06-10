@@ -3,20 +3,32 @@ import request from '@/config/axios'
 export type DictDataVO = {
   id: number | undefined
   sort: number | undefined
-  label: string
-  value: string
-  dictType: string
   status: number
-  colorType: string
-  cssClass: string
   remark: string
-  createTime: Date
+  createTime: Date,
+  /** 字典类型（如：ai_generate_mode） */
+  dictType: string;
+  /** 字典值（如："1"） */
+  value: string;
+  /** 字典标签（如："歌词模式"） */
+  label: string;
+  /** 颜色类型（预留字段，可选） */
+  colorType?: string;
+  /** CSS 类名（预留字段，可选） */
+  cssClass?: string;
 }
 
-// 查询字典数据（精简)列表
+/**
+ * 获取字典数据列表（简化版）
+ * 
+ * @description 用于获取系统字典数据，返回包含字典类型、值、标签等信息的数组
+ * @returns {Promise<DictDataVO[]>} 包含字典数据的 Promise 对象
+ */
 export const getSimpleDictDataList = () => {
-  return request.get({ url: '/system/dict-data/simple-list' })
-}
+  return request.get<DictDataVO[]>({ 
+    url: '/system/dict-data/simple-list' 
+  });
+};
 
 // 查询字典数据列表
 export const getDictDataPage = (params: PageParam) => {

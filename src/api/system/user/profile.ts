@@ -39,7 +39,15 @@ export interface UserProfileUpdateReqVO {
   avatar?: string
 }
 
-// 查询用户个人信息
+/**
+ * 获取当前用户的个人信息
+ * 
+ * @public
+ * @since 1.0.0 - 接口自 1.0.0 版本引入
+ * @see {@link updateUserProfile} - 关联的更新用户信息接口
+ * @note 此接口正在线上业务中使用，修改前需评估影响
+ * @returns {Promise<ProfileVO>} 用户个人信息
+ */
 export const getUserProfile = () => {
   return request.get({ url: '/system/user/profile/get' })
 }

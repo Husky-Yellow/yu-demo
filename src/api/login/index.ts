@@ -27,16 +27,24 @@ export const getTenantIdByName = (name: string) => {
 }
 
 // 使用租户域名，获得租户信息
-export const getTenantByWebsite = (website: string) => {
-  return request.get({ url: '/system/tenant/get-by-website?website=' + website })
-}
+// export const getTenantByWebsite = (website: string) => {
+//   return request.get({ url: '/system/tenant/get-by-website?website=' + website })
+// }
 
 // 登出
 export const loginOut = () => {
   return request.post({ url: '/system/auth/logout' })
 }
 
-// 获取用户权限信息
+/**
+ * 获取用户权限信息
+ * 
+ * @public
+ * @since 1.0.0 - 接口自 1.0.0 版本引入
+ * @see {@link updateUserProfile} - 关联的更新用户信息接口
+ * @note 此接口正在线上业务中使用，修改前需评估影响
+ * @returns {Promise<ProfileVO>} 用户个人信息
+ */
 export const getInfo = () => {
   return request.get({ url: '/system/auth/get-permission-info' })
 }
@@ -74,10 +82,23 @@ export const getCode = (data: any) => {
   return request.postOriginal({ url: 'system/captcha/get', data })
 }
 
-// 滑动或者点选验证
-export const reqCheck = (data: any) => {
-  return request.postOriginal({ url: 'system/captcha/check', data })
-}
+/**
+ * 验证码校验接口
+ * 
+ * @public
+ * @param {Object} data - 验证码校验参数
+ * @param {string} data.captchaType - 验证码类型（如：blockPuzzle-滑块拼图，clickWord-点选文字）
+ * @param {string} data.pointJson - 滑动轨迹或点击位置的加密数据（根据不同验证码类型生成）
+ * @param {string} data.token - 验证码唯一标识（由获取验证码接口返回）
+ * @returns {Promise<AxiosResponse>} 包含校验结果的响应对象
+ */
+export const reqCheck = (data: {
+  captchaType: string;
+  pointJson: string;
+  token: string;
+}) => {
+  return request.postOriginal({ url: 'system/captcha/check', data });
+};
 
 // 通过短信重置密码
 export const smsResetPassword = (data: any) => {

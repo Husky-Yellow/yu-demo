@@ -382,7 +382,6 @@ export default {
       registerButton: 'Sign up',
       rememberMe: 'Remember me',
       forgetPassword: 'Forget Password?',
-      otherSignIn: 'Sign in with',
 
       // notify
       loginSuccessTitle: 'Login successful',

@@ -43,7 +43,13 @@ export const getUnreadNotifyMessageList = async () => {
   return await request.get({ url: '/system/notify-message/get-unread-list' })
 }
 
-// 获得当前用户的未读站内信数量
+/**
+ * 获得当前用户的未读站内信数量
+ *
+ * @public
+ * @since 1.0.0 - 接口自 1.0.0 版本引入
+ * @note 此接口正在线上业务中使用，修改前需评估影响
+ */
 export const getUnreadNotifyMessageCount = async () => {
   return await request.get({ url: '/system/notify-message/get-unread-count' })
 }
