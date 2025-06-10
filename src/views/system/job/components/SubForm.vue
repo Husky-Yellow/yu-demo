@@ -7,8 +7,8 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="岗位姓名" prop="nickname">
-        <el-input v-model="formData.nickname" placeholder="请输入岗位姓名" />
+      <el-form-item label="岗位姓名" prop="name">
+        <el-input v-model="formData.name" placeholder="请输入岗位姓名" />
       </el-form-item>
       <el-form-item label="归属组织" prop="deptId">
         <el-tree-select
@@ -22,8 +22,8 @@
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="formData.status" class="!w-240px">
-          <el-option label="启用" :value="true" />
-          <el-option label="禁用" :value="false" />
+          <el-option label="启用" :value="1" />
+          <el-option label="禁用" :value="0" />
         </el-select>
       </el-form-item>
     </el-form>
@@ -35,9 +35,8 @@
 </template>
 <script lang="ts" setup>
 import { defaultProps, handleTree } from '@/utils/tree'
-import * as PostApi from '@/api/system/post'
 import * as DeptApi from '@/api/system/dept'
-import * as UserApi from '@/api/system/user'
+import * as JobApi from '@/api/system/job'
 import { FormRules } from 'element-plus'
 
 defineOptions({ name: 'SystemJobSubForm' })
@@ -49,17 +48,16 @@ const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
-  nickname: '',
+  name: '',
   deptId: '',
-  status: true
+  status: 1
 })
 const formRules = reactive<FormRules>({
-  nickname: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
   deptId: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 const deptList = ref<Tree[]>([]) // 树形结构
-const postList = ref([] as PostApi.PostVO[]) // 岗位列表
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
@@ -71,15 +69,13 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await UserApi.getUser(id)
+      formData.value = await JobApi.getPost(id)
     } finally {
       formLoading.value = false
     }
   }
   // 加载部门树
   deptList.value = handleTree(await DeptApi.getSimpleDeptList())
-  // 加载岗位列表
-  postList.value = await PostApi.getSimplePostList()
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
@@ -93,12 +89,12 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as UserApi.UserVO
+    const data = formData.value as unknown as JobApi.JobDetailData
     if (formType.value === 'create') {
-      await UserApi.createUser(data)
+      await JobApi.createJob(data)
       message.success('新增成功')
     } else {
-      await UserApi.updateUser(data)
+      await JobApi.updatePost(data)
       message.success('修改成功')
     }
     dialogVisible.value = false
@@ -112,9 +108,9 @@ const submitForm = async () => {
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
-    nickname: '',
+    name: '',
     deptId: '',
-    status: true
+    status: 1
   }
   formRef.value?.resetFields()
 }

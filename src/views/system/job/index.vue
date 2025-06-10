@@ -142,12 +142,13 @@ const handleReset = () => {
 const formRef = ref()
 const handleAdd = () => {
   console.log('新增用户')
-  formRef.value.open()
+  formRef.value.open('create')
 }
 
 const handleEdit = (row: any) => {
   console.log('编辑用户', row)
   // 打开编辑用户弹窗
+  formRef.value.open('update',row?.id)
 }
 
 const handleDelete = async (row: any) => {
