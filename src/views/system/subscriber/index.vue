@@ -3,7 +3,10 @@
     <!-- 左侧部门树 -->
     <el-col :span="4" :xs="24">
       <ContentWrap class="h-1/1">
-        <OrgTree @node-click="handleOrgNodeClick" />
+        <TreeSelector
+          :expand-all="false"
+          :load-api="loadRoleData"
+           @node-click="handleOrgNodeClick" />
       </ContentWrap>
     </el-col>
     <el-col :span="20" :xs="24" class="h-1/1">
@@ -85,7 +88,8 @@
 <script lang="ts" setup>
 defineOptions({ name: 'SystemSubscriber' })
 import { ElMessage, ElMessageBox } from 'element-plus'
-import OrgTree from './components/OrgTree.vue'
+import * as DeptApi from '@/api/system/dept'
+import { handleTree } from '@/utils/tree'
 import SubscriberTable from './components/SubscriberTable.vue'
 import SubForm from './components/SubForm.vue'
 import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS, VIEW_LEVEL_OPTIONS } from '@/config/user/index'
@@ -264,4 +268,18 @@ const handleDisable = () => {
       })
     })
 }
+
+
+const loadRoleData = async () => {
+  try {
+    const res = await DeptApi.getSimpleDeptList()
+    const treeData = handleTree(res);
+    return treeData || [];
+  } catch (error) {
+    ElMessage.error('加载角色列表失败');
+    return [];
+  }
+};
+
+
 </script>
