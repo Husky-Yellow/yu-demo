@@ -67,7 +67,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { handleTree } from '@/utils/tree'
 import SubscriberTable from './components/SubscriberTable.vue'
 import SubForm from './components/SubForm.vue'
-import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS, VIEW_LEVEL_OPTIONS } from '@/config/user/index'
+import { VIEW_LEVEL_OPTIONS } from '@/config/user/index'
 
 const loadRoleData = async () => {
   try {

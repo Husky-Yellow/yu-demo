@@ -14,6 +14,7 @@
           placeholder="请输入组织名称"
           clearable
           @keyup.enter="handleQuery"
+          @clear="resetQuery"
           class="!w-240px"
         />
       </el-form-item>
@@ -51,9 +52,9 @@
         <template #default="scope">
           <el-switch
             v-model="scope.row.status"
-            :active-value="'启用'"
-            :inactive-value="'禁用'"
-            @change="handleStatusChange(scope.row)"
+            :active-value="1"
+            :inactive-value="0"
+            @update:model-value="handleStatusChange(scope.row)"
           />
         </template>
       </el-table-column>
@@ -62,7 +63,7 @@
           <el-button
             link
             type="primary"
-            @click="openForm('update', scope.row.id)"
+            @click="openForm('addChild', scope.row)"
             v-hasPermi="['system:dept:update']"
           >
             添加下级
@@ -70,7 +71,7 @@
           <el-button
             link
             type="primary"
-            @click="openForm('update', scope.row.id)"
+            @click="openForm('update', scope.row)"
             v-hasPermi="['system:dept:update']"
           >
             编辑
@@ -92,12 +93,10 @@
   <DeptForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { dateFormatter } from '@/utils/formatTime'
 import { handleTree } from '@/utils/tree'
+import { debounce } from "lodash-es";
 import * as DeptApi from '@/api/system/dept'
 import DeptForm from './DeptForm.vue'
-import * as UserApi from '@/api/system/user'
 
 defineOptions({ name: 'SystemorGanization' })
 
@@ -114,7 +113,8 @@ const queryParams = reactive({
 const queryFormRef = ref() // 搜索的表单
 const isExpandAll = ref(true) // 是否展开，默认全部展开
 const refreshTable = ref(true) // 重新渲染表格状态
-const userList = ref<UserApi.UserVO[]>([]) // 用户列表
+
+const originalStatus = ref({}) // 添加状态记录对象，用于跟踪每行的原始状态
 
 /** 查询部门列表 */
 const getList = async () => {
@@ -122,6 +122,18 @@ const getList = async () => {
   try {
     const data = await DeptApi.getDeptPage(queryParams)
     list.value = handleTree(data)
+
+    // 初始化状态记录，避免初始化时触发不必要的更新
+    originalStatus.value = {}
+    const initStatus = (items) => {
+      items.forEach(item => {
+        originalStatus.value[item.id] = item.status
+        if (item.children && item.children.length > 0) {
+          initStatus(item.children)
+        }
+      })
+    }
+    initStatus(list.value)
   } finally {
     loading.value = false
   }
@@ -150,8 +162,8 @@ const resetQuery = () => {
 
 /** 添加/修改操作 */
 const formRef = ref()
-const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id)
+const openForm = (type: string, row?: any) => {
+  formRef.value.open(type, row)
 }
 
 /** 删除按钮操作 */
@@ -167,12 +179,30 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
-const handleStatusChange = (row: any) => console.log(row)
+
+// 优化后的状态变更处理函数
+const handleStatusChange = debounce(async (row: any) => {
+  // 检查状态是否真的改变了
+  if (originalStatus.value[row.id] === row.status) {
+    console.log('状态未变化，跳过更新')
+    return
+  }
+
+  console.log('状态变化', { id: row.id, from: originalStatus.value[row.id], to: row.status })
+
+  try {
+    // 发起 API 请求
+    await DeptApi.updateDept(row)
+    message.success('状态更新成功')
+    // 更新成功后，更新原始状态记录
+    originalStatus.value[row.id] = row.status
+  } catch (error) {
+    message.error('状态修改失败')
+    // 更新失败时，恢复原始状态
+    row.status = originalStatus.value[row.id]
+  }
+}, 300) // 300ms 防抖
 
 /** 初始化 **/
-onMounted(async () => {
-  await getList()
-  // 获取用户列表
-  userList.value = await UserApi.getSimpleUserList()
-})
+onMounted(() => getList());
 </script>

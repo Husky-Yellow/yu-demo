@@ -34,99 +34,146 @@
 <script lang="ts" setup>
 import { defaultProps, handleTree } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
-import * as UserApi from '@/api/system/user'
 import { FormRules } from 'element-plus'
 
 defineOptions({ name: 'SystemorGanizationForm' })
 
+// 常量定义
+const FORM_TYPES = {
+  ADD_CHILD: 'addChild',
+  CREATE: 'create',
+  UPDATE: 'update'
+} as const
+
+type FormType = typeof FORM_TYPES[keyof typeof FORM_TYPES]
+
 const message = useMessage() // 消息弹窗
 
+// 组件状态
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formType = ref('') // 表单的类型：create - 新增；update - 修改
-const formData = ref({
+const formType = ref<FormType | ''>('') // 表单的类型：create - 新增；update - 修改
+const formData = ref<DeptApi.DeptFormData>({
   id: undefined,
-  title: '',
-  parentId: undefined,
-  name: undefined,
-  sort: undefined
+  parentId: 0,
+  name: "",
+  sort: 0,
+  status: 0
 })
-const formRules = reactive<FormRules>({
-  parentId: [{ required: true, message: '上级部门不能为空', trigger: 'blur' }],
+const formRules = reactive<FormRules<DeptApi.DeptFormData>>({
   name: [{ required: true, message: '部门名称不能为空', trigger: 'blur' }],
   sort: [{ required: true, message: '显示排序不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 const deptTree = ref() // 树形结构
-const userList = ref<UserApi.UserVO[]>([]) // 用户列表
 
-/** 打开弹窗 */
-const open = async (type: string, id?: number) => {
+
+/**
+ * 打开表单弹窗并初始化表单数据
+ * @param {FORM_TYPES} type - 操作类型
+ * @param {DeptFormData | DeptVO} [row] - 行数据对象
+ */
+ const open = async (type: FormType, row?: DeptApi.DeptFormData) => {
   dialogVisible.value = true
-  dialogTitle.value = '编辑'
   formType.value = type
+  dialogTitle.value = {
+    [FORM_TYPES.ADD_CHILD]: '增加子级',
+    [FORM_TYPES.CREATE]: '新增',
+    [FORM_TYPES.UPDATE]: '编辑'
+  }[type]
+
   resetForm()
-  // 修改时，设置数据
-  if (id) {
+
+  if (row) {
     formLoading.value = true
     try {
-      formData.value = await DeptApi.getDept(id)
+      if (type === FORM_TYPES.ADD_CHILD) {
+        formData.value = {
+          ...row,
+          name: '',
+          parentId: row.id ?? 0,
+          sort: 1,
+          status: 0,
+          id: undefined
+        }
+      } else {
+        formData.value = { ...row }
+      }
     } finally {
       formLoading.value = false
     }
   }
-  // 获得用户列表
-  userList.value = await UserApi.getSimpleUserList()
-  // 获得部门树
-  await getTree()
+
+  await getDeptTree()
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
-  // 校验表单
-  if (!formRef) return
-  const valid = await formRef.value.validate()
-  if (!valid) return
-  // 提交请求
-  formLoading.value = true
   try {
-    const data = formData.value as unknown as DeptApi.DeptVO
-    if (formType.value === 'create') {
-      await DeptApi.createDept(data)
-      message.success('新增成功')
-    } else {
-      await DeptApi.updateDept(data)
-      message.success('修改成功')
+    await formRef.value?.validate()
+    if (!formRef.value || !formType.value) return
+
+    formLoading.value = true
+
+    const actions = {
+      [FORM_TYPES.CREATE]: {
+        api: DeptApi.createDept,
+        message: '新增成功'
+      },
+      [FORM_TYPES.ADD_CHILD]: {
+        api: DeptApi.createDept,
+        message: '新增子级成功'
+      },
+      [FORM_TYPES.UPDATE]: {
+        api: DeptApi.updateDept,
+        message: '修改成功'
+      }
     }
+
+    const action = actions[formType.value]
+    if (!action) return
+
+    await action.api(formData.value)
+    message.success(action.message)
+
     dialogVisible.value = false
-    // 发送操作成功的事件
     emit('success')
+  } catch (error) {
+    message.error('操作失败，请重试')
+    throw error
   } finally {
     formLoading.value = false
   }
 }
-
-/** 重置表单 */
-const resetForm = () => {
+/**
+ * 重置表单
+ */
+ const resetForm = () => {
   formData.value = {
     id: undefined,
-    title: '',
-    parentId: undefined,
-    name: undefined,
-    sort: undefined
+    status: 0,
+    parentId: 0,
+    name: '',
+    sort: 0,
   }
   formRef.value?.resetFields()
 }
 
-/** 获得部门树 */
-const getTree = async () => {
+/**
+ * 获取部门树数据
+ */
+const getDeptTree = async () => {
   deptTree.value = []
   const data = await DeptApi.getSimpleDeptList()
-  let dept: Tree = { id: 0, name: '顶级部门', children: [] }
-  dept.children = handleTree(data)
-  deptTree.value.push(dept)
+  const rootDept: Tree = {
+    id: 0,
+    name: '顶级部门',
+    children: handleTree(data)
+  }
+  deptTree.value.push(rootDept)
 }
+
+defineExpose({ open })
 </script>
