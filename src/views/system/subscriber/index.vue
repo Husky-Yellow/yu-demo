@@ -19,7 +19,7 @@
             <el-input v-model="searchForm.userName" placeholder="请输入用户姓名" />
           </el-form-item>
           <el-form-item label="用户状态">
-            <el-select v-model="searchForm.userStatus" placeholder="全部" style="width: 240px">
+            <el-select v-model="searchForm.userStatus" placeholder="全部" class="!w-240px">
               <el-option
                 v-for="option in USER_STATUS_OPTIONS"
                 :key="option.value"
@@ -29,7 +29,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="岗位状态">
-            <el-select v-model="searchForm.postStatus" placeholder="全部" style="width: 240px">
+            <el-select v-model="searchForm.postStatus" placeholder="全部" class="!w-240px">
               <el-option
                 v-for="option in POST_STATUS_OPTIONS"
                 :key="option.value"
@@ -42,7 +42,7 @@
             <el-select
               v-model="searchForm.viewLevel"
               placeholder="展示组织内成员"
-              style="width: 240px"
+              class="!w-240px"
             >
               <el-option
                 v-for="option in VIEW_LEVEL_OPTIONS"

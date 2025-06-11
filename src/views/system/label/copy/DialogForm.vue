@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 import * as RoleApi from '@/api/system/role'
 
-defineOptions({ name: 'SystemLabelForm' })
+defineOptions({ name: 'SystemLabelFormCopy' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗

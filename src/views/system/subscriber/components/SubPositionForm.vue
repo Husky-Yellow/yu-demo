@@ -125,7 +125,7 @@ const handleCheckChange = (
   indeterminate: boolean
 ) => {
   console.log(data, checked, indeterminate)
-formData.value.postIds.push(data as unknown as never)
+  formData.value.postIds.push(data as unknown as never)
   // formData.value.postIds = []
   // data.forEach((key) => {
   //   formData.value.postIds.push(key as never)
@@ -175,7 +175,7 @@ const submitForm = async () => {
     // }
     dialogVisible.value = false
     console.log('formData.value', formData.value);
-    
+
     // 发送操作成功的事件
     emit('success', formData.value)
   } finally {
