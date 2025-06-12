@@ -1,32 +1,41 @@
 <template>
   <el-table
     :data="tableData"
-    border
     style="width: 100%"
     :row-key="row => row.id"
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="55" />
     <el-table-column label="序号" type="index" width="55" />
-    <el-table-column prop="account" label="账号" />
-    <el-table-column prop="name" label="姓名" />
-    <el-table-column prop="orgName" label="所属组织" />
+    <el-table-column prop="mobile" label="账号" />
+    <el-table-column prop="nickname" label="姓名" />
+    <el-table-column prop="deptName" label="所属组织" />
     <el-table-column prop="status" label="账号状态">
       <template #default="scope">
         <el-switch
           v-model="scope.row.status"
-          :active-value="'启用'"
-          :inactive-value="'禁用'"
+          :active-value="1"
+          :inactive-value="0"
           @change="handleStatusChange(scope.row)"
         />
       </template>
     </el-table-column>
-    <el-table-column prop="postName" label="持有岗位" />
-    <el-table-column prop="createTime" label="创建时间" />
+    <el-table-column prop="deptId" label="持有岗位">
+      <template #default="scope">
+        {{scope.row.deptId ?'已加入':"未加入" }}
+      </template>
+    </el-table-column>
+    <el-table-column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        :formatter="dateFormatter"
+        width="180px"
+      />
     <el-table-column label="操作" width="120">
       <template #default="scope">
-        <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-        <el-button type="text" size="small" @click="handleDelete(scope.row)" danger>删除</el-button>
+        <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
+        <el-button type="text" @click="handleDelete(scope.row)" danger>删除</el-button>
       </template>
     </el-table-column>
   </el-table>

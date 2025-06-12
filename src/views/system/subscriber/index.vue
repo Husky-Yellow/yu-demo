@@ -44,8 +44,8 @@
               placeholder="展示组织内成员"
               class="!w-240px"
             >
-              <el-option
-                v-for="option in VIEW_LEVEL_OPTIONS"
+            <el-option
+                v-for="option in getIntDictOptions(DICT_TYPE.SYSTEM_MEMBER_DISPLAY_SCOPE)"
                 :key="option.value"
                 :label="option.label"
                 :value="option.value"
@@ -89,10 +89,13 @@
 defineOptions({ name: 'SystemSubscriber' })
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as DeptApi from '@/api/system/dept'
+import * as UserApi from '@/api/system/user'
 import { handleTree } from '@/utils/tree'
 import SubscriberTable from './components/SubscriberTable.vue'
 import SubForm from './components/SubForm.vue'
 import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS, VIEW_LEVEL_OPTIONS } from '@/config/user/index'
+import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
+import { CommonStatusEnum } from '@/utils/constants'
 
 const total = ref(0) // 列表的总页数
 const searchForm = reactive({
@@ -100,7 +103,7 @@ const searchForm = reactive({
   userName: '',
   userStatus: '',
   postStatus: '',
-  viewLevel: '展示组织内成员',
+  viewLevel: CommonStatusEnum.ENABLE,
   pageNo: 1,
   pageSize: 10
 })
@@ -114,9 +117,11 @@ const selectedOrgId = ref('') // 当前选中的组织 ID
 const getUsers = async () => {
   loading.value = true
   try {
-    // const res = await fetchUserList(queryParams.value);
-    // userTableData.value = res.data.list;
-    // total.value = res.data.total;
+    const res = await UserApi.getUserPage(searchForm)
+    console.log(res);
+
+    userTableData.value = res.list;
+    total.value = res.total;
   } catch (error) {
     ElMessage.error('获取用户列表失败')
   } finally {
@@ -161,6 +166,7 @@ const handleAdd = () => {
 const handleEdit = (row: any) => {
   console.log('编辑用户', row)
   // 打开编辑用户弹窗
+  formRef.value.open('update', row.id)
 }
 
 const handleDelete = async (row: any) => {

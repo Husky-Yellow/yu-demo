@@ -1,25 +1,5 @@
 <template>
-  <el-table :data="socialUsers" :show-header="false">
-    <el-table-column fixed="left" title="序号" type="seq" width="60" />
-    <el-table-column align="left" label="社交平台" width="120">
-      <template #default="{ row }">
-        <img :src="row.img" alt="" class="h-5 align-middle" />
-        <p class="mr-5">{{ row.title }}</p>
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="操作">
-      <template #default="{ row }">
-        <template v-if="row.openid">
-          已绑定
-          <XTextButton class="mr-5" title="(解绑)" type="primary" @click="unbind(row)" />
-        </template>
-        <template v-else>
-          未绑定
-          <XTextButton class="mr-5" title="(绑定)" type="primary" @click="bind(row)" />
-        </template>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div> </div>
 </template>
 <script lang="ts" setup>
 import { SystemUserSocialTypeEnum } from '@/utils/constants'

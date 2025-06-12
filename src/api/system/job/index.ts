@@ -140,6 +140,11 @@ export const deletePost = async (id: number) => {
   return await request.delete({ url: '/system/post/delete?id=' + id })
 }
 
+// 查询岗位列表
+export const getPostPage = async (params: PageParam) => {
+  return await request.get({ url: '/system/post/page', params })
+}
+
 
 
 
@@ -150,10 +155,7 @@ export const exportPost = async (params) => {
   return await request.download({ url: '/system/post/export', params })
 }
 
-// 查询岗位列表
-export const getPostPage = async (params: PageParam) => {
-  return await request.get({ url: '/system/post/page', params })
-}
+
 
 // 获取岗位精简信息列表
 export const getSimplePostList = async (): Promise<PostVO[]> => {

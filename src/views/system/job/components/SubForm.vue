@@ -34,12 +34,27 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
+defineOptions({ name: 'SystemJobSubForm' })
 import { defaultProps, handleTree } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
 import * as JobApi from '@/api/system/job'
 import { FormRules } from 'element-plus'
 
-defineOptions({ name: 'SystemJobSubForm' })
+
+// 定义组件属性
+const props = defineProps({
+  /** 初始加载数据的API函数 */
+  loadApi: {
+    type: Function,
+    required: true
+  },
+    /** 自定义数据处理函数 */
+  dataHandler: {
+    type: Function,
+    default: (data: any[]) => data
+  }
+});
+
 
 const message = useMessage() // 消息弹窗
 
@@ -74,8 +89,8 @@ const open = async (type: string, id?: number) => {
       formLoading.value = false
     }
   }
-  // 加载部门树
-  deptList.value = handleTree(await DeptApi.getSimpleDeptList())
+   const res = await props.loadApi();
+    deptList.value = props.dataHandler(res);
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
