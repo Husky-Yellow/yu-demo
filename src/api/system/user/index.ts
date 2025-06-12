@@ -69,6 +69,10 @@ export const updateUserStatus = (id: number, status: number) => {
   }
   return request.put({ url: '/system/user/update-status', data: data })
 }
+// 用户状态修改
+export const updateUserBatchStatus = (data) => {
+  return request.put({ url: '/system/user/batch-update-status', data })
+}
 
 // 获取用户精简信息列表
 export const getSimpleUserList = (): Promise<UserVO[]> => {

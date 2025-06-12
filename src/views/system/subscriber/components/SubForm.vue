@@ -14,22 +14,22 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="归属岗位" prop="deptId">
+          <el-form-item label="所属组织" prop="deptId">
             <el-tree-select
               v-model="formData.deptId"
               :data="deptList"
               :props="defaultProps"
               check-strictly
               node-key="id"
-              placeholder="请选择归属岗位"
+              placeholder="请选择所属组织"
             />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="登录账号" prop="mobile">
-            <el-input v-model="formData.mobile" maxlength="11" placeholder="请输入登录账号" />
+          <el-form-item label="登录账号" prop="username">
+            <el-input v-model="formData.username" maxlength="11" placeholder="请输入登录账号" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -50,9 +50,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="敏感密码" prop="password">
+          <el-form-item v-if="formData.id === undefined" label="敏感密码" prop="sensitivePwd">
             <el-input
-              v-model="formData.password"
+              v-model="formData.sensitivePwd"
               placeholder="请输入敏感密码"
               show-password
               type="password"
@@ -117,18 +117,17 @@ const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
+  id: undefined,
   nickname: '',
+  username: '',
   deptId: '',
+  postIds: [],
   mobile: '',
   email: '',
-  id: undefined,
-  username: '',
   password: '',
-  sex: undefined,
-  postIds: [],
+  sensitivePwd: '',
   remark: '',
   status: CommonStatusEnum.ENABLE,
-  roleIds: []
 })
 const formRules = reactive<FormRules>({
   username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
@@ -209,18 +208,17 @@ const setPosition = (val) => {
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
+    id: undefined,
     nickname: '',
+    username: '',
     deptId: '',
+    postIds: [],
     mobile: '',
     email: '',
-    id: undefined,
-    username: '',
     password: '',
-    sex: undefined,
-    postIds: [],
+    sensitivePwd: '',
     remark: '',
     status: CommonStatusEnum.ENABLE,
-    roleIds: []
   }
   formRef.value?.resetFields()
 }

@@ -7,7 +7,8 @@
           :expand-all="false"
           :load-api="loadDeptTreeData"
           @loaded="loadedTreeData"
-           @node-click="handleOrgNodeClick" />
+          @node-click="handleOrgNodeClick"
+        />
       </ContentWrap>
     </el-col>
     <el-col :span="20" :xs="24" class="h-1/1">
@@ -17,11 +18,7 @@
             <el-input v-model="searchForm.name" placeholder="请输入岗位姓名" />
           </el-form-item>
           <el-form-item label="查看层级">
-            <el-select
-              v-model="searchForm.status"
-              placeholder="展示组织内成员"
-              class="!w-240px"
-            >
+            <el-select v-model="searchForm.status" placeholder="展示组织内成员" class="!w-240px">
               <el-option
                 v-for="option in getIntDictOptions(DICT_TYPE.SYSTEM_MEMBER_DISPLAY_SCOPE)"
                 :key="option.value"
@@ -44,16 +41,16 @@
         <el-table
           :data="jobTableData"
           style="width: 100%"
-          :row-key="row => row.id"
+          :row-key="(row) => row.id"
           @selection-change="handleSelectChange"
           :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="55" />
-           <el-table-column prop="name" label="岗位名称" />
+          <el-table-column prop="name" label="岗位名称" />
           <el-table-column prop="deptId" label="所属组织">
             <template #default="scope">
-              {{ getDeptNameById(scope.row.deptId)  }}
+              {{ getDeptNameById(scope.row.deptId) }}
             </template>
           </el-table-column>
           <el-table-column prop="orgName" label="数据权限" />
@@ -71,7 +68,9 @@
           <el-table-column label="操作">
             <template #default="scope">
               <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="text" @click="handleRoleDelete(scope.row)" danger>权限配置</el-button>
+              <el-button type="text" @click="handleRoleDelete(scope.row)" danger
+                >权限配置</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -86,7 +85,7 @@
     </el-col>
   </el-row>
   <!-- 添加或修改用户对话框 -->
-  <SubForm ref="formRef" @success="fetchJobList"  :load-api="loadDeptTreeData" />
+  <SubForm ref="formRef" @success="fetchJobList" :load-api="loadDeptTreeData" />
 </template>
 <script lang="ts" setup>
 defineOptions({ name: 'SystemJob' })
@@ -105,12 +104,12 @@ const total = ref(0) // 列表总记录数
 
 // 搜索表单
 const searchForm = reactive({
-  name: '',           // 岗位名称
-  deptId: undefined,  // 部门ID
-  level: 1,           // 岗位层级
+  name: '', // 岗位名称
+  deptId: undefined, // 部门ID
+  level: 1, // 岗位层级
   status: CommonStatusEnum.DISABLE, // 岗位状态
-  pageNo: 1,          // 当前页码
-  pageSize: 10        // 每页记录数
+  pageNo: 1, // 当前页码
+  pageSize: 10 // 每页记录数
 })
 
 // 表格数据
@@ -118,7 +117,6 @@ const jobTableData = ref<JobApi.JobDetailData[]>([])
 const selectedRows = ref<JobApi.JobDetailData[]>([])
 const treeData = shallowRef<DeptApi.DeptFormData[]>([])
 const loading = ref(false)
-
 
 /**
  * 获取部门名称
@@ -159,7 +157,7 @@ const loadedTreeData = (val: DeptApi.DeptFormData[]) => {
 }
 
 const checkDeptId = () => {
-   if (!searchForm.deptId) {
+  if (!searchForm.deptId) {
     ElMessage.warning('请选择部门')
     return false
   }
@@ -167,7 +165,7 @@ const checkDeptId = () => {
 }
 
 const handleSearch = () => {
-  if(!checkDeptId()){
+  if (!checkDeptId()) {
     return
   }
   searchForm.pageNo = 1
@@ -175,7 +173,7 @@ const handleSearch = () => {
 }
 
 const handleReset = () => {
-  if(!checkDeptId()){
+  if (!checkDeptId()) {
     return
   }
   searchForm.name = ''
@@ -203,7 +201,7 @@ const loadDeptTreeData = async () => {
 const formRef = ref<InstanceType<typeof SubForm>>()
 
 const handleAdd = () => {
-  if(!checkDeptId()){
+  if (!checkDeptId()) {
     return
   }
   formRef.value?.open('create')
@@ -245,9 +243,8 @@ const handleStatusChange = async (row: JobApi.JobDetailData) => {
     ElMessage.success('状态更新成功')
   } catch {
     // 取消后恢复原状态
-    row.status = row.status === CommonStatusEnum.ENABLE
-      ? CommonStatusEnum.DISABLE
-      : CommonStatusEnum.ENABLE
+    row.status =
+      row.status === CommonStatusEnum.ENABLE ? CommonStatusEnum.DISABLE : CommonStatusEnum.ENABLE
   }
 }
 
@@ -263,35 +260,30 @@ const handleSelectChange = (rows: JobApi.JobDetailData[]) => {
  */
 const handleEnable = async (type) => {
   const text = type ? '启用' : '停用'
-  const status = type ? CommonStatusEnum.ENABLE : CommonStatusEnum.DISABLE
+  const status = !type ? CommonStatusEnum.ENABLE : CommonStatusEnum.DISABLE
   if (selectedRows.value.length === 0) {
     ElMessage.warning(`请选择要${text}的岗位`)
     return
   }
 
-  try {
-    await ElMessageBox.confirm(
-      `确定要${text}选中的岗位吗？`,
-      '提示',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }
-    )
-
-    // 批量启用逻辑
-    const ids = selectedRows.value.map(row => row.id)
-    await JobApi.updatePostStatus({ ids, status })
-    fetchJobList()
-    ElMessage.success(`${text}成功`)
-  } catch (error) {
-    ElMessage.info('操作已取消')
-  }
+  ElMessageBox.confirm(`确定要${action}选中的用户吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      const ids = selectedRows.value.map((row) => row.id)
+      await JobApi.updatePostStatus({ ids, status })
+      fetchJobList()
+      ElMessage.success(`${action}成功`)
+    })
+    .catch(() => {
+      ElMessage.info('操作已取消')
+    })
 }
-
 
 const handleRoleDelete = (row) => {
   // 跳转到权限编辑页面
+  ElMessage.info('跳转权限页面')
 }
 </script>

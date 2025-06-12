@@ -57,9 +57,9 @@
             <el-button @click="handleReset">重置</el-button>
             <el-button type="primary" @click="handleAdd"> 新增 </el-button>
             <el-button type="success" @click="handleExport"> 导出 </el-button>
-            <el-button type="warning" @click="handleImport"> 导入 </el-button>
-            <el-button type="info" @click="handleEnable"> 启用 </el-button>
-            <el-button type="danger" @click="handleDisable"> 禁用 </el-button>
+            <el-button type="warning" @click="handleImport" disabled> 导入 </el-button>
+            <el-button type="info" @click="handleEnable(true)"> 启用 </el-button>
+            <el-button type="danger" @click="handleEnable(false)"> 禁用 </el-button>
           </el-form-item>
         </el-form>
       </ContentWrap>
@@ -118,8 +118,6 @@ const getUsers = async () => {
   loading.value = true
   try {
     const res = await UserApi.getUserPage(searchForm)
-    console.log(res);
-
     userTableData.value = res.list;
     total.value = res.total;
   } catch (error) {
@@ -151,7 +149,7 @@ const handleReset = () => {
   searchForm.userName = ''
   searchForm.userStatus = ''
   searchForm.postStatus = ''
-  searchForm.viewLevel = '展示组织内成员'
+  searchForm.viewLevel = CommonStatusEnum.ENABLE
   searchForm.pageNo = 1
   getUsers()
 }
@@ -159,13 +157,10 @@ const handleReset = () => {
 /** 添加/修改操作 */
 const formRef = ref()
 const handleAdd = () => {
-  console.log('新增用户')
-  formRef.value.open()
+  formRef.value.open('create')
 }
 
 const handleEdit = (row: any) => {
-  console.log('编辑用户', row)
-  // 打开编辑用户弹窗
   formRef.value.open('update', row.id)
 }
 
@@ -179,7 +174,7 @@ const handleDelete = async (row: any) => {
     })
 
     // 调用删除 API
-    // await deleteUser(row.id);
+    await UserApi.deleteUser(row.id);
 
     // 刷新列表
     getUsers()
@@ -191,7 +186,7 @@ const handleDelete = async (row: any) => {
 
 const handleStatusChange = async (row: any) => {
   try {
-    // await updateUserStatus(row.id, row.status);
+    await UserApi.updateUserStatus(row.id, row.status);
     ElMessage.success('状态更新成功')
   } catch (error) {
     // 回滚状态
@@ -205,73 +200,39 @@ const handleSelectChange = (rows: any) => {
 }
 
 const handleExport = () => {
-  console.log('导出用户列表')
-  // 调用导出 API
 }
 
 const handleImport = () => {
-  console.log('导入用户')
-  // 打开导入文件弹窗
+  UserApi.exportUser(searchForm)
 }
 
-const handleEnable = () => {
-    // 判断有没有选中用户
-  if (selectedRows.value.length === 0) {
-    ElMessage.warning('请选择要禁用的用户')
-    return
-  }
-  // 获取选中的用户 ID 列表，调用启用 API
-  ElMessageBox.confirm(
-    'proxy will permanently delete the file. Continue?',
-    'Warning',
-    {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
-      type: 'warning',
-    }
-  )
-    .then(() => {
-      ElMessage({
-        type: 'success',
-        message: 'Delete completed',
-      })
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: 'Delete canceled',
-      })
-    })
-}
 
-const handleDisable = () => {
+
+const handleEnable = (type) => {
+  const action = type ? '启用' : '停用'
+  const status = !type ? CommonStatusEnum.ENABLE : CommonStatusEnum.DISABLE
   // 判断有没有选中用户
   if (selectedRows.value.length === 0) {
-    ElMessage.warning('请选择要禁用的用户')
+    ElMessage.warning(`请选择要${action}的用户`)
     return
   }
-  console.log('禁用选中用户')
-  // 获取选中的用户 ID 列表，调用禁用 API
   ElMessageBox.confirm(
-    'proxy will permanently delete the file. Continue?',
-    'Warning',
+    `确定要${action}选中的用户吗？`,
+    '提示',
     {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
       type: 'warning',
     }
   )
-    .then(() => {
-      ElMessage({
-        type: 'success',
-        message: 'Delete completed',
-      })
+    .then(async () => {
+      const ids = selectedRows.value.map(row => row.id)
+      await UserApi.updateUserBatchStatus({ ids, status })
+      getUsers()
+      ElMessage.success(`${action}成功`)
     })
     .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: 'Delete canceled',
-      })
+      ElMessage.info('操作已取消')
     })
 }
 

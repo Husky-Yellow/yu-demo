@@ -34,8 +34,8 @@
       />
     <el-table-column label="操作" width="120">
       <template #default="scope">
-        <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-        <el-button type="text" @click="handleDelete(scope.row)" danger>删除</el-button>
+        <el-button link type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+        <el-button link type="primary" @click="handleDelete(scope.row)" danger>删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 defineOptions({ name: 'SystemSubscriberSubscriberTable' })
-import { defineProps, defineEmits, ref } from 'vue';
+import { dateFormatter } from '@/utils/formatTime'
 
 defineProps({
   tableData: {
