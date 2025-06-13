@@ -37,7 +37,6 @@
           重置
         </el-button>
         <el-button
-          v-hasPermi="['system:role:create']"
           plain
           type="primary"
           @click="openForm('create')"
@@ -46,7 +45,6 @@
           新增
         </el-button>
         <el-button
-          v-hasPermi="['system:role:export']"
           :loading="exportLoading"
           plain
           type="success"
@@ -56,7 +54,6 @@
           删除
         </el-button>
         <el-button
-          v-hasPermi="['system:role:export']"
           :loading="exportLoading"
           plain
           type="success"
@@ -66,7 +63,6 @@
           启用
         </el-button>
         <el-button
-          v-hasPermi="['system:role:export']"
           :loading="exportLoading"
           plain
           type="success"
@@ -82,7 +78,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table
-v-loading="loading" :data="list"     :row-key="row => row.id"
+v-loading="loading" :data="list" :row-key="row => row.id"
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column align="center" label="角色编号" prop="id" />
@@ -100,7 +96,6 @@ v-loading="loading" :data="list"     :row-key="row => row.id"
       <el-table-column  align="center" label="操作">
         <template #default="scope">
           <el-button
-            v-hasPermi="['system:role:update']"
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
@@ -108,7 +103,6 @@ v-loading="loading" :data="list"     :row-key="row => row.id"
             编辑
           </el-button>
           <el-button
-            v-hasPermi="['system:permission:assign-role-menu']"
             link
             preIcon="ep:basketball"
             title="菜单权限"

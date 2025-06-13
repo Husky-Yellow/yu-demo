@@ -175,14 +175,14 @@ const columns = [
       const buttons = []
 
       // 检查权限并添加按钮
-      if (checkPermi(['system:menu:update'])) {
+      // if (checkPermi(['system:menu:update'])) {
         buttons.push(
           <ElButton key="edit" link type="primary" onClick={() => openForm('update', rowData.id)}>
             修改
           </ElButton>
         )
-      }
-      if (checkPermi(['system:menu:create'])) {
+      // }
+      // if (checkPermi(['system:menu:create'])) {
         buttons.push(
           <ElButton
             key="create"
@@ -193,14 +193,14 @@ const columns = [
             新增
           </ElButton>
         )
-      }
-      if (checkPermi(['system:menu:delete'])) {
+      // }
+      // if (checkPermi(['system:menu:delete'])) {
         buttons.push(
           <ElButton key="delete" link type="danger" onClick={() => handleDelete(rowData.id)}>
             删除
           </ElButton>
         )
-      }
+      // }
       // 如果没有权限，返回 null
       if (buttons.length === 0) {
         return null
