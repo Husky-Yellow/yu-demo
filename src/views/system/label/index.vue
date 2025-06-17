@@ -34,7 +34,6 @@ const getList = async () => {
   loading.value = true
   try {
     const data = await LabelApi.getDataLabelConfList(queryParams)
-    console.log(data)
     list.value = data
   } finally {
     loading.value = false

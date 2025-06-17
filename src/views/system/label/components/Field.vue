@@ -125,7 +125,6 @@ const handleRowClick = (row) => {
 /** 添加/修改操作 */
 const formRef = ref()
 const openForm = () => {
-  console.log('弹窗内部');
   formRef.value.open()
 }
 </script>

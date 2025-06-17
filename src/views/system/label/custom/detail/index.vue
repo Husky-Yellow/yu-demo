@@ -41,6 +41,7 @@
 <script lang="ts" setup>
 defineOptions({ name: 'SystemLabelCustomDetail' })
 import type { TabsPaneContext } from 'element-plus'
+import * as LabelApi from '@/api/system/label'
 import Field from './../../components/Field.vue'
 import Form from './../../components/Form.vue'
 import Operation from './../../components/Operation.vue'
@@ -50,6 +51,7 @@ import Details from './../../components/Details.vue'
 import Statistic from './../../components/Statistic.vue'
 
 const activeName = ref('field')
+const { query } = useRoute() // 查询参数
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
@@ -92,4 +94,17 @@ const handleEdit = (row) => {
 const handleRowClick = (row) => {
   console.log('双击行:', row);
 };
+
+const getDataFieldConfListByManageId = async () => {
+  const res = await LabelApi.getDataFieldConfListByManageId({
+    manageId: query.id
+  })
+  console.log(res)
+}
+
+
+/** 初始化 **/
+onMounted(() => {
+  getDataFieldConfListByManageId()
+})
 </script>
