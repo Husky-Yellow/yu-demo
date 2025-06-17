@@ -47,6 +47,7 @@ import Form from './../../components/Form.vue'
 import Operation from './../../components/Operation.vue'
 import Query from './../../components/Query.vue'
 import Sort from './../../components/Sort.vue'
+import Filter from './../../components/Filter.vue'
 import Details from './../../components/Details.vue'
 import StatisticConfig from './../../components/StatisticConfig.vue'
 
