@@ -26,8 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, defineProps, defineEmits } from 'vue';
-
 const props = defineProps<{
   modelValue?: {
     textType: string;

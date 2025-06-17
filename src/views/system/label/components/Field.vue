@@ -21,17 +21,9 @@
       <el-table-column prop="name" label="编辑表单" />
       <el-table-column prop="name" label="移动端列表" />
       <el-table-column prop="name" label="管理端列表" />
-      <el-table-column label="排序" width="100">
+      <el-table-column label="排序" width="140">
         <template #default="">
-          <el-icon>
-            <Rank @click="handleEdit" />
-          </el-icon>
-          <el-icon>
-            <Rank />
-          </el-icon>
-          <el-icon>
-            <Rank />
-          </el-icon>
+          <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer"/>
         </template>
       </el-table-column>
     </el-table>
@@ -41,7 +33,6 @@
 
 <script setup  lang="ts">
 import Sortable from 'sortablejs';
-import { Rank } from '@element-plus/icons-vue'
 import FieldEdit from './FieldEdit.vue';
 
 const props = defineProps({
@@ -51,7 +42,7 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits(['update:data', 'edit', 'row-click']);
+const emits = defineEmits(['update:data', 'edit', 'row-click','delete']);
 
 const tableRef = ref(null);
 const sortable = ref(null);
@@ -65,9 +56,7 @@ const updateParentData = () => {
 // 初始化 Sortable
 const initSortable = () => {
   nextTick(() => {
-    if (!tableRef.value) return;
-
-    const tableEl = (tableRef.value as any).$el.querySelector('.field-sortable-table-container .el-table__body-wrapper tbody');
+    const tableEl = (tableRef.value as any)?.$el.querySelector('.field-sortable-table-container .el-table__body-wrapper tbody');
 
     if (tableEl && !sortable.value) {
       sortable.value = new Sortable(tableEl, {
@@ -122,6 +111,11 @@ watch(() => props.data, (newVal) => {
 // 事件处理
 const handleEdit = (row) => {
   emits('edit', row);
+};
+
+// 事件处理
+const handleDelete = (row) => {
+  emits('delete', row);
 };
 
 const handleRowClick = (row) => {

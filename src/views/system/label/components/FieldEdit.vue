@@ -55,7 +55,10 @@
         <el-card>
           <template #header>字段配置</template>
           <template v-if="form.fieldType === FieldType.TEXT">
-            <TextFieldConfig />
+            <TextFieldConfig v-model="textFieldConfig" />
+          </template>
+          <template v-else-if="form.fieldType === FieldType.NUMBER">
+            <NumberFieldConfig v-model="numberFieldConfig" />
           </template>
           <template v-else>
             <!-- 这个位置 根据 fieldType 展示不同的组件 -->
@@ -86,7 +89,7 @@
               >
                 <template #default="scope">
                   <el-radio
-                    v-model="selectedDict"
+                    v-model="selectedDictCode"
                     :label="scope.row.dictCode"
                   />
                 </template>
@@ -109,6 +112,7 @@
 <script setup lang="ts">
 import { FieldType, FieldTypeLabel } from '@/types/field';
 import TextFieldConfig from './TextFieldConfig.vue';
+import NumberFieldConfig from './NumberFieldConfig.vue';
 
 // 字典数据类型定义
 interface DictData {
@@ -158,7 +162,12 @@ const dictData = ref<DictData[]>([
   { dictCode: '000004', dictName: '行政区域', valueCount: 0 },
 ]);
 // 选中的字典项
-const selectedDict = ref<DictData | null>(null);
+const selectedDictCode = ref<string>('');
+
+// 计算获取完整的选中字典项
+const selectedDict = computed(() => {
+  return dictData.value.find(item => item.dictCode === selectedDictCode.value) || null;
+});
 
 // 计算过滤后的字典数据
 const filteredDictData = computed(() => {
@@ -168,12 +177,52 @@ const filteredDictData = computed(() => {
   );
 });
 
+// 字段专属配置类型
+interface TextFieldConfigType {
+  textType: string;
+  duplicateCheck: string;
+  dataValidation: string;
+}
+
+interface NumberFieldConfigType {
+  numberType: string;
+  duplicateCheck: string;
+}
+
+// 分别维护不同类型的配置
+const textFieldConfig = ref<TextFieldConfigType>({
+  textType: 'single',
+  duplicateCheck: 'noCheck',
+  dataValidation: 'none',
+});
+
+const numberFieldConfig = ref<NumberFieldConfigType>({
+  numberType: 'integer',
+  duplicateCheck: 'noCheck',
+});
+
+// 根据字段类型使用对应的配置
+const currentConfig = computed(() => {
+  switch (form.fieldType) {
+    case FieldType.TEXT:
+      return textFieldConfig;
+    case FieldType.NUMBER:
+      return numberFieldConfig;
+    default:
+      return ref({});
+  }
+});
+
 // 提交表单
 const handleSubmit = () => {
   (fieldForm.value as any).validate((valid: boolean) => {
     if (valid) {
       // 这里可进行接口调用等逻辑，提交表单数据
-      console.log('表单数据：', form);
+      const submitData = {
+        ...form,
+        fieldConfig: currentConfig.value
+      };
+      console.log('表单数据：', submitData);
       console.log('选中字典：', selectedDict.value);
       dialogVisible.value = false;
     } else {
@@ -191,7 +240,7 @@ const handleClose = () => {
   form.fieldType = FieldType.TEXT;
   form.fieldLength = '';
   form.isSensitive = '否';
-  selectedDict.value = null;
+  selectedDictCode.value = '';
   dictSearch.value = '';
   (fieldForm.value as any).resetFields();
 };
