@@ -1,64 +1,76 @@
 <template>
-  <div class="sort-config-container">
+  <div class="sort-config">
     <!-- 左侧选择排序字段区域 -->
     <div class="left-panel">
-      <h3>选择排序字段</h3>
-      <div class="field-list" ref="leftFieldList">
-        <div
-          v-for="(field, index) in sortFields"
-          :key="field.value + index"
-          class="field-item"
-          draggable="true"
-          @dragstart="handleDragStart(field)"
-          @dragend="handleDragEnd"
-        >
-          {{ field.label }}
-          <div class="drag-handle" @mousedown.stop @touchstart.stop>
-            <el-icon><Rank /></el-icon>
+      <div class="panel-title">选择排序字段</div>
+      <VueDraggable
+        :list="sortFields"
+        :group="{ name: 'fields', pull: cloneField, put: false }"
+        :item-key="'value'"
+        :clone="cloneField"
+        :sort="false"
+        class="field-list"
+        @start="onDragStart"
+      >
+        <template #item="{ element }">
+          <div 
+            class="field-item" 
+            :class="{ 'field-item-used': isFieldUsed(element.value) }"
+            draggable="true"
+          >
+            <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer"/>
+            <span>{{ element.label }}</span>
+            <el-tag v-if="isFieldUsed(element.value)" size="small" class="ml-auto">已使用</el-tag>
           </div>
-        </div>
-      </div>
-      <div class="btn-group">
-        <el-button type="primary" @click="addSelectedFields">添加</el-button>
-        <el-button type="danger" @click="deleteSelectedFields">删除</el-button>
-      </div>
+        </template>
+      </VueDraggable>
     </div>
 
     <!-- 右侧排序设置区域 -->
     <div class="right-panel">
-      <div class="config-header">
-        <h3>排序设置</h3>
-        <div class="btn-group">
-          <el-button type="success" @click="addNewSortItem">添加</el-button>
-          <el-button type="danger" @click="deleteSelectedSortItems">删除</el-button>
+      <div class="panel-header">
+        <div class="panel-title">排序设置</div>
+        <div class="panel-actions">
+          <el-button type="primary" size="small" @click="addSortItem">添加</el-button>
+          <el-button type="danger" size="small" @click="removeLastSortItem">删除</el-button>
         </div>
       </div>
-      <div class="sort-item-list" ref="sortItemList">
-        <div
-          v-for="(item, index) in sortItems"
-          :key="item.id"
-          class="sort-item"
-          :style="{ border: item.active ? '1px dashed #409eff' : '1px solid #ebeef5' }"
-          @click="handleItemClick(item, index)"
-        >
-          <div class="sort-item-header">
-            <span>排序顺位{{ index + 1 }}</span>
+      <div v-for="(item, index) in sortItems" :key="item.id" class="sort-item">
+        <div class="sort-item-header">
+          <span>排序顺位{{ index + 1 }}</span>
+        </div>
+        <div class="sort-item-content">
+          <div class="sort-type">
+            <el-radio-group v-model="item.sortType">
+              <el-radio label="dataAddTime">数据添加时间</el-radio>
+              <el-radio label="dataModifyTime">数据修改时间</el-radio>
+              <el-radio label="custom">自定义排序</el-radio>
+            </el-radio-group>
           </div>
-          <el-radio-group v-model="item.sortSelect">
-            <el-radio label="dataAddTime">数据添加时间</el-radio>
-            <el-radio label="dataModifyTime">数据修改时间</el-radio>
-            <el-radio label="customSort">自定义排序</el-radio>
-          </el-radio-group>
-          <el-select
-            v-model="item.sortRule"
-            placeholder="请选择排序规则"
-            size="small"
-          >
-            <el-option label="升序" value="asc"/>
-            <el-option label="降序" value="desc"/>
-          </el-select>
-          <div class="drag-handle" @mousedown.stop @touchstart.stop>
-            <el-icon><Rank /></el-icon>
+          <div v-if="item.sortType === 'custom'" class="sort-field">
+            <div class="sort-drop-area" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
+              <div v-if="item.field" class="sort-field-item">
+                <span>{{ item.field.label }}</span>
+                <el-button 
+                  type="danger" 
+                  size="small" 
+                  circle 
+                  @click="removeField(index)"
+                  class="delete-btn"
+                >
+                  <Icon icon="ep:close" />
+                </el-button>
+              </div>
+              <div v-else class="sort-drop-placeholder">
+                请输入排序字段
+              </div>
+            </div>
+          </div>
+          <div class="sort-rule">
+            <el-select v-model="item.sortRule" placeholder="请选择排序规则" size="small">
+              <el-option label="升序" value="asc" />
+              <el-option label="降序" value="desc" />
+            </el-select>
           </div>
         </div>
       </div>
@@ -67,23 +79,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
-import Sortable from 'sortablejs';
-import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption, ElIcon } from 'element-plus';
-import { Rank } from '@element-plus/icons-vue'
+import { ref, computed } from 'vue'
+import VueDraggable from 'vuedraggable'
+import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption, ElTag } from 'element-plus'
 
 interface SortField {
-  label: string;
-  value: string;
+  label: string
+  value: string
 }
 
 interface SortItem {
-  id: string;
-  sortSelect: string; // dataAddTime/dataModifyTime/customSort
-  sortRule: string; // asc/desc
-  active: boolean;
+  id: number
+  sortType: 'dataAddTime' | 'dataModifyTime' | 'custom'
+  sortRule: 'asc' | 'desc'
+  field?: SortField | null
 }
 
+// 左侧可选字段
 const sortFields = ref<SortField[]>([
   { label: '证件类型', value: 'certType' },
   { label: '证件号码', value: 'certNo' },
@@ -94,199 +106,204 @@ const sortFields = ref<SortField[]>([
   { label: '数据修改时间', value: 'dataModifyTime' },
   { label: '数据添加人', value: 'dataAdder' },
   { label: '数据修改人', value: 'dataModifier' }
-]);
+])
 
+// 右侧排序项列表
 const sortItems = ref<SortItem[]>([
   {
-    id: '1',
-    sortSelect: 'dataAddTime',
+    id: Date.now(),
+    sortType: 'dataAddTime',
     sortRule: 'asc',
-    active: false
+    field: null
   }
-]);
+])
 
-const leftFieldList = ref<any>(null);
-const sortItemList = ref<any>(null);
-let draggedField: SortField | null = null;
+// 当前拖拽的字段
+const draggedField = ref<SortField | null>(null)
 
-onMounted(() => {
-  initLeftSortable();
-  initRightSortable();
-});
+// 检查字段是否已被使用
+const isFieldUsed = (fieldValue: string) => {
+  return sortItems.value.some(item => item.field?.value === fieldValue)
+}
 
-// 初始化左侧字段列表的拖拽（调整左侧字段顺序，可选功能）
-const initLeftSortable = () => {
-  nextTick(() => {
-    const el = leftFieldList.value;
-    if (el) {
-      new Sortable(el, {
-        handle: '.drag-handle',
-        animation: 150
-      });
-    }
-  });
-};
+// 克隆字段函数，如果字段已使用则返回false阻止拖拽
+function cloneField(field: SortField) {
+  return isFieldUsed(field.value) ? false : { ...field }
+}
 
-// 初始化右侧排序项的拖拽
-const initRightSortable = () => {
-  nextTick(() => {
-    const el = sortItemList.value;
-    if (el) {
-      new Sortable(el, {
-        handle: '.drag-handle',
-        animation: 150,
-        onEnd: (evt) => {
-          const { oldIndex, newIndex } = evt;
-          if (oldIndex !== newIndex) {
-            const item = sortItems.value.splice(oldIndex, 1)[0];
-            sortItems.value.splice(newIndex, 0, item);
-          }
-        }
-      });
-    }
-  });
-};
-
-// 左侧字段拖拽开始
-const handleDragStart = (field: SortField) => {
-  draggedField = field;
-  (event as DragEvent).dataTransfer?.setData('text/plain', field.value);
-  setTimeout(() => {
-    const fieldItem = document.querySelector(`[data-value="${field.value}"]`);
-    fieldItem?.classList.add('dragging');
-  }, 0);
-};
-
-// 左侧字段拖拽结束
-const handleDragEnd = () => {
-  draggedField = null;
-  const fieldItems = document.querySelectorAll('.field-item');
-  fieldItems.forEach(item => item.classList.remove('dragging'));
-};
-
-// 添加选中字段到排序项（简单示例，可完善逻辑将拖拽的字段关联到右侧）
-const addSelectedFields = () => {
-  if (draggedField) {
-    const isExist = draggedField?.value === undefined ? false : sortItems.value.some(item => item.sortSelect === draggedField.value);
-    if (!isExist) {
-      const newItem: SortItem = {
-        id: Date.now().toString(),
-        sortSelect: draggedField.value,
-        sortRule: 'asc',
-        active: false
-      };
-      sortItems.value.push(newItem);
-      nextTick(() => {
-        initRightSortable();
-      });
-    }
-  }
-};
-
-// 删除选中字段（简单示例，可完善逻辑从左侧移除对应字段等）
-const deleteSelectedFields = () => {
-  console.log('执行删除选中字段逻辑');
-  // 实际可结合选中状态等进行字段删除操作
-};
-
-// 添加新的排序项
-const addNewSortItem = () => {
-  const newItem: SortItem = {
-    id: Date.now().toString(),
-    sortSelect: 'dataAddTime',
+function addSortItem() {
+  sortItems.value.push({
+    id: Date.now(),
+    sortType: 'custom',
     sortRule: 'asc',
-    active: false
-  };
-  sortItems.value.push(newItem);
-  nextTick(() => {
-    initRightSortable();
-  });
-};
+    field: null
+  })
+}
 
-// 删除选中的排序项
-const deleteSelectedSortItems = () => {
-  const activeItems = sortItems.value.filter(item => item.active);
-  activeItems.forEach(item => {
-    const index = sortItems.value.indexOf(item);
-    if (index > -1) {
-      sortItems.value.splice(index, 1);
-    }
-  });
-  nextTick(() => {
-    initRightSortable();
-  });
-};
+function removeLastSortItem() {
+  if (sortItems.value.length > 1) {
+    sortItems.value.pop()
+  }
+}
 
-// 点击排序项
-const handleItemClick = (item: SortItem, index: number) => {
-  sortItems.value.forEach(i => (i.active = false));
-  item.active = true;
-};
+// 开始拖拽时保存字段数据
+function onDragStart(evt: any) {
+  const field = sortFields.value[evt.oldIndex]
+  if (field && !isFieldUsed(field.value)) {
+    draggedField.value = field
+  }
+}
+
+// 修改 onFieldDrop 函数
+function onFieldDrop(e: DragEvent, sortIndex: number) {
+  e.preventDefault()
+  if (draggedField.value && !isFieldUsed(draggedField.value.value)) {
+    sortItems.value[sortIndex].field = { ...draggedField.value }
+    draggedField.value = null
+  }
+}
+
+function removeField(sortIndex: number) {
+  if (sortItems.value[sortIndex]) {
+    sortItems.value[sortIndex].field = null
+  }
+}
 </script>
 
 <style scoped>
-.sort-config-container {
+.sort-config {
   display: flex;
-  height: calc(100vh - 60px);
+  gap: 24px;
+  height: 100%;
+}
+
+.left-panel, .right-panel {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px #f0f1f2;
+  padding: 16px;
 }
 
 .left-panel {
-  width: 250px;
-  border-right: 1px solid #ebeef5;
-  padding: 10px;
+  width: 240px;
 }
 
 .right-panel {
   flex: 1;
-  padding: 10px;
 }
 
-.config-header {
+.panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
-.field-list,
-.sort-item-list {
+.panel-title {
+  font-weight: bold;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.field-list {
+  min-height: 100px;
+}
+
+.field-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  background: #f5f7fa;
+  border-radius: 4px;
+  cursor: grab;
+}
+
+.field-item:hover {
+  background: #e6f7ff;
+}
+
+.field-item-used {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f0f0f0;
+}
+
+.field-item-used:hover {
+  background: #f0f0f0;
+}
+
+.sort-item {
+  margin-bottom: 18px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 12px;
+  background: #fafbfc;
+}
+
+.sort-item-header {
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.sort-item-content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.field-item,
-.sort-item {
-  padding: 8px 12px;
+.sort-type {
+  margin-bottom: 8px;
+}
+
+.sort-drop-area {
+  min-height: 40px;
+  background: #f5f7fa;
+  border: 1px dashed #dcdfe6;
   border-radius: 4px;
-  background-color: #fff;
-  transition: all 0.2s;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.sort-field-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
 }
 
-.field-item:hover,
-.sort-item:hover {
-  background-color: #fafafa;
+.sort-drop-placeholder {
+  color: #bbb;
+  text-align: center;
+  padding: 12px 0;
 }
 
-.drag-handle {
-  cursor: grab;
-  color: #409eff;
-  font-size: 18px;
+.sort-rule {
+  margin-top: 8px;
 }
 
-.drag-handle:active {
-  cursor: grabbing;
+.text-red-500 {
+  color: #f56c6c;
 }
 
-.btn-group {
-  margin-top: 10px;
+.mr-2 {
+  margin-right: 8px;
 }
 
-.dragging {
-  opacity: 0.5;
-  transform: scale(0.98);
+.ml-auto {
+  margin-left: auto;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.delete-btn {
+  padding: 4px;
 }
 </style>
