@@ -274,27 +274,33 @@ export const handleTree = (data: any[], id?: string, parentId?: string, children
 
 /**
  * 构造树型结构数据
- * @param {*} data 数据源
- * @param {*} id id字段 默认 'id'
- * @param {*} parentId 父节点字段 默认 'parentId'
- * @param {*} children 孩子节点字段 默认 'children'
- * @param {*} rootId 根Id 默认 0
+ * @param {T[]} data 数据源
+ * @param {keyof T} id id字段 默认 'id'
+ * @param {keyof T} parentId 父节点字段 默认 'parentId'
+ * @param {string} children 孩子节点字段 默认 'children'
+ * @param {T[keyof T] | null} rootId 根Id 默认自动计算或 0
+ * @returns {T[]} 树形结构数据
  */
-// @ts-ignore
-export const handleTree2 = (data, id, parentId, children, rootId) => {
-  id = id || 'id'
-  parentId = parentId || 'parentId'
+export const handleTree2 = <T extends Record<string, any>>(
+  data: T[],
+  id: keyof T = 'id' as keyof T,
+  parentId: keyof T = 'parentId' as keyof T,
+  children: string = 'children',
+  rootId: T[keyof T] | null = null
+): (T & { children?: T[] })[] => {
+  id = id || ('id' as keyof T);
+  parentId = parentId || ('parentId' as keyof T);
   // children = children || 'children'
   rootId =
-    rootId ||
-    Math.min(
-      ...data.map((item) => {
-        return item[parentId]
-      })
-    ) ||
-    0
+  rootId ||
+  (Math.min(
+    ...data.map((item) => {
+      return item[parentId];
+    })
+  ) as T[keyof T]) ||
+  (0 as T[keyof T]);
   // 对源数据深度克隆
-  const cloneData = JSON.parse(JSON.stringify(data))
+  const cloneData = JSON.parse(JSON.stringify(data)) as (T & { children?: T[] })[];
   // 循环所有项
   const treeData = cloneData.filter((father) => {
     const branchArr = cloneData.filter((child) => {
@@ -305,7 +311,7 @@ export const handleTree2 = (data, id, parentId, children, rootId) => {
     // 返回第一层
     return father[parentId] === rootId
   })
-  return treeData !== '' ? treeData : data
+  return treeData.length > 0 ? treeData : data
 }
 
 /**
