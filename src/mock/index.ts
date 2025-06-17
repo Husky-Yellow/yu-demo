@@ -18,6 +18,7 @@ import notifyMessage from './module/notify-message'
 import role from './module/role'
 import tenant from './module/tenant'
 import user from './module/user'
+import data from './module/data'
 
 export const mocks = [
   ...auth,
@@ -27,7 +28,8 @@ export const mocks = [
   ...notifyMessage,
   ...role,
   ...tenant,
-  ...user
+  ...user,
+  ...data
 ]
 
 // for front mock

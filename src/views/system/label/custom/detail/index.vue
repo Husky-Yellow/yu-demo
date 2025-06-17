@@ -32,7 +32,7 @@
           <Sort />
         </el-tab-pane>
         <el-tab-pane label="统计配置" name="Statistical">
-          <Statistic />
+          <StatisticConfig />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -48,7 +48,7 @@ import Operation from './../../components/Operation.vue'
 import Query from './../../components/Query.vue'
 import Sort from './../../components/Sort.vue'
 import Details from './../../components/Details.vue'
-import Statistic from './../../components/Statistic.vue'
+import StatisticConfig from './../../components/StatisticConfig.vue'
 
 const activeName = ref('field')
 const { query } = useRoute() // 查询参数
