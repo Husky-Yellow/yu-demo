@@ -1,5 +1,5 @@
 <template>
-  <div class="field-sortable-table-container">
+  <ContentWrap>
     <el-row :gutter="20">
       <el-col :span="12">
         <el-alert title="仅能删除本次新增字段，保存后字段无法再删除" type="info" :closable="false" show-icon />
@@ -10,7 +10,7 @@
         <el-button type="success">删除</el-button>
       </el-col>
     </el-row>
-    <el-table ref="tableRef" :data="tableData" stripe @row-dblclick="handleRowClick">
+    <el-table ref="tableRef" :data="tableData" stripe>
       <el-table-column prop="name" label="Code" />
       <el-table-column prop="name" label="字段名称" />
       <el-table-column prop="name" label="字段说明" />
@@ -24,13 +24,19 @@
       <el-table-column label="排序" width="100">
         <template #default="">
           <el-icon>
+            <Rank @click="handleEdit" />
+          </el-icon>
+          <el-icon>
+            <Rank />
+          </el-icon>
+          <el-icon>
             <Rank />
           </el-icon>
         </template>
       </el-table-column>
     </el-table>
     <FieldEdit ref="formRef"/>
-  </div>
+  </ContentWrap>
 </template>
 
 <script setup  lang="ts">
@@ -59,7 +65,9 @@ const updateParentData = () => {
 // 初始化 Sortable
 const initSortable = () => {
   nextTick(() => {
-    const tableEl = tableRef.value.$el.querySelector('.field-sortable-table-container .el-table__body-wrapper tbody');
+    if (!tableRef.value) return;
+
+    const tableEl = (tableRef.value as any).$el.querySelector('.field-sortable-table-container .el-table__body-wrapper tbody');
 
     if (tableEl && !sortable.value) {
       sortable.value = new Sortable(tableEl, {
@@ -97,7 +105,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // 销毁 Sortable 实例
   if (sortable.value) {
-    sortable.value.destroy();
+    (sortable.value as any).destroy();
     sortable.value = null;
   }
 });
@@ -129,10 +137,6 @@ const openForm = () => {
 </script>
 
 <style scoped>
-.field-sortable-table-container {
-  margin: 20px;
-}
-
 /* 拖拽时的样式 */
 .sortable-ghost {
   background-color: #f5f7fa;

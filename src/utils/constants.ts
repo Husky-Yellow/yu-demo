@@ -203,3 +203,10 @@ export const BpmAutoApproveType = {
   APPROVE_ALL: 1, // 仅审批一次，后续重复的审批节点均自动通过
   APPROVE_SEQUENT: 2 // 仅针对连续审批的节点自动通过
 }
+
+
+export const SUCCESS_MESSAGES = {
+  create: '新增成功',
+  addChild: '新增成功',
+  update: '更新成功'
+};

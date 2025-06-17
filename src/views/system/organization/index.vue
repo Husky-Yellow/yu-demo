@@ -25,7 +25,6 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['system:dept:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
@@ -64,7 +63,6 @@
             link
             type="primary"
             @click="openForm('addChild', scope.row)"
-            v-hasPermi="['system:dept:update']"
           >
             添加下级
           </el-button>
@@ -72,7 +70,6 @@
             link
             type="primary"
             @click="openForm('update', scope.row)"
-            v-hasPermi="['system:dept:update']"
           >
             编辑
           </el-button>
@@ -80,7 +77,6 @@
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['system:dept:delete']"
           >
             删除
           </el-button>
