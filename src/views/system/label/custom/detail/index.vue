@@ -63,7 +63,6 @@ const fieldRef = ref(null);
 // 数据更新回调
 const onDataUpdate = (newData) => {
   tableData.value = newData;
-  console.log('数据已更新:', tableData.value);
 };
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -75,7 +74,7 @@ const save = () => {
 }
 
 const getDataFieldConfListByManageId = async () => {
-  const res = await LabelApi.getFieldConfigListByManageId({
+  const res = await LabelApi.getFieldConfigList({
     manageId: query.id as string
   })
   tableData.value = res.map(item => {

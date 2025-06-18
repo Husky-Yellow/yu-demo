@@ -198,8 +198,8 @@ const addField = (row: QueryConfig) => {
 
 const getOperateConfList = async () => {
   if (!query.id) return
-  const res = await LabelApi.getDataOperateConfList({ manageId: query.id as string})
-  console.log(res)
+  const res = await LabelApi.getFieldConfigListByManageId({ manageId: query.id as string})
+  // console.log(res)
 }
 
 getOperateConfList()

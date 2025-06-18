@@ -21,11 +21,11 @@ export interface LabelFieldConfig {
  * 标签字段配置详情
  */
 export interface LabelFieldConfExt {
-  textType: 'single' | string;        // 文本类型
-  duplicateCheck: 'noCheck' | string; // 查重方式
-  dataValidation: 'none' | string;    // 数据验证方式
-  numberType: 'integer' | string;     // 数字类型
-  datePrecision: 'date' | string;     // 日期精度
+  textType: 'single' | 'multi';        // 文本类型
+  duplicateCheck: 'noCheck' | 'check'; // 查重方式
+  dataValidation: 'none' | 'custom' | 'idCard' | 'creditCode' | 'mobile' | 'phone';    // 数据验证方式
+  numberType: 'integer' | 'decimal';     // 数字类型
+  datePrecision: 'date' | 'year' | 'month' | 'hour' | 'minute' | 'second';     // 日期精度
   code2: string;                      // 备用编码
   maxSize: number;                    // 最大尺寸
   maxCount: number;                   // 最大数量
@@ -110,4 +110,15 @@ export const createFieldConfigList = async (data: LabelFieldConfig[]) => {
  */
 export const updateFieldConfigList = async (data: LabelFieldConfig[]) => {
   return await request.put({ url: '/data/field-conf/update-list', data });
+};
+
+
+/**
+ * 获取标签配置列表
+ * @param {PageParam} params - 分页查询参数
+ * @returns {Promise<PageResult<any>>} 标签配置列表
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076064
+ */
+export const getFieldConfigList = async (params: { manageId: string }) => {
+  return await request.get({ url: '/data/field-conf/list', params });
 };

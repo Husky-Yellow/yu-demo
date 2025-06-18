@@ -106,9 +106,9 @@ const emit = defineEmits(['success']) // 定义 success 事件，用于操作成
 // 提取表单提交的逻辑到一个单独的函数，提高代码的复用性和可测试性
 const submitFormData = async (formType, data) => {
   if (formType === 'create' || formType === 'addChild') {
-    return await LabelApi.postLabelManageCreate(data);
+    return await LabelApi.createLabelManage(data);
   }
-  return await LabelApi.putLabelManageUpdate(data);
+  return await LabelApi.updateLabelManage(data);
 };
 
 const submitForm = async () => {

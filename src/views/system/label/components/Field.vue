@@ -80,6 +80,7 @@
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
 import type { TableInstance } from 'element-plus'
+import { generateUUID } from '@/utils'
 //  todo 要处理未保存的数据，是id 缺失，然后可删除
 //  todo 点击选中后，可以编辑和删除
 //  todo 系统字段不可点击
@@ -179,21 +180,28 @@ const handleEdit = () => {
 }
 
 // 事件处理
-const handleDelete = (row) => {
-  tableData.value = tableData.value.filter((item) => item?.id !== row.id && item.uuid !== row.uuid)
+const handleDelete = () => {
+  const { id, uuid } = multipleSelection.value[0]
+  tableData.value = tableData.value.filter((item) => item?.id !== id && item.uuid !== uuid)
 }
 
 const updateData = (data) => {
-  console.log('updateData', data)
-  // 有id 代表编辑
-  // 有 uuid 代表新增
-  // 从 tableData.value 中找到对应的行，然后更新
-  const index = tableData.value.findIndex((item) => item?.id === data.id || item.uuid === data.uuid)
-  if (index !== -1) {
-    tableData.value[index] = data
-  } else {
-    tableData.value.push(data)
+  if (!data.uuid && !data.id) {
+    data.uuid = generateUUID();
   }
+  const identifier = data.id || data.uuid;
+  const index = tableData.value.findIndex(
+    item => item.id === identifier || item.uuid === identifier
+  );
+  // 如果 data 没有 uuid 则生成一个
+  if (index !== -1) {
+    // 使用展开运算符保留响应式
+    tableData.value.splice(index, 1, { ...tableData.value[index], ...data });
+  } else {
+    tableData.value.push({ ...data });
+  }
+
+  updateParentData()
 }
 
 const saveTableData = async () => {

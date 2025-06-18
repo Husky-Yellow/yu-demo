@@ -35,16 +35,16 @@
             </el-form-item>
             <el-form-item label="是否为敏感字段" prop="encFlag">
               <el-radio-group v-model="form.encFlag">
-                <el-radio v-for="option in YesNoOptions" :key="option.value" :label="option.value">
+                <el-radio v-for="option in BooleanOptions" :key="option.value" :label="option.value">
                   {{ option.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-show="form.encFlag === YesNoEnum.YES" label="加密类型" prop="bizType">
-              <el-radio-group v-model="form.bizType" placeholder="请选择加密类型">
-                <el-radio label="全文加密" value="MD5" />
-                <el-radio label="证件号码加密" value="SHA-1" />
-                <el-radio label="手机号码加密" value="SHA-256" />
+            <el-form-item v-show="form.encFlag === BooleanEnum.TRUE" label="加密类型" prop="encType">
+              <el-radio-group v-model="form.encType" placeholder="请选择加密类型">
+                <el-radio label="全文加密" value="0" />
+                <el-radio label="证件号码加密" value="1" />
+                <el-radio label="手机号码加密" value="2" />
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -106,8 +106,7 @@ import NumberFieldConfig from './NumberFieldConfig.vue'
 import RadioFieldConfig from './RadioFieldConfig.vue'
 import DatePrecisionConfig from './DatePrecisionConfig.vue'
 import UploadFieldConfig from './UploadFieldConfig.vue'
-import { FieldType, FieldTypeLabel, YesNoOptions, YesNoEnum } from '@/config/constants'
-import { generateUUID } from '@/utils'
+import { FieldType, FieldTypeLabel, BooleanOptions, BooleanEnum } from '@/config/constants'
 const { query } = useRoute() // 查询参数
 
 const emits = defineEmits(['update:data'])
@@ -137,8 +136,7 @@ const defaultForm = () => ({
   remark: '',
   fieldType: FieldType.TEXT,
   length: '',
-  encFlag: YesNoEnum.NO,
-  bizType: '',
+  encFlag: BooleanEnum.FALSE,
   encType: 0,
   addFlag: 0,
   editFlag: 0,
@@ -164,11 +162,9 @@ const handleSubmit = () => {
     if (valid) {
       const submitData = {
         ...form,
-        uuid: form?.uuid || generateUUID(),
         // 深拷贝 fieldJson，防止外部修改影响本地
         fieldConfExt: JSON.parse(JSON.stringify(form.fieldConfExt))
       }
-      console.log('表单数据：', submitData)
       emits('update:data', submitData)
       handleClose()
     } else {
