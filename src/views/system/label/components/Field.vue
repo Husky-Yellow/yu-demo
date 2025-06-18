@@ -2,70 +2,118 @@
   <ContentWrap>
     <el-row :gutter="20">
       <el-col :span="12">
-        <el-alert title="仅能删除本次新增字段，保存后字段无法再删除" type="info" :closable="false" show-icon />
+        <el-alert
+          title="仅能删除本次新增字段，保存后字段无法再删除"
+          type="info"
+          :closable="false"
+          show-icon
+        />
       </el-col>
       <el-col :span="6" :offset="6">
         <el-button @click="openForm">添加基础字段</el-button>
-        <el-button type="primary">编辑</el-button>
-        <el-button type="success">删除</el-button>
+        <el-button :disabled="multipleSelection.length === 0" type="primary" @click="handleEdit"
+          >编辑</el-button
+        >
+        <el-button :disabled="multipleSelection.length === 0" type="success" @click="handleDelete"
+          >删除</el-button
+        >
       </el-col>
     </el-row>
     <!-- 增加点击事件，点击后来处理上面编辑和删除按钮是否可以点击 -->
-    <el-table ref="tableRef" :data="tableData" stripe class="field-sortable-table-container">
-      <el-table-column prop="name" label="Code" >
+    <el-table
+      ref="tableRef"
+      :data="tableData"
+      stripe
+      class="field-sortable-table-container"
+      row-key="uuid"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" :selectable="selectable" />
+      <el-table-column prop="code" label="Code">
         <template #default="scope">
-          {{ scope.row.name }}
+          {{ scope.row.code }}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="字段名称" />
-      <el-table-column prop="name" label="字段说明" />
-      <el-table-column prop="name" label="字段类型" />
-      <el-table-column prop="name" label="字段长度" >
+      <el-table-column prop="remark" label="字段说明" />
+      <el-table-column prop="fieldType" label="字段类型" />
+      <el-table-column prop="length" label="字段长度">
         <template #default="scope">
           {{ scope.row.length }}
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="是否加密" />
-      <el-table-column prop="name" label="新增表单" />
-      <el-table-column prop="name" label="编辑表单" />
-      <el-table-column prop="name" label="移动端列表" />
-      <el-table-column prop="name" label="管理端列表" />
+      <el-table-column prop="encFlag" label="是否加密">
+        <template #default="scope">
+          {{ scope.row.encFlag }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="addFlag" label="新增表单">
+        <template #default="scope">
+          {{ scope.row.addFlag }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="editFlag" label="编辑表单">
+        <template #default="scope">
+          {{ scope.row.editFlag }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="appViewFlag" label="移动端列表">
+        <template #default="scope">
+          {{ scope.row.appViewFlag }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="pcViewFlag" label="管理端列表">
+        <template #default="scope">
+          {{ scope.row.pcViewFlag }}
+        </template>
+      </el-table-column>
       <el-table-column label="排序" width="140">
         <template #default="">
-          <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer"/>
+          <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
         </template>
       </el-table-column>
     </el-table>
-    <FieldEdit ref="formRef"/>
+    <FieldEdit ref="formRef" @update:data="updateData" />
   </ContentWrap>
 </template>
 
-<script setup  lang="ts">
-import Sortable from 'sortablejs';
-import FieldEdit from './FieldEdit.vue';
+<script setup lang="ts">
+import * as LabelApi from '@/api/system/label'
+import type { TableInstance } from 'element-plus'
+//  todo 要处理未保存的数据，是id 缺失，然后可删除
+//  todo 点击选中后，可以编辑和删除
+//  todo 系统字段不可点击
+//  todo 点击是可以预览弹窗的
+import Sortable from 'sortablejs'
+import FieldEdit from './FieldEdit.vue'
 
 const props = defineProps({
   data: {
     type: Array,
     default: () => []
   }
-});
+})
 
-const emits = defineEmits(['update:data', 'edit', 'row-click','delete']);
+const emits = defineEmits(['update:data', 'edit', 'row-click', 'delete'])
 
-const tableRef = ref(null);
-const sortable = ref(null);
-const tableData = ref([...props.data]);
+const tableRef = ref<TableInstance | null>(null)
+const multipleSelection = ref<any[]>([])
+const sortable = ref(null)
+const tableData = ref<LabelApi.LabelFieldConfig[]>([...(props.data as LabelApi.LabelFieldConfig[])])
+
+const selectable = (row: any) => ![1, 2].includes(row.id)
 
 // 更新父组件数据
 const updateParentData = () => {
-  emits('update:data', [...tableData.value]);
-};
+  emits('update:data', [...tableData.value])
+}
 
 // 初始化 Sortable
 const initSortable = () => {
   nextTick(() => {
-    const tableEl = (tableRef.value as any)?.$el.querySelector('.field-sortable-table-container .el-table__body-wrapper tbody');
+    const tableEl = (tableRef.value as any)?.$el.querySelector(
+      '.field-sortable-table-container .el-table__body-wrapper tbody'
+    )
 
     if (tableEl && !sortable.value) {
       sortable.value = new Sortable(tableEl, {
@@ -77,65 +125,95 @@ const initSortable = () => {
 
         // 开始拖拽
         onStart: () => {
-          console.log('开始拖拽');
+          console.log('开始拖拽')
         },
 
         // 结束拖拽
         onEnd: (evt) => {
-          const { oldIndex, newIndex } = evt;
+          const { oldIndex, newIndex } = evt
           if (oldIndex !== newIndex) {
             // 调整表格数据顺序
-            const item = tableData.value.splice(oldIndex, 1)[0];
-            tableData.value.splice(newIndex, 0, item);
-            updateParentData();
+            const item = tableData.value.splice(oldIndex, 1)[0]
+            tableData.value.splice(newIndex, 0, item)
+            updateParentData()
           }
         }
-      });
+      })
     }
-  });
-};
+  })
+}
+
+const handleSelectionChange = (val: any[]) => {
+  multipleSelection.value = val
+}
 
 // 生命周期钩子
 onMounted(() => {
-  initSortable();
-});
+  initSortable()
+})
 
 onBeforeUnmount(() => {
   // 销毁 Sortable 实例
   if (sortable.value) {
-    (sortable.value as any).destroy();
-    sortable.value = null;
+    ;(sortable.value as any).destroy()
+    sortable.value = null
   }
-});
+})
 
 // 监听数据变化
-watch(() => props.data, (newVal) => {
-  tableData.value = [...newVal];
-  // 如果表格已渲染，重新初始化 Sortable
-  if (tableRef.value) {
-    initSortable();
-  }
-}, { deep: true });
+watch(
+  () => props.data,
+  (newVal) => {
+    tableData.value = [...(newVal as LabelApi.LabelFieldConfig[])]
+    // 如果表格已渲染，重新初始化 Sortable
+    if (tableRef.value) {
+      initSortable()
+    }
+  },
+  { deep: true }
+)
 
 // 事件处理
-const handleEdit = (row) => {
-  emits('edit', row);
-};
+const handleEdit = () => {
+  formRef.value.open(multipleSelection.value[0])
+}
 
 // 事件处理
 const handleDelete = (row) => {
-  emits('delete', row);
-};
+  tableData.value = tableData.value.filter((item) => item?.id !== row.id && item.uuid !== row.uuid)
+}
 
-const handleRowClick = (row) => {
-  emits('row-click', row);
-};
+const updateData = (data) => {
+  console.log('updateData', data)
+  // 有id 代表编辑
+  // 有 uuid 代表新增
+  // 从 tableData.value 中找到对应的行，然后更新
+  const index = tableData.value.findIndex((item) => item?.id === data.id || item.uuid === data.uuid)
+  if (index !== -1) {
+    tableData.value[index] = data
+  } else {
+    tableData.value.push(data)
+  }
+}
+
+const saveTableData = async () => {
+  const data = tableData.value.map((item, index) => {
+    delete item.uuid
+    return {
+      ...item,
+      sort: index + 1
+    }
+  })
+  handleSelectionChange([])
+  await LabelApi.updateFieldConfigList(data)
+}
 
 /** 添加/修改操作 */
 const formRef = ref()
 const openForm = () => {
   formRef.value.open()
 }
+defineExpose({ saveTableData })
 </script>
 
 <style scoped>

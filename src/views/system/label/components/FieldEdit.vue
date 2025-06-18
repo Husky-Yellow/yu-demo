@@ -1,20 +1,11 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="添加基础字段"
-    width="80%"
-    @close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="添加基础字段" width="80%" @close="handleClose">
     <el-row :gutter="10">
       <el-col :span="10">
         <el-card>
           <template #header>表单配置</template>
-          <el-form
-            ref="fieldForm"
-            :model="form"
-            :rules="rules"
-            label-width="150px"
-          >
+          <el-form ref="fieldForm" :model="form" :rules="rules" label-width="150px">
+            <!-- todo 编辑的时候，这个位置不可编辑 -->
             <el-form-item label="Code" prop="code">
               <el-input v-model.trim="form.code" placeholder="请输入字段 Code" />
             </el-form-item>
@@ -44,11 +35,7 @@
             </el-form-item>
             <el-form-item label="是否为敏感字段" prop="encFlag">
               <el-radio-group v-model="form.encFlag">
-                <el-radio
-                  v-for="option in YesNoOptions"
-                  :key="option.value"
-                  :label="option.value"
-                >
+                <el-radio v-for="option in YesNoOptions" :key="option.value" :label="option.value">
                   {{ option.label }}
                 </el-radio>
               </el-radio-group>
@@ -68,27 +55,37 @@
           <template #header>字段配置</template>
           <!-- 文本 -->
           <template v-if="form.fieldType === FieldType.TEXT">
-            <TextFieldConfig v-model="form.fieldJson" />
+            <TextFieldConfig v-model="form.fieldConfExt" />
           </template>
           <!-- 数字 -->
           <template v-else-if="form.fieldType === FieldType.NUMBER">
-            <NumberFieldConfig v-model="form.fieldJson" />
+            <NumberFieldConfig v-model="form.fieldConfExt" />
           </template>
           <!-- 单选、多选 -->
-          <template v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX">
+          <template
+            v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX"
+          >
             <RadioFieldConfig />
           </template>
           <!-- 日期、日期区间 -->
-          <template v-else-if="form.fieldType === FieldType.DATE || form.fieldType === FieldType.DATE_RANGE">
-            <DatePrecisionConfig :type="form.fieldType" v-model="form.fieldJson" />
+          <template
+            v-else-if="form.fieldType === FieldType.DATE || form.fieldType === FieldType.DATE_RANGE"
+          >
+            <DatePrecisionConfig :type="form.fieldType" v-model="form.fieldConfExt" />
           </template>
           <!-- 地址、区域、标签 -->
-          <template v-else-if="form.fieldType === FieldType.ADDRESS || form.fieldType === FieldType.REGION || form.fieldType === FieldType.TAG">
+          <template
+            v-else-if="
+              form.fieldType === FieldType.ADDRESS ||
+              form.fieldType === FieldType.REGION ||
+              form.fieldType === FieldType.TAG
+            "
+          >
             展示地址、区域、标签的图片
           </template>
           <!-- 文件 -->
           <template v-else>
-            <UploadFieldConfig v-model="form.fieldJson" />
+            <UploadFieldConfig v-model="form.fieldConfExt" />
           </template>
         </el-card>
       </el-col>
@@ -104,92 +101,108 @@
 </template>
 
 <script setup lang="ts">
-import { FieldType, FieldTypeLabel } from '@/config/constants';
-import { YesNoOptions, YesNoEnum } from '@/config/constants'
-import TextFieldConfig from './TextFieldConfig.vue';
-import NumberFieldConfig from './NumberFieldConfig.vue';
-import RadioFieldConfig from './RadioFieldConfig.vue';
-import DatePrecisionConfig from './DatePrecisionConfig.vue';
-import UploadFieldConfig from './UploadFieldConfig.vue';
+import TextFieldConfig from './TextFieldConfig.vue'
+import NumberFieldConfig from './NumberFieldConfig.vue'
+import RadioFieldConfig from './RadioFieldConfig.vue'
+import DatePrecisionConfig from './DatePrecisionConfig.vue'
+import UploadFieldConfig from './UploadFieldConfig.vue'
+import { FieldType, FieldTypeLabel, YesNoOptions, YesNoEnum } from '@/config/constants'
+import { generateUUID } from '@/utils'
 const { query } = useRoute() // 查询参数
 
+const emits = defineEmits(['update:data'])
+
 // 表单引用
-const fieldForm = ref(null);
+const fieldForm = ref(null)
 // 弹窗显示状态
-const dialogVisible = ref(false);
+const dialogVisible = ref(false)
 
-// 表单数据
-const form = reactive({
-  manageId: query.id as string, // 管理 ID
-  code: '', // 字段编码
-  name: '', // 字段名称
-  remark: '', // 字段描述
-  fieldType: FieldType.TEXT, // 字段类型
-  length: '',  // 字段长度
-  encFlag: YesNoEnum.NO, // 是否加密
-  bizType: '', // 业务类型
-  fieldJson: {
-    textType: 'single',
-    duplicateCheck: 'noCheck',
-    dataValidation: 'none',
-    numberType: 'integer',
-  }, // 字段配置
-});
+// fieldJson 初始值
+const defaultFieldConfExt = () => ({
+  textType: 'single',
+  duplicateCheck: 'noCheck',
+  dataValidation: 'none',
+  numberType: 'integer',
+  datePrecision: 'date',
+  code2: undefined,
+  maxSize: undefined,
+  maxCount: undefined
+})
 
-// 表单校验规则
+// 表单初始值
+const defaultForm = () => ({
+  manageId: query.id as string,
+  code: '',
+  name: '',
+  remark: '',
+  fieldType: FieldType.TEXT,
+  length: '',
+  encFlag: YesNoEnum.NO,
+  bizType: '',
+  encType: 0,
+  addFlag: 0,
+  editFlag: 0,
+  appViewFlag: 0,
+  pcViewFlag: 0,
+  fieldConfExt: defaultFieldConfExt()
+})
+
+// 响应式表单数据
+const form = reactive(defaultForm())
+
+// 校验规则
 const rules = reactive({
-  code: [
-    { required: true, message: '请输入 Code', trigger: 'blur' }
-  ],
-  name: [
-    { required: true, message: '请输入字段名称', trigger: 'blur' }
-  ],
-  fieldType: [
-    { required: true, message: '请选择字段类型', trigger: 'change' }
-  ],
-  length: [
-    { required: true, message: '请输入字段长度', trigger: 'blur' }
-  ],
-});
+  code: [{ required: true, message: '请输入 Code', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入字段名称', trigger: 'blur' }],
+  fieldType: [{ required: true, message: '请选择字段类型', trigger: 'change' }],
+  length: [{ required: true, message: '请输入字段长度', trigger: 'blur' }]
+})
 
 // 提交表单
 const handleSubmit = () => {
-  (fieldForm.value as any).validate((valid: boolean) => {
+  ;(fieldForm.value as any).validate((valid: boolean) => {
     if (valid) {
-      // 这里可进行接口调用等逻辑，提交表单数据
       const submitData = {
         ...form,
-      };
-      console.log('表单数据：', submitData);
-      dialogVisible.value = false;
+        uuid: form?.uuid || generateUUID(),
+        // 深拷贝 fieldJson，防止外部修改影响本地
+        fieldConfExt: JSON.parse(JSON.stringify(form.fieldConfExt))
+      }
+      console.log('表单数据：', submitData)
+      emits('update:data', submitData)
+      handleClose()
     } else {
-      console.log('表单校验不通过');
+      console.log('表单校验不通过')
     }
-  });
-};
+  })
+}
+
+// 重置表单
+const resetForm = () => {
+  Object.assign(form, defaultForm())
+  ;(fieldForm.value as any)?.resetFields()
+}
 
 // 关闭弹窗
 const handleClose = () => {
-  form.code = '';
-  form.fieldType = FieldType.TEXT;
-  form.length = '';
-  form.encFlag = YesNoEnum.NO;
-  form.bizType = '';
-  form.fieldJson = {
-    textType: 'single',
-    duplicateCheck: 'noCheck',
-    dataValidation: 'none',
-    numberType: 'integer',
-  };
-  (fieldForm.value as any).resetFields();
-};
+  resetForm()
+  dialogVisible.value = false
+}
 
-/** 打开弹窗 */
-const open = async () => {
-  dialogVisible.value = true;
-  // 还要回显数据
-};
+// 打开弹窗（支持回显）
+const open = (row?: any) => {
+  if (row) {
+    Object.assign(form, row, {
+      // fieldJson 也要深拷贝，防止引用污染
+      fieldConfExt: row.fieldConfExt
+        ? JSON.parse(JSON.stringify(row.fieldConfExt))
+        : defaultFieldConfExt()
+    })
+  } else {
+    resetForm()
+  }
+  dialogVisible.value = true
+}
 
-// 提供 open 方法，用于外部调用打开弹窗
-defineExpose({ open });
+defineExpose({ open })
 </script>

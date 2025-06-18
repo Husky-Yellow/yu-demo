@@ -1,7 +1,7 @@
 <template>
   <el-form :model="form" label-width="120px">
-    <el-form-item label="Code2" required>
-      <el-input v-model="form.code" />
+    <el-form-item label="Code2" required v-show="type === FieldType.DATE_RANGE">
+      <el-input v-model="form.code2" />
     </el-form-item>
     <el-form-item label="日期精度" required>
       <el-radio-group v-model="form.datePrecision">
@@ -18,8 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, defineProps, defineEmits } from 'vue';
-
+import { FieldType } from '@/config/constants';
 const datePrecisionOptions = [
   { label: '选至年', value: 'year', example: 'YYYY' },
   { label: '选至月', value: 'month', example: 'YYYY/MM' },
@@ -32,14 +31,15 @@ const datePrecisionOptions = [
 const props = defineProps<{
   modelValue?: {
     datePrecision: string;
-    code: string;
+    code2: string;
   }
+  type: string;
 }>();
 const emit = defineEmits(['update:modelValue']);
 
 const form = reactive({
   datePrecision: props.modelValue?.datePrecision || 'date',
-  code: props.modelValue?.code || '',
+  code2: props.modelValue?.code2 || '',
 });
 
 watch(form, (val) => {

@@ -20,11 +20,7 @@
       <el-form-item>
         <el-button @click="handleQuery"> <Icon icon="ep:search" class="mr-5px" /> 搜索 </el-button>
         <el-button @click="resetQuery"> <Icon icon="ep:refresh" class="mr-5px" /> 重置 </el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="handleUpdateName('create')"
-        >
+        <el-button type="primary" plain @click="handleUpdateName('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增业务标签
         </el-button>
       </el-form-item>
@@ -39,9 +35,8 @@
       row-key="id"
       v-if="refreshTable"
       :default-expand-all="isExpandAll"
-
     >
-      <el-table-column prop="num" label="标签编号" width="200"/>
+      <el-table-column prop="num" label="标签编号" width="200" />
       <el-table-column prop="name" label="标签名称" />
       <el-table-column prop="type" label="标签类型" :formatter="formatTagType" />
       <el-table-column v-for="config in configList" :key="config" :label="config" align="center">
@@ -52,7 +47,9 @@
       <el-table-column label="操作" align="center" width="300">
         <template #default="scope">
           <el-button link type="primary" @click="openDetail(scope.row.id)"> 配置 </el-button>
-          <el-button link type="primary" @click="handleUpdateName('edit', scope.row)"> 编辑 </el-button>
+          <el-button link type="primary" @click="handleUpdateName('edit', scope.row)">
+            编辑
+          </el-button>
           <el-button link type="primary" @click="handleUpdateName('addChild', scope.row)">
             添加子标签
           </el-button>
@@ -113,7 +110,7 @@ const configList = [
 const getList = async () => {
   loading.value = true
   try {
-    const { list: listData, total: totalCount } = await LabelApi.getDataLabelManagePage(queryParams)
+    const { list: listData, total: totalCount } = await LabelApi.getLabelManagePage(queryParams)
     // flag 拆分8个字符串，代表8个配置
     list.value = handleTree2(listData)
     total.value = totalCount
@@ -148,14 +145,13 @@ const resetQuery = () => {
 
 const nameFormRef = ref()
 const handleUpdateName = (type: string, row?: any) => {
-  nameFormRef.value.open(type,row)
+  nameFormRef.value.open(type, row)
 }
 
 /** 添加/修改操作 */
 const openDetail = (id?: number) => {
-  push(`/system/label/customDetail?labelId=${query.id}&id=${id}`)
+  push(`/system/label/customDetail?id=${query.id}&type=${query.type}&labelId=${id}`)
 }
-
 
 /** 初始化 **/
 onMounted(async () => {

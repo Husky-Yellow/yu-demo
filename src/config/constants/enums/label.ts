@@ -26,8 +26,8 @@ export const TagTypeOptions = [
  * 是否选项
  */
 export const YesNoOptions = [
-  { label: YesNoEnum.YES, value: YesNoEnum.YES },
-  { label: YesNoEnum.NO, value: YesNoEnum.NO }
+  { label: YesNoEnum.YES, value: BooleanEnum.TRUE },
+  { label: YesNoEnum.NO, value: BooleanEnum.FALSE }
 ];
 
 /**

@@ -9,8 +9,7 @@
           <Field
             :data="tableData"
             @update:data="onDataUpdate"
-            @edit="handleEdit"
-            @row-click="handleRowClick"
+            ref="fieldRef"
           />
         </el-tab-pane>
         <el-tab-pane label="表单配置" name="Form">
@@ -50,19 +49,16 @@ import Sort from './../../components/Sort.vue'
 import Filter from './../../components/Filter.vue'
 import Details from './../../components/Details.vue'
 import StatisticConfig from './../../components/StatisticConfig.vue'
+import { generateUUID } from '@/utils'
 
-const activeName = ref('field')
+
 const { query } = useRoute() // 查询参数
 
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
-}
 
+const activeName = ref('field')
 // 模拟数据
 const tableData = ref([]);
-
-// 初始数据备份
-const initialData = [...tableData.value];
+const fieldRef = ref(null);
 
 // 数据更新回调
 const onDataUpdate = (newData) => {
@@ -70,32 +66,24 @@ const onDataUpdate = (newData) => {
   console.log('数据已更新:', tableData.value);
 };
 
-// 重置数据
-const resetData = () => {
-  tableData.value = [...initialData];
-  console.log('数据已重置');
-};
-
-// 编辑处理
-const handleEdit = (row) => {
-  console.log('编辑行:', row);
-  // 这里可以打开编辑对话框
-};
-
-// 行点击处理
-const handleRowClick = (row) => {
-  console.log('双击行:', row);
-};
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+  console.log(tab, event)
+}
 
 const save = () => {
-  console.log('保存')
+  (fieldRef.value as any).saveTableData()
 }
 
 const getDataFieldConfListByManageId = async () => {
-  const res = await LabelApi.getDataFieldConfListByManageId({
+  const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.id as string
   })
-  tableData.value = res
+  tableData.value = res.map(item => {
+    return {
+      ...item,
+      uuid: item.id ? item.id : generateUUID()
+    }
+  })
 }
 
 
