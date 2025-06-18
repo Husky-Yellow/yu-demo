@@ -4,10 +4,10 @@
       <el-col :span="10">
         <el-card>
           <template #header>表单配置</template>
-          <el-form ref="fieldForm" :model="form" :rules="rules" label-width="150px">
+          <el-form ref="fieldForm" :model="form" :rules="rules" label-width="150px" :disabled="formDisabled">
             <!-- todo 编辑的时候，这个位置不可编辑 -->
             <el-form-item label="Code" prop="code">
-              <el-input v-model.trim="form.code" placeholder="请输入字段 Code" />
+              <el-input v-model.trim="form.code" placeholder="请输入字段 Code" :disabled="codeInputDisabled" />
             </el-form-item>
             <el-form-item label="字段名称" prop="name">
               <el-input v-model.trim="form.name" placeholder="请输入字段名称" />
@@ -55,23 +55,23 @@
           <template #header>字段配置</template>
           <!-- 文本 -->
           <template v-if="form.fieldType === FieldType.TEXT">
-            <TextFieldConfig v-model="form.fieldConfExt" />
+            <TextFieldConfig v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
           <!-- 数字 -->
           <template v-else-if="form.fieldType === FieldType.NUMBER">
-            <NumberFieldConfig v-model="form.fieldConfExt" />
+            <NumberFieldConfig v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
           <!-- 单选、多选 -->
           <template
             v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX"
           >
-            <RadioFieldConfig />
+            <RadioFieldConfig :disabled="formDisabled" />
           </template>
           <!-- 日期、日期区间 -->
           <template
             v-else-if="form.fieldType === FieldType.DATE || form.fieldType === FieldType.DATE_RANGE"
           >
-            <DatePrecisionConfig :type="form.fieldType" v-model="form.fieldConfExt" />
+            <DatePrecisionConfig :type="form.fieldType" v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
           <!-- 地址、区域、标签 -->
           <template
@@ -85,7 +85,7 @@
           </template>
           <!-- 文件 -->
           <template v-else>
-            <UploadFieldConfig v-model="form.fieldConfExt" />
+            <UploadFieldConfig v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
         </el-card>
       </el-col>
@@ -93,7 +93,7 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="handleClose()">取 消</el-button>
         <el-button type="primary" @click="handleSubmit">确 认</el-button>
       </span>
     </template>
@@ -117,16 +117,18 @@ const fieldForm = ref(null)
 const dialogVisible = ref(false)
 
 // fieldJson 初始值
-const defaultFieldConfExt = () => ({
+const defaultFieldConfExt = (): LabelFieldConfExt => ({
   textType: 'single',
   duplicateCheck: 'noCheck',
   dataValidation: 'none',
   numberType: 'integer',
   datePrecision: 'date',
-  code2: undefined,
-  maxSize: undefined,
-  maxCount: undefined
-})
+  code2: '',
+  maxSize: 0,
+  maxCount: 0,
+  formatSearch: '',
+  selectedDictCode: ''
+} as const)
 
 // 表单初始值
 const defaultForm = () => ({
@@ -144,7 +146,8 @@ const defaultForm = () => ({
   pcViewFlag: 0,
   fieldConfExt: defaultFieldConfExt()
 })
-
+const formDisabled = ref(false)
+const codeInputDisabled = ref(false)
 // 响应式表单数据
 const form = reactive(defaultForm())
 
@@ -175,7 +178,14 @@ const handleSubmit = () => {
 
 // 重置表单
 const resetForm = () => {
-  Object.assign(form, defaultForm())
+  // 先重置所有字段为默认值
+  const defaultValues = defaultForm()
+  for (const key in form) {
+    form[key] = defaultValues[key]
+  }
+  // 确保 fieldConfExt 被正确重置
+  form.fieldConfExt = { ...defaultFieldConfExt() }
+  // 重置表单验证状态
   ;(fieldForm.value as any)?.resetFields()
 }
 
@@ -186,7 +196,9 @@ const handleClose = () => {
 }
 
 // 打开弹窗（支持回显）
-const open = (row?: any) => {
+const open = (type: 'add' | 'edit' | 'show', row?: any) => {
+  formDisabled.value = type === 'show'
+  codeInputDisabled.value = type === 'edit'
   if (row) {
     Object.assign(form, row, {
       // fieldJson 也要深拷贝，防止引用污染

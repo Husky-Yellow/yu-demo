@@ -14,12 +14,11 @@
         <el-button :disabled="multipleSelection.length === 0" type="primary" @click="handleEdit"
           >编辑</el-button
         >
-        <el-button :disabled="multipleSelection.length === 0" type="success" @click="handleDelete"
+        <el-button :disabled="multipleSelection.length === 0 || !multipleSelection[0]?.id" type="success" @click="handleDelete"
           >删除</el-button
         >
       </el-col>
     </el-row>
-    <!-- 增加点击事件，点击后来处理上面编辑和删除按钮是否可以点击 -->
     <el-table
       ref="tableRef"
       :data="tableData"
@@ -34,7 +33,17 @@
           {{ scope.row.code }}
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="字段名称" />
+      <el-table-column prop="name" label="字段名称">
+        <template #default="scope">
+          <el-button
+            type="primary"
+            link
+            @click="handleRowClick(scope.row)"
+          >
+          {{ scope.row.name }}
+          </el-button>
+        </template>
+      </el-table-column>
       <el-table-column prop="remark" label="字段说明" />
       <el-table-column prop="fieldType" label="字段类型" />
       <el-table-column prop="length" label="字段长度">
@@ -81,9 +90,6 @@
 import * as LabelApi from '@/api/system/label'
 import type { TableInstance } from 'element-plus'
 import { generateUUID } from '@/utils'
-//  todo 要处理未保存的数据，是id 缺失，然后可删除
-//  todo 点击选中后，可以编辑和删除
-//  todo 系统字段不可点击
 //  todo 点击是可以预览弹窗的
 import Sortable from 'sortablejs'
 import FieldEdit from './FieldEdit.vue'
@@ -102,7 +108,7 @@ const multipleSelection = ref<any[]>([])
 const sortable = ref(null)
 const tableData = ref<LabelApi.LabelFieldConfig[]>([...(props.data as LabelApi.LabelFieldConfig[])])
 
-const selectable = (row: any) => ![1, 2].includes(row.id)
+const selectable = (row: any) => ![1, 2].includes(row.id) // todo 系统字段不可点击
 
 // 更新父组件数据
 const updateParentData = () => {
@@ -148,6 +154,10 @@ const handleSelectionChange = (val: any[]) => {
   multipleSelection.value = val
 }
 
+const handleRowClick = (row: any) => {
+  formRef.value.open('show', row)
+}
+
 // 生命周期钩子
 onMounted(() => {
   initSortable()
@@ -176,7 +186,7 @@ watch(
 
 // 事件处理
 const handleEdit = () => {
-  formRef.value.open(multipleSelection.value[0])
+  formRef.value.open('edit', multipleSelection.value[0])
 }
 
 // 事件处理
@@ -219,7 +229,7 @@ const saveTableData = async () => {
 /** 添加/修改操作 */
 const formRef = ref()
 const openForm = () => {
-  formRef.value.open()
+  formRef.value.open('add', null)
 }
 defineExpose({ saveTableData })
 </script>
