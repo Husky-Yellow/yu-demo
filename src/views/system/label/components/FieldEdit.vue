@@ -53,21 +53,42 @@
                 </el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item v-show="form.encFlag === YesNoEnum.YES" label="加密类型" prop="bizType">
+              <el-radio-group v-model="form.bizType" placeholder="请选择加密类型">
+                <el-radio label="全文加密" value="MD5" />
+                <el-radio label="证件号码加密" value="SHA-1" />
+                <el-radio label="手机号码加密" value="SHA-256" />
+              </el-radio-group>
+            </el-form-item>
           </el-form>
         </el-card>
       </el-col>
       <el-col :span="14">
         <el-card>
           <template #header>字段配置</template>
+          <!-- 文本 -->
           <template v-if="form.fieldType === FieldType.TEXT">
-            <TextFieldConfig v-model="currentConfig" />
+            <TextFieldConfig v-model="form.fieldJson" />
           </template>
+          <!-- 数字 -->
           <template v-else-if="form.fieldType === FieldType.NUMBER">
-            <NumberFieldConfig v-model="currentConfig" />
+            <NumberFieldConfig v-model="form.fieldJson" />
           </template>
+          <!-- 单选、多选 -->
+          <template v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX">
+            <RadioFieldConfig />
+          </template>
+          <!-- 日期、日期区间 -->
+          <template v-else-if="form.fieldType === FieldType.DATE || form.fieldType === FieldType.DATE_RANGE">
+            <DatePrecisionConfig :type="form.fieldType" v-model="form.fieldJson" />
+          </template>
+          <!-- 地址、区域、标签 -->
+          <template v-else-if="form.fieldType === FieldType.ADDRESS || form.fieldType === FieldType.REGION || form.fieldType === FieldType.TAG">
+            展示地址、区域、标签的图片
+          </template>
+          <!-- 文件 -->
           <template v-else>
-            <!-- 这个位置 根据 fieldType 展示不同的组件 -->
-            <RadioFieldConfig v-model="currentConfig" />
+            <UploadFieldConfig v-model="form.fieldJson" />
           </template>
         </el-card>
       </el-col>
@@ -88,37 +109,15 @@ import { YesNoOptions, YesNoEnum } from '@/config/constants'
 import TextFieldConfig from './TextFieldConfig.vue';
 import NumberFieldConfig from './NumberFieldConfig.vue';
 import RadioFieldConfig from './RadioFieldConfig.vue';
+import DatePrecisionConfig from './DatePrecisionConfig.vue';
+import UploadFieldConfig from './UploadFieldConfig.vue';
 const { query } = useRoute() // 查询参数
-
-
-// 字段专属配置类型
-interface TextFieldConfigType {
-  textType: string;
-  duplicateCheck: string;
-  dataValidation: string;
-}
-
-interface NumberFieldConfigType {
-  numberType: string;
-  duplicateCheck: string;
-}
 
 // 表单引用
 const fieldForm = ref(null);
 // 弹窗显示状态
 const dialogVisible = ref(false);
 
-// 分别维护不同类型的配置
-const textFieldConfig = ref<TextFieldConfigType>({
-  textType: 'single',
-  duplicateCheck: 'noCheck',
-  dataValidation: 'none',
-});
-
-const numberFieldConfig = ref<NumberFieldConfigType>({
-  numberType: 'integer',
-  duplicateCheck: 'noCheck',
-});
 // 表单数据
 const form = reactive({
   manageId: query.id as string, // 管理 ID
@@ -130,7 +129,10 @@ const form = reactive({
   encFlag: YesNoEnum.NO, // 是否加密
   bizType: '', // 业务类型
   fieldJson: {
-
+    textType: 'single',
+    duplicateCheck: 'noCheck',
+    dataValidation: 'none',
+    numberType: 'integer',
   }, // 字段配置
 });
 
@@ -150,18 +152,6 @@ const rules = reactive({
   ],
 });
 
-// 根据字段类型使用对应的配置
-const currentConfig = computed(() => {
-  switch (form.fieldType) {
-    case FieldType.TEXT:
-      return textFieldConfig;
-    case FieldType.NUMBER:
-      return numberFieldConfig;
-    default:
-      return ref({});
-  }
-});
-
 // 提交表单
 const handleSubmit = () => {
   (fieldForm.value as any).validate((valid: boolean) => {
@@ -169,7 +159,6 @@ const handleSubmit = () => {
       // 这里可进行接口调用等逻辑，提交表单数据
       const submitData = {
         ...form,
-        fieldConfig: currentConfig.value
       };
       console.log('表单数据：', submitData);
       dialogVisible.value = false;
@@ -181,13 +170,17 @@ const handleSubmit = () => {
 
 // 关闭弹窗
 const handleClose = () => {
-  // 重置表单
   form.code = '';
-  form.fieldJson = {};
   form.fieldType = FieldType.TEXT;
   form.length = '';
   form.encFlag = YesNoEnum.NO;
   form.bizType = '';
+  form.fieldJson = {
+    textType: 'single',
+    duplicateCheck: 'noCheck',
+    dataValidation: 'none',
+    numberType: 'integer',
+  };
   (fieldForm.value as any).resetFields();
 };
 
@@ -196,8 +189,6 @@ const open = async () => {
   dialogVisible.value = true;
   // 还要回显数据
 };
-
-
 
 // 提供 open 方法，用于外部调用打开弹窗
 defineExpose({ open });
