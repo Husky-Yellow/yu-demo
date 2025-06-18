@@ -1,5 +1,5 @@
 <template>
-  <div class="operation-config-table">
+  <ContentWrap class="operation-config-table">
     <DraggableTable
       :table-data="tableData"
       :columns="columns as any[]"
@@ -8,7 +8,7 @@
       @sort-end="handleSortEnd"
        drag-position="last"
     />
-  </div>
+  </ContentWrap>
 </template>
 
 <script setup lang="ts">
@@ -90,16 +90,16 @@ const columns = ref([
 
 const handleSortEnd = (oldIndex: number, newIndex: number) => {
   console.log('Drag ended', { oldIndex, newIndex });
-  
+
   if (oldIndex !== newIndex) {
     const item = tableData.value.splice(oldIndex, 1)[0];
     tableData.value.splice(newIndex, 0, item);
-    
+
     // 更新排序字段
     tableData.value.forEach((item, index) => {
       item.sort = index + 1;
     });
-    
+
     console.log('New order:', tableData.value);
   }
 };
@@ -121,10 +121,10 @@ const handleSave = () => {
     visible: item.visible,
     sort: item.sort
   }));
-  
+
   console.log('Data to save:', submitData);
   ElMessage.success('配置已保存');
-  
+
   // 实际项目中这里应该调用API
   // api.saveOperationConfig(submitData).then(() => {
   //   ElMessage.success('保存成功');
@@ -133,10 +133,6 @@ const handleSave = () => {
 </script>
 
 <style scoped>
-.operation-config-table {
-  padding: 20px;
-}
-
 .drag-handle {
   cursor: grab;
   color: #409eff;

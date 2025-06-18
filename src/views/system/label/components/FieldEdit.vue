@@ -5,7 +5,6 @@
         <el-card>
           <template #header>表单配置</template>
           <el-form ref="fieldForm" :model="form" :rules="rules" label-width="150px" :disabled="formDisabled">
-            <!-- todo 编辑的时候，这个位置不可编辑 -->
             <el-form-item label="Code" prop="code">
               <el-input v-model.trim="form.code" placeholder="请输入字段 Code" :disabled="codeInputDisabled" />
             </el-form-item>
@@ -117,7 +116,7 @@ const fieldForm = ref(null)
 const dialogVisible = ref(false)
 
 // fieldJson 初始值
-const defaultFieldConfExt = (): LabelFieldConfExt => ({
+const defaultFieldConfExt = () => ({
   textType: 'single',
   duplicateCheck: 'noCheck',
   dataValidation: 'none',

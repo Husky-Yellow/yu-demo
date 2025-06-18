@@ -14,6 +14,7 @@
       :data="tableData"
       border
       style="width: 100%"
+       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
       <el-table-column
         prop="queryField"

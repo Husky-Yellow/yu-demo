@@ -26,6 +26,7 @@
       class="field-sortable-table-container"
       row-key="uuid"
       @selection-change="handleSelectionChange"
+       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
       <el-table-column type="selection" width="55" :selectable="selectable" />
       <el-table-column prop="code" label="Code">
