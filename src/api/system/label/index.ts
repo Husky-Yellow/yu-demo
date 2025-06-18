@@ -54,6 +54,17 @@ export const postLabelManageCreate = async (data: any) => {
  *
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076064
  */
-export const getDataFieldConfListByManageId = async (params: any) => {
+export const getDataFieldConfListByManageId = async (params: { manageId: string }) => {
   return await request.get({ url: '/data/field-conf/list-by-manage-id', params })
+}
+
+
+/**
+ *
+ * 获得标签配置
+ *
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076044
+ */
+export const getDataOperateConfList = async (params: { manageId: string }) => {
+  return await request.get({ url: '/data/operate-conf/list', params })
 }

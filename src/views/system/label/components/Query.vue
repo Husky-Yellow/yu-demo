@@ -115,10 +115,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
+import * as LabelApi from '@/api/system/label'
 import Sortable from 'sortablejs';
 import { ElTable, ElTableColumn, ElInput, ElRadioGroup, ElRadio, ElSelect, ElOption, ElDatePicker, ElButton, ElIcon } from 'element-plus';
 import { Rank } from '@element-plus/icons-vue'
-
+const { query } = useRoute() // 查询参数
 interface QueryConfig {
   queryField: string;
   hintText: string;
@@ -194,6 +195,14 @@ const addField = (row: QueryConfig) => {
   const newRow = { ...row };
   tableData.value.push(newRow);
 };
+
+const getOperateConfList = async () => {
+  if (!query.id) return
+  const res = await LabelApi.getDataOperateConfList({ manageId: query.id as string})
+  console.log(res)
+}
+
+getOperateConfList()
 </script>
 
 <style scoped>

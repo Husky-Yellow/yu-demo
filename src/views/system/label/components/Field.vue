@@ -10,12 +10,21 @@
         <el-button type="success">删除</el-button>
       </el-col>
     </el-row>
-    <el-table ref="tableRef" :data="tableData" stripe>
-      <el-table-column prop="name" label="Code" />
+    <!-- 增加点击事件，点击后来处理上面编辑和删除按钮是否可以点击 -->
+    <el-table ref="tableRef" :data="tableData" stripe class="field-sortable-table-container">
+      <el-table-column prop="name" label="Code" >
+        <template #default="scope">
+          {{ scope.row.name }}
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="字段名称" />
       <el-table-column prop="name" label="字段说明" />
       <el-table-column prop="name" label="字段类型" />
-      <el-table-column prop="name" label="字段长度" />
+      <el-table-column prop="name" label="字段长度" >
+        <template #default="scope">
+          {{ scope.row.length }}
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="是否加密" />
       <el-table-column prop="name" label="新增表单" />
       <el-table-column prop="name" label="编辑表单" />

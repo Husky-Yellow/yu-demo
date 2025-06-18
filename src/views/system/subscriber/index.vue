@@ -93,7 +93,7 @@ import * as UserApi from '@/api/system/user'
 import { handleTree } from '@/utils/tree'
 import SubscriberTable from './components/SubscriberTable.vue'
 import SubForm from './components/SubForm.vue'
-import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS } from '@/enums/user'
+import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS } from '@/config/constants'
 import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { CommonStatusEnum } from '@/utils/constants'
 

@@ -16,15 +16,15 @@
             label-width="150px"
           >
             <el-form-item label="Code" prop="code">
-              <el-input v-model="form.code" placeholder="请输入字段 Code" />
+              <el-input v-model.trim="form.code" placeholder="请输入字段 Code" />
             </el-form-item>
             <el-form-item label="字段名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入字段名称" />
+              <el-input v-model.trim="form.name" placeholder="请输入字段名称" />
             </el-form-item>
             <el-form-item label="字段描述" prop="remark">
               <el-input
                 type="textarea"
-                v-model="form.remark"
+                v-model.trim="form.remark"
                 placeholder="请输入字段描述"
                 :rows="3"
               />
@@ -40,12 +40,17 @@
               </el-select>
             </el-form-item>
             <el-form-item label="字段长度" prop="length">
-              <el-input v-model="form.length" placeholder="请输入字段长度" />
+              <el-input v-model.number="form.length" placeholder="请输入字段长度" />
             </el-form-item>
             <el-form-item label="是否为敏感字段" prop="encFlag">
               <el-radio-group v-model="form.encFlag">
-                <el-radio label="是">是</el-radio>
-                <el-radio label="否">否</el-radio>
+                <el-radio
+                  v-for="option in YesNoOptions"
+                  :key="option.value"
+                  :label="option.value"
+                >
+                  {{ option.label }}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -55,14 +60,14 @@
         <el-card>
           <template #header>字段配置</template>
           <template v-if="form.fieldType === FieldType.TEXT">
-            <TextFieldConfig v-model="form.fieldJson" />
+            <TextFieldConfig v-model="currentConfig" />
           </template>
           <template v-else-if="form.fieldType === FieldType.NUMBER">
-            <NumberFieldConfig v-model="form.fieldJson" />
+            <NumberFieldConfig v-model="currentConfig" />
           </template>
           <template v-else>
             <!-- 这个位置 根据 fieldType 展示不同的组件 -->
-            <RadioFieldConfig v-model="form.fieldJson" />
+            <RadioFieldConfig v-model="currentConfig" />
           </template>
         </el-card>
       </el-col>
@@ -78,79 +83,13 @@
 </template>
 
 <script setup lang="ts">
-import { FieldType, FieldTypeLabel } from '@/types/field';
+import { FieldType, FieldTypeLabel } from '@/config/constants';
+import { YesNoOptions, YesNoEnum } from '@/config/constants'
 import TextFieldConfig from './TextFieldConfig.vue';
 import NumberFieldConfig from './NumberFieldConfig.vue';
 import RadioFieldConfig from './RadioFieldConfig.vue';
+const { query } = useRoute() // 查询参数
 
-// 字典数据类型定义
-interface DictData {
-  dictCode: string;
-  dictName: string;
-  valueCount: number;
-}
-
-// 表单数据
-const form = reactive({
-  manageId: '', // 管理 ID
-  code: '', // 字段编码
-  name: '', // 字段名称
-  remark: '', // 字段描述
-  fieldType: FieldType.TEXT, // 字段类型
-  length: '',  // 字段长度
-  encFlag: '', // 是否加密
-  bizType: '', // 业务类型
-  fieldJson: '', // 字段配置
-});
-
-// 表单校验规则
-const rules = reactive({
-  code: [
-    { required: true, message: '请输入 Code', trigger: 'blur' }
-  ],
-  manageId: [
-    { required: true, message: '请输入管理 ID', trigger: 'blur' }
-  ],
-  fieldName: [
-    { required: true, message: '请输入字段名称', trigger: 'blur' }
-  ],
-  fieldType: [
-    { required: true, message: '请选择字段类型', trigger: 'change' }
-  ],
-  fieldLength: [
-    { required: true, message: '请输入字段长度', trigger: 'blur' }
-  ],
-  isSensitive: [
-    { required: true, message: '请选择是否为敏感字段', trigger: 'change' }
-  ]
-});
-
-// 弹窗显示状态
-const dialogVisible = ref(false);
-// 字典搜索关键字
-const dictSearch = ref('');
-// 字典数据（假数据）
-const dictData = ref<DictData[]>([
-  { dictCode: '000001', dictName: '行政区域', valueCount: 186 },
-  { dictCode: '000002', dictName: '行政区域', valueCount: 0 },
-  { dictCode: '000003', dictName: '行政区域', valueCount: 0 },
-  { dictCode: '000004', dictName: '行政区域', valueCount: 0 },
-]);
-// 选中的字典项
-const selectedDictCode = ref<string>('');
-
-// 计算获取完整的选中字典项
-const selectedDict = computed(() => {
-  return dictData.value.find(item => item.dictCode === selectedDictCode.value) || null;
-});
-
-// 计算过滤后的字典数据
-const filteredDictData = computed(() => {
-  if (!dictSearch.value) return dictData.value;
-  return dictData.value.filter(item =>
-    item.dictCode.includes(dictSearch.value) || item.dictName.includes(dictSearch.value)
-  );
-});
 
 // 字段专属配置类型
 interface TextFieldConfigType {
@@ -164,6 +103,11 @@ interface NumberFieldConfigType {
   duplicateCheck: string;
 }
 
+// 表单引用
+const fieldForm = ref(null);
+// 弹窗显示状态
+const dialogVisible = ref(false);
+
 // 分别维护不同类型的配置
 const textFieldConfig = ref<TextFieldConfigType>({
   textType: 'single',
@@ -174,6 +118,36 @@ const textFieldConfig = ref<TextFieldConfigType>({
 const numberFieldConfig = ref<NumberFieldConfigType>({
   numberType: 'integer',
   duplicateCheck: 'noCheck',
+});
+// 表单数据
+const form = reactive({
+  manageId: query.id as string, // 管理 ID
+  code: '', // 字段编码
+  name: '', // 字段名称
+  remark: '', // 字段描述
+  fieldType: FieldType.TEXT, // 字段类型
+  length: '',  // 字段长度
+  encFlag: YesNoEnum.NO, // 是否加密
+  bizType: '', // 业务类型
+  fieldJson: {
+
+  }, // 字段配置
+});
+
+// 表单校验规则
+const rules = reactive({
+  code: [
+    { required: true, message: '请输入 Code', trigger: 'blur' }
+  ],
+  name: [
+    { required: true, message: '请输入字段名称', trigger: 'blur' }
+  ],
+  fieldType: [
+    { required: true, message: '请选择字段类型', trigger: 'change' }
+  ],
+  length: [
+    { required: true, message: '请输入字段长度', trigger: 'blur' }
+  ],
 });
 
 // 根据字段类型使用对应的配置
@@ -198,7 +172,6 @@ const handleSubmit = () => {
         fieldConfig: currentConfig.value
       };
       console.log('表单数据：', submitData);
-      console.log('选中字典：', selectedDict.value);
       dialogVisible.value = false;
     } else {
       console.log('表单校验不通过');
@@ -210,23 +183,21 @@ const handleSubmit = () => {
 const handleClose = () => {
   // 重置表单
   form.code = '';
-  form.fieldName = '';
-  form.fieldDesc = '';
+  form.fieldJson = {};
   form.fieldType = FieldType.TEXT;
-  form.fieldLength = '';
-  form.isSensitive = '否';
-  selectedDictCode.value = '';
-  dictSearch.value = '';
+  form.length = '';
+  form.encFlag = YesNoEnum.NO;
+  form.bizType = '';
   (fieldForm.value as any).resetFields();
 };
 
 /** 打开弹窗 */
 const open = async () => {
   dialogVisible.value = true;
+  // 还要回显数据
 };
 
-// 表单引用
-const fieldForm = ref(null);
+
 
 // 提供 open 方法，用于外部调用打开弹窗
 defineExpose({ open });

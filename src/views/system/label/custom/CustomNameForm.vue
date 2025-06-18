@@ -21,7 +21,7 @@
 import * as LabelApi from '@/api/system/label'
 import { SUCCESS_MESSAGES } from '@/utils/constants'
 import { FormRules } from 'element-plus'
-import { TagType } from '@/enums/label'
+import { BooleanEnum } from '@/config/constants/enums/label'
 
 defineOptions({ name: 'SystemLabelCustomNameForm' })
 
@@ -42,7 +42,7 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
   name: undefined,
-  type: TagType.BASE,
+  type: BooleanEnum.FALSE,
   parentId: 0,
   labelId: query.id
 })
@@ -83,7 +83,7 @@ const open = async (type: string, row: any) => {
           id: undefined,
           name: undefined,
           parentId: 0,
-          type: TagType.BASE,
+          type: BooleanEnum.FALSE,
           labelId: query.id
         };
         break;
@@ -159,7 +159,7 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     name: undefined,
-    type: TagType.BASE,
+    type: BooleanEnum.FALSE,
     parentId: 0,
     labelId: query.id
   }

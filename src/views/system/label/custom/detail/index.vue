@@ -2,7 +2,7 @@
   <ContentWrap>
     <div class="h-[calc(100vh-160px)] position">
       <div  class="absolute right-36px z-2" >
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
       </div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="字段配置" name="field">
@@ -59,16 +59,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 }
 
 // 模拟数据
-const tableData = ref([
-  { id: 1, name: '张三', age: 28, address: '北京市朝阳区' },
-  { id: 2, name: '李四', age: 32, address: '上海市浦东新区' },
-  { id: 3, name: '王五', age: 45, address: '广州市天河区' },
-  { id: 4, name: '赵六', age: 24, address: '深圳市南山区' },
-  { id: 5, name: '钱七', age: 36, address: '杭州市西湖区' },
-  { id: 6, name: '孙八', age: 29, address: '南京市鼓楼区' },
-  { id: 7, name: '周九', age: 41, address: '成都市武侯区' },
-  { id: 8, name: '吴十', age: 33, address: '武汉市武昌区' }
-]);
+const tableData = ref([]);
 
 // 初始数据备份
 const initialData = [...tableData.value];
@@ -96,11 +87,15 @@ const handleRowClick = (row) => {
   console.log('双击行:', row);
 };
 
+const save = () => {
+  console.log('保存')
+}
+
 const getDataFieldConfListByManageId = async () => {
   const res = await LabelApi.getDataFieldConfListByManageId({
-    manageId: query.id
+    manageId: query.id as string
   })
-  console.log(res)
+  tableData.value = res
 }
 
 

@@ -75,7 +75,7 @@ import { useRouter } from 'vue-router'
 import { handleTree2 } from '@/utils/tree'
 import CustomNameForm from './CustomNameForm.vue'
 import * as LabelApi from '@/api/system/label'
-import { TagType, TagTypeOptions } from '@/enums/label'
+import { BooleanEnum, TagTypeOptions } from '@/config/constants/enums/label'
 import type { TableColumnCtx } from 'element-plus'
 
 defineOptions({ name: 'SystemLabelCustom' })
@@ -129,7 +129,7 @@ const formatTagType: (
   cellValue: number, // 假设实际数据类型是 number
   index: number
 ) => string = (row, column, cellValue, index) => {
-  const tagType = cellValue as TagType
+  const tagType = cellValue as BooleanEnum
   const option = TagTypeOptions.find((item) => item.value === tagType)
   return option?.label || '未知类型'
 }
