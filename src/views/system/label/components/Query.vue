@@ -1,241 +1,188 @@
 <template>
-  <div class="operation-config-table">
-    <!-- 添加、删除、预览 -->
-    <el-row justify="end">
-      <el-col :span="6">
-        <el-button>添加</el-button>
-        <el-button type="primary">删除</el-button>
-        <el-button type="success">预览</el-button>
-      </el-col>
-    </el-row>
-    <div class="query-config-table">
-    <el-table
-      ref="tableRef"
-      :data="tableData"
-      border
-      style="width: 100%"
-       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
-    >
-      <el-table-column
-        prop="queryField"
-        label="查询字段"
-        align="center"
-      />
-      <el-table-column
-        prop="hintText"
-        label="提示文字"
-        align="center"
-      >
-        <template #default="scope">
+  <div>
+    <div class="flex justify-end mb-2">
+      <el-button type="primary" @click="showDialog = true">添加</el-button>
+      <el-button type="danger" @click="removeSelected" :disabled="!selectedRowKeys.length">删除</el-button>
+      <el-button>预览</el-button>
+    </div>
+    <el-table :data="tableData" border style="width: 100%" @selection-change="onSelectionChange">
+      <el-table-column type="selection" width="40" />
+      <el-table-column label="查询字段" prop="label" />
+      <el-table-column label="提示文字" prop="placeholder">
+        <template #default="{ row }">
+          <el-input v-model="row.placeholder" size="small" />
+        </template>
+      </el-table-column>
+      <el-table-column label="查询类型" prop="queryType">
+        <template #default="{ row }">
+          <el-radio-group v-model="row.queryType">
+            <el-radio v-if="row.type === 'string' || row.type === 'number'" label="search">搜索</el-radio>
+            <template v-else-if="row.type === 'enum'">
+              <el-radio label="radio">单选</el-radio>
+              <el-radio label="checkbox">多选</el-radio>
+            </template>
+            <template v-else-if="row.type === 'date'">
+              <el-radio label="date">时间</el-radio>
+              <el-radio label="daterange">时间区间</el-radio>
+            </template>
+          </el-radio-group>
+        </template>
+      </el-table-column>
+      <el-table-column label="默认值" prop="defaultValue">
+        <template #default="{ row }">
+          <!-- 搜索：输入框 -->
           <el-input
-            v-model="scope.row.hintText"
-            placeholder="请输入提示文字"
+            v-if="row.queryType === 'search'"
+            v-model="row.defaultValue"
             size="small"
+          />
+          <!-- 单选/多选：下拉框 -->
+          <el-select
+            v-else-if="row.queryType === 'radio' || row.queryType === 'checkbox'"
+            v-model="row.defaultValue"
+            size="small"
+            :multiple="row.queryType === 'checkbox'"
+            placeholder="请选择"
+            style="width: 120px"
+          >
+            <el-option
+              v-for="opt in getEnumOptions(row.key)"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
+          <!-- 时间/时间区间：时间选择器 -->
+          <el-date-picker
+            v-else-if="row.queryType === 'date'"
+            v-model="row.defaultValue"
+            type="date"
+            placeholder="请选择日期"
+            size="small"
+            style="width: 140px"
+          />
+          <el-date-picker
+            v-else-if="row.queryType === 'daterange'"
+            v-model="row.defaultValue"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            size="small"
+            style="width: 220px"
           />
         </template>
       </el-table-column>
-      <el-table-column
-        prop="queryType"
-        label="查询类型"
-        align="center"
-      >
-        <template #default="scope">
-          <template v-if="scope.row.queryType === 'search'">
-            搜索
-          </template>
-          <template v-else-if="scope.row.queryType === 'radio'">
-            <el-radio-group v-model="scope.row.queryTypeDetail">
-              <el-radio label="single">单选</el-radio>
-              <el-radio label="multiple">多选</el-radio>
-            </el-radio-group>
-          </template>
-          <template v-else-if="scope.row.queryType === 'date'">
-            <el-radio-group v-model="scope.row.queryTypeDetail">
-              <el-radio label="date">日期</el-radio>
-              <el-radio label="dateRange">日期区间</el-radio>
-            </el-radio-group>
-          </template>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="defaultValue"
-        label="默认值"
-        align="center"
-      >
-        <template #default="scope">
-          <template v-if="scope.row.queryType === 'search'">
-            <el-input
-              v-model="scope.row.defaultValue"
-              placeholder="请输入默认值"
-              size="small"
-            />
-          </template>
-          <template v-else-if="scope.row.queryType === 'radio'">
-            <el-select
-              v-model="scope.row.defaultValue"
-              placeholder="请选择"
-              size="small"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="scope.row.queryType === 'date'">
-            <el-date-picker
-              v-model="scope.row.defaultValue"
-              :type="scope.row.queryTypeDetail === 'date' ? 'date' : 'daterange'"
-              placeholder="请选择日期"
-              size="small"
-            />
-          </template>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-      >
-        <template #default="scope">
-          <div class="drag-handle" @mousedown.stop @touchstart.stop>
-            <el-icon><Rank /></el-icon>
-          </div>
+      <el-table-column label="操作" width="100">
+        <template #default="{ row, $index }">
           <el-button
-            type="primary"
-            size="small"
-            @click="addField(scope.row)"
-          >添加字段</el-button>
+            v-if="row.queryType === 'search'"
+            type="text"
+            @click="addSubField($index)"
+          >
+            添加字段
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-  </div>
+
+    <!-- 字段选择弹窗 -->
+    <FieldSelectDialog
+      v-model="showDialog"
+      :fieldList="allFields"
+      :selectedKeys="tableData.map(i => i.key)"
+      @confirm="addFields"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
-import * as LabelApi from '@/api/system/label'
-import Sortable from 'sortablejs';
-import { ElTable, ElTableColumn, ElInput, ElRadioGroup, ElRadio, ElSelect, ElOption, ElDatePicker, ElButton, ElIcon } from 'element-plus';
-import { Rank } from '@element-plus/icons-vue'
-const { query } = useRoute() // 查询参数
-interface QueryConfig {
-  queryField: string;
-  hintText: string;
-  queryType: 'search' | 'radio' | 'date';
-  queryTypeDetail?: 'single' | 'multiple' | 'date' | 'dateRange';
-  defaultValue?: string | (string | number)[] | Date | Date[];
+import { ref } from 'vue'
+import FieldSelectDialog from './FieldSelectDialog.vue' // 路径按实际调整
+
+const allFields = ref([
+{ key: 'idType', label: '证件类型', type: 'enum' },
+  { key: 'idNo', label: '证件号码', type: 'string' },
+  { key: 'name', label: '姓名', type: 'string' },
+  { key: 'org', label: '组织', type: 'string' },
+  { key: 'level', label: '人员等级', type: 'enum' },
+  { key: 'addTime', label: '数据添加时间', type: 'date' },
+  { key: 'editTime', label: '数据修改时间', type: 'date' },
+  { key: 'addUser', label: '数据添加人', type: 'string' },
+  { key: 'editUser', label: '数据修改人', type: 'string' },
+  { key: 'gender', label: '性别', type: 'enum' },
+  { key: 'age', label: '年龄', type: 'number' },
+  { key: 'phone', label: '手机号', type: 'string' },
+  { key: 'email', label: '邮箱', type: 'string' },
+  { key: 'address', label: '地址', type: 'string' },
+  { key: 'status', label: '状态', type: 'enum' },
+  { key: 'score', label: '分数', type: 'number' },
+  { key: 'birthday', label: '出生日期', type: 'date' },
+  { key: 'registerTime', label: '注册时间', type: 'date' },
+  { key: 'lastLogin', label: '最后登录时间', type: 'date' },
+  { key: 'remark', label: '备注', type: 'string' }
+])
+
+const tableData = ref([
+{ key: 'name', label: '姓名', type: 'string', placeholder: '请输入姓名', queryType: 'search', defaultValue: '' },
+  { key: 'idNo', label: '证件号码', type: 'string', placeholder: '请输入证件号码', queryType: 'search', defaultValue: '' },
+  { key: 'idType', label: '证件类型', type: 'enum', placeholder: '请选择证件类型', queryType: 'radio', defaultValue: '' },
+  { key: 'level', label: '人员等级', type: 'enum', placeholder: '请选择等级', queryType: 'checkbox', defaultValue: '' },
+  { key: 'addTime', label: '数据添加时间', type: 'date', placeholder: '请选择时间', queryType: 'date', defaultValue: '' },
+  { key: 'editTime', label: '数据修改时间', type: 'date', placeholder: '请选择时间', queryType: 'daterange', defaultValue: '' },
+  { key: 'gender', label: '性别', type: 'enum', placeholder: '请选择性别', queryType: 'radio', defaultValue: '' },
+  { key: 'age', label: '年龄', type: 'number', placeholder: '请输入年龄', queryType: 'search', defaultValue: '' },
+  { key: 'phone', label: '手机号', type: 'string', placeholder: '请输入手机号', queryType: 'search', defaultValue: '' },
+  { key: 'status', label: '状态', type: 'enum', placeholder: '请选择状态', queryType: 'checkbox', defaultValue: '' }
+])
+const showDialog = ref(false)
+const selectedRowKeys = ref<string[]>([])
+
+function addFields(keys: string[]) {
+  const existKeys = tableData.value.map(i => i.key)
+  const toAdd = allFields.value.filter(f => keys.includes(f.key) && !existKeys.includes(f.key))
+  tableData.value.push(...toAdd.map(f => ({
+    key: f.key,
+    label: f.label,
+    type: f.type,
+    placeholder: '',
+    queryType: f.type === 'string' || f.type === 'number' ? 'search' : '',
+    defaultValue: ''
+  })))
 }
 
-const tableData = ref<QueryConfig[]>([
-  {
-    queryField: '姓名 证件号码',
-    hintText: '请输入姓名/证件号码',
-    queryType: 'search',
-    defaultValue: ''
-  },
-  {
-    queryField: '证件号码',
-    hintText: '请输入证件号码',
-    queryType: 'search',
-    defaultValue: ''
-  },
-  {
-    queryField: '证件类型',
-    hintText: '请选择证件类型',
-    queryType: 'radio',
-    queryTypeDetail: 'single',
-    defaultValue: ''
-  },
-  {
-    queryField: '多选',
-    hintText: '请选择x xx',
-    queryType: 'radio',
-    queryTypeDetail: 'multiple',
-    defaultValue: ''
-  },
-  {
-    queryField: '数据添加时间',
-    hintText: '请选择时间',
-    queryType: 'date',
-    queryTypeDetail: 'dateRange',
-    defaultValue: []
-  }
-]);
-
-const options = ref([
-  { label: '选项1', value: '1' },
-  { label: '选项2', value: '2' }
-]);
-
-const tableRef = ref<any>(null);
-
-onMounted(() => {
-  nextTick(() => {
-    const tbody = tableRef.value.$el.querySelector('tbody');
-    if (tbody) {
-      new Sortable(tbody, {
-        handle: '.drag-handle',
-        animation: 150,
-        onEnd: (evt) => {
-          const { oldIndex, newIndex } = evt;
-          if (oldIndex !== newIndex) {
-            const item = tableData.value.splice(oldIndex, 1)[0];
-            tableData.value.splice(newIndex, 0, item);
-          }
-        }
-      });
+function getEnumOptions(key) {
+    const map = {
+      idType: [
+        { label: '身份证', value: 'idcard' },
+        { label: '护照', value: 'passport' }
+      ],
+      level: [
+        { label: '一级', value: '1' },
+        { label: '二级', value: '2' }
+      ],
+      gender: [
+        { label: '男', value: 'male' },
+        { label: '女', value: 'female' }
+      ],
+      status: [
+        { label: '启用', value: 'enable' },
+        { label: '禁用', value: 'disable' }
+      ]
     }
-  });
-});
+    return map[key] || []
+  }
 
-const addField = (row: QueryConfig) => {
-  // 这里可实现添加字段逻辑，比如复制当前行数据等，示例简单 push 演示
-  const newRow = { ...row };
-  tableData.value.push(newRow);
-};
-
-const getOperateConfList = async () => {
-  if (!query.id) return
-  const res = await LabelApi.getFieldConfigListByManageId({ manageId: query.id as string})
-  // console.log(res)
+function removeSelected() {
+  tableData.value = tableData.value.filter(row => !selectedRowKeys.value.includes(row.key))
+  selectedRowKeys.value = []
 }
 
-getOperateConfList()
+function onSelectionChange(rows: any[]) {
+  selectedRowKeys.value = rows.map(r => r.key)
+}
+
+function addSubField(index: number) {
+  // 这里可以实现“添加字段”按钮的具体逻辑
+}
 </script>
-
-<style scoped>
-.operation-config-table {
-  padding: 20px;
-}
-
-.drag-handle {
-  cursor: grab;
-  color: #409eff;
-  font-size: 18px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-}
-
-.sortable-ghost {
-  background-color: #f5f7fa;
-  opacity: 0.6;
-}
-
-.sortable-chosen {
-  background-color: #e6f7ff;
-}
-
-.footer {
-  margin-top: 20px;
-  text-align: right;
-}
-</style>
