@@ -13,15 +13,7 @@
         @start="onDragStart"
       >
         <template #item="{ element }">
-          <div 
-            class="field-item" 
-            :class="{ 'field-item-used': isFieldUsed(element.value) }"
-            draggable="true"
-          >
-            <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer"/>
-            <span>{{ element.label }}</span>
-            <el-tag v-if="isFieldUsed(element.value)" size="small" class="ml-auto">已使用</el-tag>
-          </div>
+          <FieldPoolItem :hasKeyString="'value'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -51,10 +43,10 @@
             <div class="sort-drop-area" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
               <div v-if="item.field" class="sort-field-item">
                 <span>{{ item.field.label }}</span>
-                <el-button 
-                  type="danger" 
-                  size="small" 
-                  circle 
+                <el-button
+                  type="danger"
+                  size="small"
+                  circle
                   @click="removeField(index)"
                   class="delete-btn"
                 >
@@ -81,6 +73,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import VueDraggable from 'vuedraggable'
+import FieldPoolItem from './FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption, ElTag } from 'element-plus'
 
 interface SortField {

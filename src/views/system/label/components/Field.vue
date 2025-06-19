@@ -91,7 +91,6 @@
 import * as LabelApi from '@/api/system/label'
 import type { TableInstance } from 'element-plus'
 import { generateUUID } from '@/utils'
-//  todo 点击是可以预览弹窗的
 import Sortable from 'sortablejs'
 import FieldEdit from './FieldEdit.vue'
 
@@ -109,7 +108,7 @@ const multipleSelection = ref<any[]>([])
 const sortable = ref(null)
 const tableData = ref<LabelApi.LabelFieldConfig[]>([...(props.data as LabelApi.LabelFieldConfig[])])
 
-const selectable = (row: any) => ![1, 2].includes(row.id) // todo 系统字段不可点击
+const selectable = (row: any) => ![1].includes(row.bizType) // todo 系统字段不可点击
 
 // 更新父组件数据
 const updateParentData = () => {
