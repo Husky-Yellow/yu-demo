@@ -71,10 +71,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import VueDraggable from 'vuedraggable'
 import FieldPoolItem from './FieldPoolItem.vue'
-import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption, ElTag } from 'element-plus'
+import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 
 interface SortField {
   label: string

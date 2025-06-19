@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
 import FieldPoolItem from './FieldPoolItem.vue'
-import { ElInput, ElButton, ElSelect, ElOption, ElTag } from 'element-plus'
+import { ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
 
 interface Field {
   key: string

@@ -70,7 +70,25 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 }
 
 const save = () => {
-  (fieldRef.value as any).saveTableData()
+  switch (activeName.value) {
+    case 'field':
+      (fieldRef.value as any).saveTableData()
+      break;
+    case 'Form':
+      break;
+    case 'details':
+      break;
+    case 'operation':
+      break;
+    case 'query':
+      break;
+    case 'Data':
+      break;
+    case 'Sorting':
+      break;
+    case 'Statistical':
+      break;
+  }
 }
 
 const getDataFieldConfListByManageId = async () => {
