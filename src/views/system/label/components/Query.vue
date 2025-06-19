@@ -84,7 +84,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="排序" width="140">
+      <el-table-column label="排序" width="60">
         <template #default="">
           <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
         </template>
