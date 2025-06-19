@@ -5,7 +5,7 @@
       <el-button type="danger" @click="removeSelected" :disabled="!selectedRowKeys.length">删除</el-button>
       <el-button>预览</el-button>
     </div>
-    <el-table :data="tableData" border style="width: 100%" @selection-change="onSelectionChange">
+    <el-table  row-key="key"  ref="tableRef" class="query-sortable-table-container" :data="tableData" border  style="width: 100%" @selection-change="onSelectionChange" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }">
       <el-table-column type="selection" width="40" />
       <el-table-column label="查询字段" prop="label" />
       <el-table-column label="提示文字" prop="placeholder">
@@ -84,6 +84,11 @@
           </el-button>
         </template>
       </el-table-column>
+      <el-table-column label="排序" width="140">
+        <template #default="">
+          <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 字段选择弹窗 -->
@@ -97,9 +102,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { TableInstance } from 'element-plus'
 import FieldSelectDialog from './FieldSelectDialog.vue' // 路径按实际调整
-
+import Sortable from 'sortablejs'
 const allFields = ref([
 { key: 'idType', label: '证件类型', type: 'enum' },
   { key: 'idNo', label: '证件号码', type: 'string' },
@@ -137,7 +142,8 @@ const tableData = ref([
 ])
 const showDialog = ref(false)
 const selectedRowKeys = ref<string[]>([])
-
+  const tableRef = ref<TableInstance | null>(null)
+    const sortable = ref(null)
 function addFields(keys: string[]) {
   const existKeys = tableData.value.map(i => i.key)
   const toAdd = allFields.value.filter(f => keys.includes(f.key) && !existKeys.includes(f.key))
@@ -185,4 +191,45 @@ function onSelectionChange(rows: any[]) {
 function addSubField(index: number) {
   // 这里可以实现“添加字段”按钮的具体逻辑
 }
+
+
+// 初始化 Sortable
+const initSortable = () => {
+  nextTick(() => {
+    const tableEl = (tableRef.value as any)?.$el.querySelector(
+      '.query-sortable-table-container .el-table__body-wrapper tbody'
+    )
+
+    if (tableEl && !sortable.value) {
+      sortable.value = new Sortable(tableEl, {
+        animation: 150,
+        handle: '.el-table__row',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+
+        // 开始拖拽
+        onStart: () => {
+          console.log('开始拖拽')
+        },
+
+        // 结束拖拽
+        onEnd: (evt) => {
+          const { oldIndex, newIndex } = evt
+          if (oldIndex !== newIndex) {
+            // 调整表格数据顺序
+            const item = tableData.value.splice(oldIndex, 1)[0]
+            tableData.value.splice(newIndex, 0, item)
+          }
+        }
+      })
+    }
+  })
+}
+
+// 生命周期钩子
+onMounted(() => {
+  initSortable()
+})
+
 </script>

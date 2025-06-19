@@ -1,13 +1,11 @@
 <template>
   <el-dialog v-model="visible" title="新增" width="500px" @close="onCancel">
     <el-checkbox-group v-model="checkedKeys">
-      <el-row>
-        <el-col :span="24" v-for="item in fieldList" :key="item.key" class="mb-2">
-          <div class="flex items-center">
-            <Icon icon="ep:text" class="mr-2" />
-            <span class="flex-1">{{ item.label }}</span>
-            <el-checkbox :label="item.key" />
-          </div>
+      <el-row  v-for="item in fieldList" :key="item.key" class="mb-2">
+        <el-col :span="24">
+          <Icon icon="ep:text" class="mr-2" />
+          <span>{{ item.label }}</span>
+          <el-checkbox :label="item.key" />
         </el-col>
       </el-row>
     </el-checkbox-group>
@@ -19,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps } from 'vue'
 const props = defineProps<{
   modelValue: boolean
   fieldList: Array<{ key: string; label: string }>
