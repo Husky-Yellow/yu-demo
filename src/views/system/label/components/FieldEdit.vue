@@ -41,9 +41,7 @@
             </el-form-item>
             <el-form-item v-show="form.encFlag === BooleanEnum.TRUE" label="加密类型" prop="encType">
               <el-radio-group v-model="form.encType" placeholder="请选择加密类型">
-                <el-radio label="全文加密" value="0" />
-                <el-radio label="证件号码加密" value="1" />
-                <el-radio label="手机号码加密" value="2" />
+                <el-radio v-for="item in EncFlagOptions" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -105,9 +103,9 @@ import NumberFieldConfig from './NumberFieldConfig.vue'
 import RadioFieldConfig from './RadioFieldConfig.vue'
 import DatePrecisionConfig from './DatePrecisionConfig.vue'
 import UploadFieldConfig from './UploadFieldConfig.vue'
-import { FieldType, FieldTypeLabel, BooleanOptions, BooleanEnum } from '@/config/constants'
-const { query } = useRoute() // 查询参数
+import { FieldType, FieldTypeLabel, BooleanOptions, BooleanEnum, EncFlagOptions } from '@/config/constants'
 
+const { query } = useRoute() // 查询参数
 const emits = defineEmits(['update:data'])
 
 // 表单引用
@@ -160,7 +158,7 @@ const rules = reactive({
 
 // 提交表单
 const handleSubmit = () => {
-  ;(fieldForm.value as any).validate((valid: boolean) => {
+  (fieldForm.value as any).validate((valid: boolean) => {
     if (valid) {
       const submitData = {
         ...form,

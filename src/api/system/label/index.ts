@@ -1,4 +1,25 @@
 import request from '@/config/axios';
+import type {
+  TextType,
+  DuplicateCheck,
+  DataValidation,
+  NumberType,
+  DatePrecision
+} from '@/config/constants/enums/field';
+
+/**
+ * 标签字段配置详情
+ */
+export interface LabelFieldConfExt {
+  textType: TextType;
+  duplicateCheck: DuplicateCheck;
+  dataValidation: DataValidation;
+  numberType: NumberType;
+  datePrecision: DatePrecision;
+  code2: string;
+  maxSize: number;
+  maxCount: number;
+}
 
 /**
  * 标签字段配置
@@ -15,20 +36,6 @@ export interface LabelFieldConfig {
   encFlag: number;       // 加密标志
   bizType: string;       // 业务类型
   fieldConfExt: LabelFieldConfExt; // 字段配置详情
-}
-
-/**
- * 标签字段配置详情
- */
-export interface LabelFieldConfExt {
-  textType: 'single' | 'multi';        // 文本类型
-  duplicateCheck: 'noCheck' | 'check'; // 查重方式
-  dataValidation: 'none' | 'custom' | 'idCard' | 'creditCode' | 'mobile' | 'phone';    // 数据验证方式
-  numberType: 'integer' | 'decimal';     // 数字类型
-  datePrecision: 'date' | 'year' | 'month' | 'hour' | 'minute' | 'second';     // 日期精度
-  code2: string;                      // 备用编码
-  maxSize: number;                    // 最大尺寸
-  maxCount: number;                   // 最大数量
 }
 
 /**

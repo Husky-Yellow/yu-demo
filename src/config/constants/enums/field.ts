@@ -23,3 +23,55 @@ export const FieldTypeLabel: Record<FieldType, string> = {
   [FieldType.TAG]: '标签',
   [FieldType.ATTACHMENT]: '附件',
 };
+
+
+// 文本类型
+export const TextTypeOptions = [
+  { label: '单行文本', value: 'single' },
+  { label: '多行文本', value: 'multi' }
+] as const;
+export type TextType = typeof TextTypeOptions[number]['value'];
+
+// 查重校验
+export const DuplicateCheckOptions = [
+  { label: '校验', value: 'check' },
+  { label: '不校验', value: 'noCheck' }
+] as const;
+export type DuplicateCheck = typeof DuplicateCheckOptions[number]['value'];
+
+// 数据校验
+export const DataValidationOptions = [
+  { label: '不校验', value: 'none' },
+  { label: '自定义正则代码', value: 'custom' },
+  { label: '身份证校验', value: 'idCard' },
+  { label: '统一社会信用代码校验', value: 'creditCode' },
+  { label: '手机号校验', value: 'mobile' },
+  { label: '电话号码校验', value: 'phone' }
+] as const;
+export type DataValidation = typeof DataValidationOptions[number]['value'];
+
+// 数字类型
+export const NumberTypeOptions = [
+  { label: '整数', value: 'integer' },
+  { label: '小数', value: 'decimal' }
+] as const;
+export type NumberType = typeof NumberTypeOptions[number]['value'];
+
+// 日期精度
+export const DatePrecisionOptions = [
+  { label: '年', value: 'year' },
+  { label: '月', value: 'month' },
+  { label: '日', value: 'date' },
+  { label: '时', value: 'hour' },
+  { label: '分', value: 'minute' },
+  { label: '秒', value: 'second' }
+] as const;
+export type DatePrecision = typeof DatePrecisionOptions[number]['value'];
+
+// 加密方式
+export const EncFlagOptions = [
+  { label: '全文加密', value: 0 },
+  { label: '证件号码加密', value: 1 },
+  { label: '手机号码加密', value: 2 }
+] as const;
+export type EncFlag = typeof EncFlagOptions[number]['value'];
