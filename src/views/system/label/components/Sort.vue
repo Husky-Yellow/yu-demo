@@ -45,14 +45,14 @@
             :prop="`sortItems.${index}.field`"
             :rules="[{ validator: validateFieldsNotEmpty(item), trigger: 'submit' }]"
           >
-            <div class="sort-drop-area" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
+            <div class="min-h-[20px] bg-gray-100 border border-dashed border-gray-300 rounded px-2 py-2 w-full" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
               <div v-if="item.field" class="sort-field-item">
                 <span>{{ item.field.label }}</span>
                 <el-button type="danger" size="small" circle @click="removeField(index)">
                   <Icon icon="ep:close" />
                 </el-button>
               </div>
-              <div v-else class="sort-drop-placeholder"> 请输入排序字段 </div>
+              <div v-else class="text-[#bbb] text-center py-3 px-0"> 请输入排序字段 </div>
             </div>
           </el-form-item>
           <el-form-item label="排序规则" :prop="`sortItems.${index}.sortRule`">

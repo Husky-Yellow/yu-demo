@@ -21,18 +21,17 @@
     <!-- 右侧设置筛选规则区域 -->
     <div class="right-panel">
       <div class="panel-header">
-        <div class="panel-title">设置筛选规则</div>
+        <div class="font-bold">设置筛选规则</div>
         <div class="panel-actions">
           <el-button type="primary" @click="addRule">添加</el-button>
           <el-button type="danger" @click="removeLastRule">删除</el-button>
         </div>
       </div>
-      <div class="rule-list">
+      <el-form :model="filterRules" ref="filterFormRef" :inline="true">
         <div v-for="(rule, index) in filterRules" :key="rule.id" class="rule-item">
           <div class="rule-content">
-            <!-- 字段拖拽区域 -->
-            <div class="rule-field">
-              <div class="field-drop-area" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
+            <el-form-item :prop="`filterRules.${index}.field`" :rules="[{ validator: validateFieldsNotEmpty(rule), trigger: 'submit' }]">
+              <div class=" bg-gray-100 border border-dashed border-gray-300 rounded px-2px py-2px w-full mt-18px min-w-300px" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
                 <div v-if="rule.field" class="field-display">
                   <span>{{ getFieldLabel(rule.field) }}</span>
                   <el-button
@@ -40,29 +39,27 @@
                     size="small"
                     circle
                     @click="removeField(index)"
-                    class="delete-btn"
                   >
                     <Icon icon="ep:close" />
                   </el-button>
                 </div>
-                <div v-else class="field-placeholder"> 请拖入筛选字段 </div>
+                <div v-else class="text-[#bbb] text-center"> 请拖入筛选字段 </div>
               </div>
-            </div>
-
-            <!-- 操作符选择 -->
-            <el-select v-model="rule.operator" placeholder="选择操作符" class="operator-select">
-              <el-option
-                v-for="operatorItem in OperatorOptions"
-                :key="operatorItem.value"
-                :label="operatorItem.label"
-                :value="operatorItem.value"
-              />
-            </el-select>
-
-            <!-- 值输入框 -->
-            <el-input v-model="rule.value" placeholder="请输入值" class="value-input" />
+            </el-form-item>
+            <el-form-item :prop="`filterRules.${index}.operator`">
+              <el-select class="!w-[200px] mt-18px" v-model="rule.operator" placeholder="选择操作符">
+                <el-option
+                  v-for="operatorItem in OperatorOptions"
+                  :key="operatorItem.value"
+                  :label="operatorItem.label"
+                  :value="operatorItem.value"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item :prop="`filterRules.${index}.value`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
+              <el-input v-model="rule.value" placeholder="请输入值"  class="!w-[200px] mt-18px"/>
+            </el-form-item>
           </div>
-
           <!-- 且/或按钮 -->
           <div v-if="index < filterRules.length - 1" class="logic-button">
             <el-button type="primary" plain @click="toggleLogic(index)">
@@ -70,7 +67,7 @@
             </el-button>
           </div>
         </div>
-      </div>
+      </el-form>
     </div>
   </div>
 </template>
@@ -79,6 +76,7 @@
 import { ref } from 'vue'
 import VueDraggable from 'vuedraggable'
 import { OperatorOptions } from '@/config/constants/enums/label'
+import type { FormInstance } from 'element-plus'
 import FieldPoolItem from './FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
 
@@ -102,6 +100,7 @@ const filterFields = ref<FilterField[]>([
   { key: 'certType', label: '证件类型', type: 'text' },
   { key: 'region', label: '区域', type: 'text' }
 ])
+const filterFormRef = ref<FormInstance>()
 
 // 右侧规则列表
 const filterRules = ref<FilterRule[]>([
@@ -113,6 +112,7 @@ const filterRules = ref<FilterRule[]>([
     logic: 'and'
   }
 ])
+
 
 // 当前拖拽的字段
 const draggedField = ref<FilterField | null>(null)
@@ -179,6 +179,54 @@ function toggleLogic(index: number) {
   const rule = filterRules.value[index]
   rule.logic = rule.logic === 'and' ? 'or' : 'and'
 }
+
+
+/**
+ * 自定义表单校验规则工厂函数：验证统计项的字段列表是否为空
+ * @param idx - 当前统计项的索引
+ * @returns 返回一个 Element Plus 的表单校验函数
+ */
+ const validateFieldsNotEmpty = (item: any) => {
+  return (_rule: any, _value: any, callback: any) => {
+    if (!item.field) {
+      return callback(new Error('请拖入排序字段'))
+    }
+    callback()
+  }
+}
+
+
+/**
+ * 自定义表单校验规则工厂函数：验证统计项的字段列表是否为空
+ * @param idx - 当前统计项的索引
+ * @returns 返回一个 Element Plus 的表单校验函数
+ */
+ const validateValueNotEmpty = (item: any) => {
+  return (_rule: any, _value: any, callback: any) => {
+    if (!item.value) {
+      return callback(new Error('请输入值'))
+    }
+    callback()
+  }
+}
+
+
+
+const submitForm = () => {
+  if (!filterFormRef.value) return
+  filterFormRef.value.validate((valid) => {
+    if (valid) {
+      console.log('submit!')
+      console.log(filterRules.value)
+    } else {
+      console.log('error submit!')
+    }
+  })
+}
+
+defineExpose({
+  submitForm
+})
 </script>
 
 <style scoped>
@@ -215,59 +263,18 @@ function toggleLogic(index: number) {
   gap: 8px;
 }
 
-.field-list {
-  min-height: 100px;
-}
-
-.field-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  margin-bottom: 4px;
-  background: #f5f7fa;
-  border-radius: 4px;
-  cursor: grab;
-}
-
-.field-item:hover {
-  background: #e6f7ff;
-}
-
-.field-item-used {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #f0f0f0;
-}
-
-.field-item-used:hover {
-  background: #f0f0f0;
-}
-
-.rule-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
 
 .rule-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .rule-content {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 2px 0 0 10px;
   background: #fafbfc;
-}
-
-.rule-field {
-  flex: 1;
 }
 
 .field-drop-area {
@@ -276,6 +283,7 @@ function toggleLogic(index: number) {
   border: 1px dashed #dcdfe6;
   border-radius: 4px;
   padding: 4px 8px;
+  width: 100%;
 }
 
 .field-display {
@@ -291,15 +299,9 @@ function toggleLogic(index: number) {
   color: #909399;
   text-align: center;
   padding: 4px 0;
+  width: 100%;
 }
 
-.operator-select {
-  width: 120px;
-}
-
-.value-input {
-  width: 200px;
-}
 
 .logic-button {
   display: flex;
@@ -307,11 +309,4 @@ function toggleLogic(index: number) {
   margin: 4px 0;
 }
 
-.mr-2 {
-  margin-right: 8px;
-}
-
-.ml-auto {
-  margin-left: auto;
-}
 </style>
