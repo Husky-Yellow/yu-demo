@@ -19,10 +19,10 @@
           <Details />
         </el-tab-pane>
         <el-tab-pane label="操作配置" name="operation">
-          <Operation />
+          <Operation ref="operationRef" />
         </el-tab-pane>
         <el-tab-pane label="查询配置" name="query">
-          <Query />
+          <Query ref="queryRef" />
         </el-tab-pane>
         <el-tab-pane label="数据配置" name="Data">
           <Filter ref="filterRef" />
@@ -62,6 +62,8 @@ const fieldRef = ref(null);
 const statisticRef = ref(null);
 const sortRef = ref(null);
 const filterRef = ref(null);
+const queryRef = ref(null);
+const operationRef = ref(null);
 
 // 数据更新回调
 const onDataUpdate = (newData) => {
@@ -82,8 +84,10 @@ const save = () => {
     case 'details':
       break;
     case 'operation':
+      (operationRef.value as any).submitForm()
       break;
     case 'query':
+      (queryRef.value as any).submitForm()
       break;
     case 'Data':
       (filterRef.value as any).submitForm()

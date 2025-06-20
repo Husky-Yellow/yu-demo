@@ -114,22 +114,14 @@ const handleVisibleChange = (row: OperationButton) => {
   // 这里可以添加API调用
 };
 
-const handleSave = () => {
-  const submitData = tableData.value.map(item => ({
-    id: item.id,
-    name: item.name,
-    visible: item.visible,
-    sort: item.sort
-  }));
+
+const submitForm = () => {
+  const submitData = tableData.value
 
   console.log('Data to save:', submitData);
   ElMessage.success('配置已保存');
-
-  // 实际项目中这里应该调用API
-  // api.saveOperationConfig(submitData).then(() => {
-  //   ElMessage.success('保存成功');
-  // });
-};
+}
+defineExpose({ submitForm })
 </script>
 
 <style scoped>

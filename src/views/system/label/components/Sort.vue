@@ -98,16 +98,6 @@ const sortFields = ref<SortField[]>([
   { label: '数据修改人', value: 'dataModifier' }
 ])
 
-// 右侧排序项列表
-// const sortItems = ref<SortItem[]>([
-//   {
-//     id: Date.now(),
-//     sortType: 'dataAddTime',
-//     sortRule: 'asc',
-//     field: null
-//   }
-// ])
-
 const formModel = ref<{ sortItems: SortItem[] }>({
   sortItems: [
     {
