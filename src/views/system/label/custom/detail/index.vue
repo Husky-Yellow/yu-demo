@@ -28,7 +28,7 @@
           <Filter />
         </el-tab-pane>
         <el-tab-pane label="排序配置" name="Sorting">
-          <Sort />
+          <Sort ref="sortRef" />
         </el-tab-pane>
         <el-tab-pane label="统计配置" name="Statistical">
           <StatisticConfig ref="statisticRef" />
@@ -60,6 +60,7 @@ const activeName = ref('field')
 const tableData = ref([]);
 const fieldRef = ref(null);
 const statisticRef = ref(null);
+const sortRef = ref(null);
 
 // 数据更新回调
 const onDataUpdate = (newData) => {
@@ -86,6 +87,7 @@ const save = () => {
     case 'Data':
       break;
     case 'Sorting':
+      (sortRef.value as any).submitForm()
       break;
     case 'Statistical':
       (statisticRef.value as any).submitForm()
