@@ -1,5 +1,5 @@
 <template>
-  <div class="statistic-config">
+  <div class="flex gap-3 h-full">
     <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
       <div class="font-bold mb-16px">选择统计字段</div>
       <VueDraggable
@@ -17,7 +17,7 @@
     </div>
     <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 flex-1">
       <div class="panel-header">
-        <div class="panel-title">统计设置</div>
+        <div class="font-bold">统计设置</div>
         <div class="panel-actions">
           <el-button type="primary" @click="addStatistic">添加</el-button>
           <el-button type="danger" @click="removeLastStatistic">删除</el-button>
@@ -57,17 +57,24 @@
                   <div class="stat-field-item">
                     <!-- todo 这里要改成标签类型 -->
                     <span class="!w-[80px] text-right mr-6px">{{ element.label }}</span>
-                    <el-form-item :prop="`${idx}.fields.${index}.condition`" :rules="{ required: true, message: '请选择条件' }">
-                      <el-select
-                        v-model="element.condition"
-                        class="!w-[120px] mt-18px mr-6px"
-                      >
-                        <el-option label="等于" value="=" />
-                        <el-option label="不等于" value="!=" />
+                    <el-form-item
+                      :prop="`${idx}.fields.${index}.condition`"
+                      :rules="{ required: true, message: '请选择条件' }"
+                    >
+                      <el-select v-model="element.condition" class="!w-[120px] mt-18px mr-6px">
+                        <el-option
+                          v-for="operatorItem in OperatorOptions"
+                          :key="operatorItem.value"
+                          :label="operatorItem.label"
+                          :value="operatorItem.value"
+                        />
                       </el-select>
                     </el-form-item>
                     <template v-if="element.type === 'select'">
-                      <el-form-item :prop="`${idx}.fields.${index}.value`" :rules="{ required: true, message: '请选择值' }">
+                      <el-form-item
+                        :prop="`${idx}.fields.${index}.value`"
+                        :rules="{ required: true, message: '请选择值' }"
+                      >
                         <el-select v-model="element.value" class="!w-[200px] mt-18px mr-6px">
                           <el-option
                             v-for="opt in element.options"
@@ -79,8 +86,11 @@
                       </el-form-item>
                     </template>
                     <template v-else>
-                      <el-form-item :prop="`${idx}.fields.${index}.value`" :rules="{ required: true, message: '请选择值' }">
-                       <el-input v-model="element.value" class="!w-[200px] mt-18px mr-6px" />
+                      <el-form-item
+                        :prop="`${idx}.fields.${index}.value`"
+                        :rules="{ required: true, message: '请选择值' }"
+                      >
+                        <el-input v-model="element.value" class="!w-[200px] mt-18px mr-6px" />
                       </el-form-item>
                     </template>
                     <el-button type="text" @click="removeField(idx, index)">删除</el-button>
@@ -105,6 +115,7 @@ import VueDraggable from 'vuedraggable'
 import FieldPoolItem from './FieldPoolItem.vue'
 import { ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
+import { OperatorOptions } from '@/config/constants/enums/label'
 
 /** 字段定义 */
 interface Field {
@@ -273,13 +284,6 @@ defineExpose({ submitForm })
 </script>
 
 <style scoped>
-.statistic-config {
-  display: flex;
-  gap: 12px;
-  height: 100%;
-}
-
-
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -303,7 +307,7 @@ defineExpose({ submitForm })
 .stat-item {
   border: 1px solid #eee;
   border-radius: 4px;
-  padding:2px 6px;
+  padding: 2px 6px;
   background: #fafbfc;
   display: flex;
   align-items: center;

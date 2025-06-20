@@ -1,7 +1,7 @@
 <template>
-  <div class="filter-config">
+  <div class="flex gap-3 h-full">
     <!-- 左侧选择筛选字段区域 -->
-    <div class="left-panel">
+    <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
       <div class="font-bold mb-16px">选择筛选字段</div>
       <VueDraggable
         :list="filterFields"
@@ -9,10 +9,10 @@
         :item-key="'key'"
         :clone="cloneField"
         :sort="false"
-        class="field-list"
+        class="min-h-[100px]"
         @start="onDragStart"
       >
-      <template #item="{ element }">
+        <template #item="{ element }">
           <FieldPoolItem :hasKeyString="'key'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
@@ -23,8 +23,8 @@
       <div class="panel-header">
         <div class="panel-title">设置筛选规则</div>
         <div class="panel-actions">
-          <el-button type="primary" size="small" @click="addRule">添加</el-button>
-          <el-button type="danger" size="small" @click="removeLastRule">删除</el-button>
+          <el-button type="primary" @click="addRule">添加</el-button>
+          <el-button type="danger" @click="removeLastRule">删除</el-button>
         </div>
       </div>
       <div class="rule-list">
@@ -32,11 +32,7 @@
           <div class="rule-content">
             <!-- 字段拖拽区域 -->
             <div class="rule-field">
-              <div
-                class="field-drop-area"
-                @dragover.prevent
-                @drop="(e) => onFieldDrop(e, index)"
-              >
+              <div class="field-drop-area" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
                 <div v-if="rule.field" class="field-display">
                   <span>{{ getFieldLabel(rule.field) }}</span>
                   <el-button
@@ -49,44 +45,27 @@
                     <Icon icon="ep:close" />
                   </el-button>
                 </div>
-                <div v-else class="field-placeholder">
-                  请拖入筛选字段
-                </div>
+                <div v-else class="field-placeholder"> 请拖入筛选字段 </div>
               </div>
             </div>
 
             <!-- 操作符选择 -->
-            <el-select
-              v-model="rule.operator"
-              placeholder="选择操作符"
-              size="small"
-              class="operator-select"
-            >
+            <el-select v-model="rule.operator" placeholder="选择操作符" class="operator-select">
               <el-option
-                v-for="(label, value) in operators"
-                :key="value"
-                :label="label"
-                :value="value"
+                v-for="operatorItem in OperatorOptions"
+                :key="operatorItem.value"
+                :label="operatorItem.label"
+                :value="operatorItem.value"
               />
             </el-select>
 
             <!-- 值输入框 -->
-            <el-input
-              v-model="rule.value"
-              placeholder="请输入值"
-              size="small"
-              class="value-input"
-            />
+            <el-input v-model="rule.value" placeholder="请输入值" class="value-input" />
           </div>
 
           <!-- 且/或按钮 -->
           <div v-if="index < filterRules.length - 1" class="logic-button">
-            <el-button
-              type="primary"
-              size="small"
-              plain
-              @click="toggleLogic(index)"
-            >
+            <el-button type="primary" plain @click="toggleLogic(index)">
               {{ rule.logic === 'and' ? '且' : '或' }}
             </el-button>
           </div>
@@ -97,10 +76,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import VueDraggable from 'vuedraggable'
+import { OperatorOptions } from '@/config/constants/enums/label'
 import FieldPoolItem from './FieldPoolItem.vue'
-import { ElButton, ElSelect, ElOption, ElInput, ElTag } from 'element-plus'
+import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
 
 interface FilterField {
   key: string
@@ -128,7 +108,7 @@ const filterRules = ref<FilterRule[]>([
   {
     id: Date.now(),
     field: null,
-    operator: 'eq',
+    operator: '=',
     value: '',
     logic: 'and'
   }
@@ -137,26 +117,14 @@ const filterRules = ref<FilterRule[]>([
 // 当前拖拽的字段
 const draggedField = ref<FilterField | null>(null)
 
-// 操作符选项
-const operators = {
-  eq: '等于',
-  neq: '不等于',
-  like: '包含',
-  notLike: '不包含',
-  gt: '大于',
-  lt: '小于',
-  gte: '大于等于',
-  lte: '小于等于'
-}
-
 // 检查字段是否已被使用
 const isFieldUsed = (fieldKey: string) => {
-  return filterRules.value.some(rule => rule.field === fieldKey)
+  return filterRules.value.some((rule) => rule.field === fieldKey)
 }
 
 // 获取字段显示标签
 const getFieldLabel = (fieldKey: string) => {
-  return filterFields.value.find(f => f.key === fieldKey)?.label || fieldKey
+  return filterFields.value.find((f) => f.key === fieldKey)?.label || fieldKey
 }
 
 // 开始拖拽时保存字段数据
@@ -193,7 +161,7 @@ function addRule() {
   filterRules.value.push({
     id: Date.now(),
     field: null,
-    operator: 'eq',
+    operator: '=',
     value: '',
     logic: 'and'
   })
@@ -214,13 +182,8 @@ function toggleLogic(index: number) {
 </script>
 
 <style scoped>
-.filter-config {
-  display: flex;
-  gap: 24px;
-  height: 100%;
-}
-
-.left-panel, .right-panel {
+.left-panel,
+.right-panel {
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 2px 8px #f0f1f2;
@@ -295,7 +258,12 @@ function toggleLogic(index: number) {
 .rule-content {
   display: flex;
   gap: 8px;
-  align-items: flex-start;
+  align-items: center;
+
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: #fafbfc;
 }
 
 .rule-field {
@@ -303,7 +271,7 @@ function toggleLogic(index: number) {
 }
 
 .field-drop-area {
-  min-height: 32px;
+  min-height: 10px;
   background: #f5f7fa;
   border: 1px dashed #dcdfe6;
   border-radius: 4px;
@@ -337,10 +305,6 @@ function toggleLogic(index: number) {
   display: flex;
   justify-content: center;
   margin: 4px 0;
-}
-
-.delete-btn {
-  padding: 4px;
 }
 
 .mr-2 {

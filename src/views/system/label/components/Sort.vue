@@ -1,5 +1,5 @@
 <template>
-  <div class="sort-config">
+  <div class="flex gap-3 h-full">
     <!-- 左侧选择排序字段区域 -->
     <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
       <div class="font-bold mb-16px">选择排序字段</div>
@@ -9,7 +9,7 @@
         :item-key="'value'"
         :clone="cloneField"
         :sort="false"
-         class="min-h-[100px]"
+        class="min-h-[100px]"
         @start="onDragStart"
       >
         <template #item="{ element }">
@@ -39,23 +39,20 @@
               <el-radio label="custom">自定义排序</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item  v-if="item.sortType === 'custom'" label="排序字段" :prop="`sortItems.${index}.field`" :rules="[{ required: true, message: '请选择排序字段', trigger: 'submit' }]">
+          <el-form-item
+            v-if="item.sortType === 'custom'"
+            label="排序字段"
+            :prop="`sortItems.${index}.field`"
+            :rules="[{ validator: validateFieldsNotEmpty(item), trigger: 'submit' }]"
+          >
             <div class="sort-drop-area" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
               <div v-if="item.field" class="sort-field-item">
                 <span>{{ item.field.label }}</span>
-                <el-button
-                  type="danger"
-                  size="small"
-                  circle
-                  @click="removeField(index)"
-                  class="delete-btn"
-                >
+                <el-button type="danger" size="small" circle @click="removeField(index)">
                   <Icon icon="ep:close" />
                 </el-button>
               </div>
-              <div v-else class="sort-drop-placeholder">
-                请输入排序字段
-              </div>
+              <div v-else class="sort-drop-placeholder"> 请输入排序字段 </div>
             </div>
           </el-form-item>
           <el-form-item label="排序规则" :prop="`sortItems.${index}.sortRule`">
@@ -113,12 +110,12 @@ const sortFields = ref<SortField[]>([
 
 const formModel = ref<{ sortItems: SortItem[] }>({
   sortItems: [
-  {
-    id: Date.now(),
-    sortType: 'dataAddTime',
-    sortRule: 'asc',
-    field: null
-  }
+    {
+      id: Date.now(),
+      sortType: 'dataAddTime',
+      sortRule: 'asc',
+      field: null
+    }
   ]
 })
 
@@ -129,7 +126,7 @@ const draggedField = ref<SortField | null>(null)
 
 // 检查字段是否已被使用
 const isFieldUsed = (fieldValue: string) => {
-  return formModel.value.sortItems.some(item => item.field?.value === fieldValue)
+  return formModel.value.sortItems.some((item) => item.field?.value === fieldValue)
 }
 
 // 克隆字段函数，如果字段已使用则返回false阻止拖拽
@@ -175,6 +172,20 @@ function removeField(sortIndex: number) {
   }
 }
 
+/**
+ * 自定义表单校验规则工厂函数：验证统计项的字段列表是否为空
+ * @param idx - 当前统计项的索引
+ * @returns 返回一个 Element Plus 的表单校验函数
+ */
+const validateFieldsNotEmpty = (item: SortItem) => {
+  return (_rule: any, _value: any, callback: any) => {
+    if (!item.field) {
+      return callback(new Error('请拖入排序字段'))
+    }
+    callback()
+  }
+}
+
 const submitForm = () => {
   if (!sortFormRef.value) return
   sortFormRef.value.validate((valid) => {
@@ -191,13 +202,8 @@ defineExpose({ submitForm })
 </script>
 
 <style scoped>
-.sort-config {
-  display: flex;
-  gap: 12px;
-  height: 100%;
-}
-
-.left-panel, .right-panel {
+.left-panel,
+.right-panel {
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 2px 8px #f0f1f2;
@@ -232,30 +238,6 @@ defineExpose({ submitForm })
   min-height: 100px;
 }
 
-.field-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  margin-bottom: 4px;
-  background: #f5f7fa;
-  border-radius: 4px;
-  cursor: grab;
-}
-
-.field-item:hover {
-  background: #e6f7ff;
-}
-
-.field-item-used {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #f0f0f0;
-}
-
-.field-item-used:hover {
-  background: #f0f0f0;
-}
-
 .sort-item {
   margin-bottom: 18px;
   border: 1px solid #eee;
@@ -267,12 +249,6 @@ defineExpose({ submitForm })
 .sort-item-header {
   margin-bottom: 12px;
   font-weight: bold;
-}
-
-.sort-item-content {
-  display: flex;
-  flex-direction: column;
-  /* gap: 12px; */
 }
 
 .sort-drop-area {
@@ -297,29 +273,5 @@ defineExpose({ submitForm })
   color: #bbb;
   text-align: center;
   padding: 12px 0;
-}
-
-.sort-rule {
-  margin-top: 8px;
-}
-
-.text-red-500 {
-  color: #f56c6c;
-}
-
-.mr-2 {
-  margin-right: 8px;
-}
-
-.ml-auto {
-  margin-left: auto;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.delete-btn {
-  padding: 4px;
 }
 </style>
