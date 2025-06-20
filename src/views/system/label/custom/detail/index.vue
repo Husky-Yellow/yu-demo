@@ -68,6 +68,23 @@ const filterRef = ref(null);
 const queryRef = ref(null);
 const operationRef = ref(null);
 
+// tab name 到 ref 和方法名的映射
+const tabActionMap: Record<string, { ref: any, method: string }> = {
+  field:        { ref: fieldRef,      method: 'saveTableData' },
+  operation:    { ref: operationRef,  method: 'submitForm' },
+  query:        { ref: queryRef,      method: 'submitForm' },
+  Data:         { ref: filterRef,     method: 'submitForm' },
+  Sorting:      { ref: sortRef,       method: 'submitForm' },
+  Statistical:  { ref: statisticRef,  method: 'submitForm' }
+}
+
+function handleTabAction() {
+  const action = tabActionMap[activeName.value]
+  if (action && action.ref.value && typeof action.ref.value[action.method] === 'function') {
+    action.ref.value[action.method]()
+  }
+}
+
 // 数据更新回调
 const onDataUpdate = (newData) => {
   tableData.value = newData;
@@ -78,30 +95,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 }
 
 const save = () => {
-  switch (activeName.value) {
-    case 'field':
-      (fieldRef.value as any).saveTableData()
-      break;
-    case 'Form':
-      break;
-    case 'details':
-      break;
-    case 'operation':
-      (operationRef.value as any).submitForm()
-      break;
-    case 'query':
-      (queryRef.value as any).submitForm()
-      break;
-    case 'Data':
-      (filterRef.value as any).submitForm()
-      break;
-    case 'Sorting':
-      (sortRef.value as any).submitForm()
-      break;
-    case 'Statistical':
-      (statisticRef.value as any).submitForm()
-      break;
-  }
+  handleTabAction()
 }
 
 const getDataFieldConfListByManageId = async () => {
