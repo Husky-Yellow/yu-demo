@@ -29,12 +29,12 @@
        :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
       <el-table-column type="selection" width="55" :selectable="selectable" />
-      <el-table-column prop="code" label="Code">
+      <el-table-column prop="code" label="Code" align="center">
         <template #default="scope">
           {{ scope.row.code }}
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="字段名称">
+      <el-table-column prop="name" label="字段名称" align="center">
         <template #default="scope">
           <el-button
             type="primary"
@@ -45,39 +45,49 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="字段说明" />
-      <el-table-column prop="fieldType" label="字段类型" />
-      <el-table-column prop="length" label="字段长度">
+      <el-table-column prop="remark" label="字段说明" align="center" />
+      <el-table-column prop="fieldType" label="字段类型" align="center" >
+        <template #default="scope">
+          {{ FieldTypeLabel[scope.row.fieldType] }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="length" label="字段长度" align="center">
         <template #default="scope">
           {{ scope.row.length }}
         </template>
       </el-table-column>
-      <el-table-column prop="encFlag" label="是否加密">
+      <el-table-column prop="encFlag" label="是否加密" align="center">
         <template #default="scope">
-          {{ scope.row.encFlag }}
+          {{ scope.row.encFlag ? '是' : '否' }}
         </template>
       </el-table-column>
-      <el-table-column prop="addFlag" label="新增表单">
+      <el-table-column prop="addFlag" label="新增表单" align="center">
         <template #default="scope">
-          {{ scope.row.addFlag }}
+          <el-checkbox v-model="scope.row.addFlag" label="" />
         </template>
       </el-table-column>
-      <el-table-column prop="editFlag" label="编辑表单">
+      <el-table-column prop="editFlag" label="编辑表单" align="center">
         <template #default="scope">
-          {{ scope.row.editFlag }}
+          <el-checkbox v-model="scope.row.editFlag" label="" />
         </template>
       </el-table-column>
-      <el-table-column prop="appViewFlag" label="移动端列表">
+      <el-table-column prop="appViewFlag" label="移动端列表" align="center">
         <template #default="scope">
-          {{ scope.row.appViewFlag }}
+          <div class="cursor-pointer" @click="handleViewFlag(scope.row, 'appViewFlag')">
+            <el-icon v-if="scope.row.appViewFlag"><View /></el-icon>
+            <el-icon v-else><Hide /></el-icon>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column prop="pcViewFlag" label="管理端列表">
+      <el-table-column prop="pcViewFlag" label="管理端列表" align="center">
         <template #default="scope">
-          {{ scope.row.pcViewFlag }}
+          <div class="cursor-pointer" @click="handleViewFlag(scope.row, 'pcViewFlag')">
+            <el-icon v-if="scope.row.pcViewFlag"><View /></el-icon>
+            <el-icon v-else><Hide /></el-icon>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="排序" width="140">
+      <el-table-column label="排序" width="140" align="center">
         <template #default="">
           <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
         </template>
@@ -93,6 +103,9 @@ import type { TableInstance } from 'element-plus'
 import { generateUUID } from '@/utils'
 import Sortable from 'sortablejs'
 import FieldEdit from './FieldEdit.vue'
+import { View, Hide } from '@element-plus/icons-vue'
+import { FieldTypeLabel } from '@/config/constants'
+
 
 const props = defineProps({
   data: {
@@ -212,6 +225,10 @@ const updateData = (data) => {
   }
 
   updateParentData()
+}
+
+const handleViewFlag = (row: any, flag: string) => {
+  row[flag] = !row[flag]
 }
 
 const saveTableData = async () => {

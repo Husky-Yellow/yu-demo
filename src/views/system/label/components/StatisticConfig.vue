@@ -1,7 +1,7 @@
 <template>
   <div class="statistic-config">
     <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
-      <div class="font-bold">选择统计字段</div>
+      <div class="font-bold mb-16px">选择统计字段</div>
       <VueDraggable
         :list="fields"
         :group="{ name: 'fields', pull: 'clone', put: false }"
@@ -23,22 +23,29 @@
           <el-button type="danger" @click="removeLastStatistic">删除</el-button>
         </div>
       </div>
-      <el-form :model="statistics" ref="statForm">
+      <el-form :model="statistics" ref="statFormRef">
         <VueDraggable :list="statistics" :item-key="'id'" class="statistic-list">
           <template #item="{ element: item, index: idx }">
             <div class="stat-item">
               <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
               <div class="stat-item-header">
                 名称：
-                <el-form-item :prop="`${idx}.name`" :rules="{ required: true, message: '请输入统计名称' }">
+                <el-form-item
+                  :prop="`${idx}.name`"
+                  :rules="[
+                    { required: true, message: '请输入统计名称', trigger: 'blur' },
+                    { validator: validateNameUnique, trigger: 'blur' },
+                    { validator: validateFieldsNotEmpty(idx), trigger: 'submit' }
+                  ]"
+                >
                   <el-input
                     v-model="item.name"
                     placeholder="请输入统计名称"
-                    size="small"
-                    style="width: 200px"
+                    class="!w-[200px] mt-18px"
                   />
                 </el-form-item>
               </div>
+
               <VueDraggable
                 class="stat-drop-area"
                 :list="item.fields"
@@ -48,12 +55,12 @@
               >
                 <template #item="{ element, index }">
                   <div class="stat-field-item">
-                    <span>{{ element.label }}</span>
+                    <!-- todo 这里要改成标签类型 -->
+                    <span class="!w-[80px] text-right mr-6px">{{ element.label }}</span>
                     <el-form-item :prop="`${idx}.fields.${index}.condition`" :rules="{ required: true, message: '请选择条件' }">
                       <el-select
                         v-model="element.condition"
-                        size="small"
-                        style="width: 90px; margin: 0 8px"
+                        class="!w-[120px] mt-18px mr-6px"
                       >
                         <el-option label="等于" value="=" />
                         <el-option label="不等于" value="!=" />
@@ -61,7 +68,7 @@
                     </el-form-item>
                     <template v-if="element.type === 'select'">
                       <el-form-item :prop="`${idx}.fields.${index}.value`" :rules="{ required: true, message: '请选择值' }">
-                        <el-select v-model="element.value" size="small" style="width: 120px">
+                        <el-select v-model="element.value" class="!w-[200px] mt-18px mr-6px">
                           <el-option
                             v-for="opt in element.options"
                             :key="opt.value"
@@ -73,7 +80,7 @@
                     </template>
                     <template v-else>
                       <el-form-item :prop="`${idx}.fields.${index}.value`" :rules="{ required: true, message: '请选择值' }">
-                       <el-input v-model="element.value" size="small" style="width: 120px" />
+                       <el-input v-model="element.value" class="!w-[200px] mt-18px mr-6px" />
                       </el-form-item>
                     </template>
                     <el-button type="text" @click="removeField(idx, index)">删除</el-button>
@@ -97,7 +104,9 @@
 import VueDraggable from 'vuedraggable'
 import FieldPoolItem from './FieldPoolItem.vue'
 import { ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 
+/** 字段定义 */
 interface Field {
   key: string
   label: string
@@ -105,11 +114,13 @@ interface Field {
   options?: Array<{ label: string; value: string }>
 }
 
+/** 统计项中的字段定义，继承自 Field 并增加了条件和值 */
 interface StatisticField extends Field {
   condition: '=' | '!='
   value: string
 }
 
+/** 单个统计项的定义 */
 interface StatisticItem {
   id: number
   name: string
@@ -139,9 +150,11 @@ const fields = ref<Field[]>([
   { key: 'label', label: '系统标签', type: 'input' }
 ])
 
+/** 统计项列表：用户配置的统计规则 */
 const statistics = ref<StatisticItem[]>([{ id: Date.now(), name: '', fields: [] }])
+const statFormRef = ref<FormInstance>()
 
-// 计算已使用的字段keys
+/** 计算所有统计项中已使用的字段的 key 集合 */
 const usedFieldKeys = computed(() => {
   const keys = new Set<string>()
   statistics.value.forEach((stat) => {
@@ -152,11 +165,20 @@ const usedFieldKeys = computed(() => {
   return keys
 })
 
-// 判断字段是否已被使用
+/**
+ * 检查指定 key 的字段是否已被使用
+ * @param key - 字段的 key
+ * @returns 如果已使用则返回 true，否则返回 false
+ */
 function isFieldUsed(key: string): boolean {
   return usedFieldKeys.value.has(key)
 }
 
+/**
+ * 克隆字段到统计项中。如果字段已被使用，则不允许克隆。
+ * @param field - 要克隆的字段
+ * @returns 克隆后的字段对象，如果字段已使用则返回 false
+ */
 function cloneField(field: Field): Field | false {
   if (isFieldUsed(field.key)) {
     return false
@@ -164,23 +186,36 @@ function cloneField(field: Field): Field | false {
   return { ...field }
 }
 
+/** 添加一个新的空统计项 */
 function addStatistic() {
   statistics.value.push({ id: Date.now(), name: '', fields: [] })
 }
 
+/** 删除最后一个统计项 */
 function removeLastStatistic() {
   if (statistics.value.length > 0) {
     statistics.value.pop()
   }
 }
 
+/**
+ * 从指定的统计项中删除一个字段
+ * @param statIdx - 统计项的索引
+ * @param fieldIdx - 字段的索引
+ */
 function removeField(statIdx: number, fieldIdx: number) {
   statistics.value[statIdx].fields.splice(fieldIdx, 1)
 }
 
+/**
+ * 处理字段拖放到统计项的事件
+ * @param statIdx - 目标统计项的索引
+ * @param evt - 拖放事件对象，包含添加的元素信息
+ */
 function onFieldDrop(statIdx: number, evt: { added: { element: Field; newIndex: number } }) {
   if (evt.added) {
     const field = evt.added.element
+    // 将普通字段转换为带默认值的统计字段
     statistics.value[statIdx].fields[evt.added.newIndex] = {
       ...field,
       condition: '=',
@@ -188,6 +223,53 @@ function onFieldDrop(statIdx: number, evt: { added: { element: Field; newIndex: 
     }
   }
 }
+
+/**
+ * 自定义表单校验规则：验证统计名称是否唯一
+ * @param rule - 校验规则
+ * @param value - 当前输入框的值
+ * @param callback - 回调函数
+ */
+const validateNameUnique = (rule: any, value: any, callback: any) => {
+  const index = parseInt(rule.field.split('.')[0], 10)
+  if (value && statistics.value.some((item, idx) => item.name === value && idx !== index)) {
+    return callback(new Error('统计名称不能重复'))
+  }
+  callback()
+}
+
+/**
+ * 自定义表单校验规则工厂函数：验证统计项的字段列表是否为空
+ * @param idx - 当前统计项的索引
+ * @returns 返回一个 Element Plus 的表单校验函数
+ */
+const validateFieldsNotEmpty = (idx: number) => {
+  return (_rule: any, _value: any, callback: any) => {
+    if (!statistics.value[idx].fields || statistics.value[idx].fields.length === 0) {
+      return callback(new Error('请拖入统计字段'))
+    }
+    callback()
+  }
+}
+
+/**
+ * 触发表单校验，并处理校验结果。
+ * 这是暴露给父组件的方法。
+ */
+const submitForm = () => {
+  if (!statFormRef.value) return
+  statFormRef.value.validate((valid) => {
+    if (valid) {
+      console.log('submit!')
+      console.log(statistics.value)
+    } else {
+      console.log('error submit!')
+    }
+  })
+}
+
+/** 向父组件暴露 submitForm 方法 */
+defineExpose({ submitForm })
 </script>
 
 <style scoped>
@@ -219,10 +301,9 @@ function onFieldDrop(statIdx: number, evt: { added: { element: Field; newIndex: 
 }
 
 .stat-item {
-  margin-bottom: 18px;
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 6px;
+  padding:2px 6px;
   background: #fafbfc;
   display: flex;
   align-items: center;

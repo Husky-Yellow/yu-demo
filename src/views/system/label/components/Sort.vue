@@ -2,7 +2,7 @@
   <div class="sort-config">
     <!-- 左侧选择排序字段区域 -->
     <div class="left-panel">
-      <div class="panel-title">选择排序字段</div>
+      <div class="font-bold mb-16px">选择排序字段</div>
       <VueDraggable
         :list="sortFields"
         :group="{ name: 'fields', pull: cloneField, put: false }"
@@ -21,7 +21,7 @@
     <!-- 右侧排序设置区域 -->
     <div class="right-panel">
       <div class="panel-header">
-        <div class="panel-title">排序设置</div>
+        <div class="font-bold mb-16px">排序设置</div>
         <div class="panel-actions">
           <el-button type="primary" size="small" @click="addSortItem">添加</el-button>
           <el-button type="danger" size="small" @click="removeLastSortItem">删除</el-button>

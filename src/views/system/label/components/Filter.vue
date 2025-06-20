@@ -2,7 +2,7 @@
   <div class="filter-config">
     <!-- 左侧选择筛选字段区域 -->
     <div class="left-panel">
-      <div class="panel-title">选择筛选字段</div>
+      <div class="font-bold mb-16px">选择筛选字段</div>
       <VueDraggable
         :list="filterFields"
         :group="{ name: 'fields', pull: cloneField, put: false }"
@@ -12,16 +12,8 @@
         class="field-list"
         @start="onDragStart"
       >
-        <template #item="{ element }">
-          <div 
-            class="field-item" 
-            :class="{ 'field-item-used': isFieldUsed(element.key) }"
-            draggable="true"
-          >
-            <Icon icon="ep:document" class="mr-2"/>
-            <span>{{ element.label }}</span>
-            <el-tag v-if="isFieldUsed(element.key)" size="small" class="ml-auto">已使用</el-tag>
-          </div>
+      <template #item="{ element }">
+          <FieldPoolItem :hasKeyString="'key'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -40,17 +32,17 @@
           <div class="rule-content">
             <!-- 字段拖拽区域 -->
             <div class="rule-field">
-              <div 
-                class="field-drop-area" 
-                @dragover.prevent 
+              <div
+                class="field-drop-area"
+                @dragover.prevent
                 @drop="(e) => onFieldDrop(e, index)"
               >
                 <div v-if="rule.field" class="field-display">
                   <span>{{ getFieldLabel(rule.field) }}</span>
-                  <el-button 
-                    type="danger" 
-                    size="small" 
-                    circle 
+                  <el-button
+                    type="danger"
+                    size="small"
+                    circle
                     @click="removeField(index)"
                     class="delete-btn"
                   >
@@ -64,8 +56,8 @@
             </div>
 
             <!-- 操作符选择 -->
-            <el-select 
-              v-model="rule.operator" 
+            <el-select
+              v-model="rule.operator"
               placeholder="选择操作符"
               size="small"
               class="operator-select"
@@ -89,8 +81,8 @@
 
           <!-- 且/或按钮 -->
           <div v-if="index < filterRules.length - 1" class="logic-button">
-            <el-button 
-              type="primary" 
+            <el-button
+              type="primary"
               size="small"
               plain
               @click="toggleLogic(index)"
@@ -107,6 +99,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import VueDraggable from 'vuedraggable'
+import FieldPoolItem from './FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput, ElTag } from 'element-plus'
 
 interface FilterField {

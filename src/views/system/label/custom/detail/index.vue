@@ -31,7 +31,7 @@
           <Sort />
         </el-tab-pane>
         <el-tab-pane label="统计配置" name="Statistical">
-          <StatisticConfig />
+          <StatisticConfig ref="statisticRef" />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -59,6 +59,7 @@ const activeName = ref('field')
 // 模拟数据
 const tableData = ref([]);
 const fieldRef = ref(null);
+const statisticRef = ref(null);
 
 // 数据更新回调
 const onDataUpdate = (newData) => {
@@ -87,6 +88,7 @@ const save = () => {
     case 'Sorting':
       break;
     case 'Statistical':
+      (statisticRef.value as any).submitForm()
       break;
   }
 }
