@@ -13,15 +13,18 @@
           />
         </el-tab-pane>
         <el-tab-pane label="表单配置" name="Form">
+          <!-- 还得再调 -->
           <Form />
         </el-tab-pane>
         <el-tab-pane label="详情配置" name="details">
+          <!-- 还得再调 -->
           <Details />
         </el-tab-pane>
         <el-tab-pane label="操作配置" name="operation">
           <Operation ref="operationRef" />
         </el-tab-pane>
         <el-tab-pane label="查询配置" name="query">
+          <!-- 没写完啊 -->
           <Query ref="queryRef" />
         </el-tab-pane>
         <el-tab-pane label="数据配置" name="Data">
