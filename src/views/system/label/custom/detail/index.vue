@@ -44,14 +44,14 @@
 defineOptions({ name: 'SystemLabelCustomDetail' })
 import type { TabsPaneContext } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
-import Field from './../../components/Field.vue'
-import Form from './../../components/Form.vue'
-import Operation from './../../components/Operation.vue'
-import Query from './../../components/Query.vue'
-import Sort from './../../components/Sort.vue'
-import Filter from './../../components/Filter.vue'
-import Details from './../../components/Details.vue'
-import StatisticConfig from './../../components/StatisticConfig.vue'
+import Field from '../../components/field/Field.vue'
+import Form from '../../components/common/Form.vue'
+import Operation from '../../components/common/Operation.vue'
+import Query from '../../components/query/Query.vue'
+import Filter from '../../components/filter/Filter.vue'
+import Sort from '../../components/sort/Sort.vue'
+import Details from '../../components/common/Details.vue'
+import StatisticConfig from '../../components/statistic/StatisticConfig.vue'
 import { generateUUID } from '@/utils'
 
 

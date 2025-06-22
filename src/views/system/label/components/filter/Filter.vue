@@ -77,7 +77,7 @@ import { ref } from 'vue'
 import VueDraggable from 'vuedraggable'
 import { OperatorOptions } from '@/config/constants/enums/label'
 import type { FormInstance } from 'element-plus'
-import FieldPoolItem from './FieldPoolItem.vue'
+import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
 
 interface FilterField {

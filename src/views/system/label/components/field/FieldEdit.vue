@@ -98,11 +98,11 @@
 </template>
 
 <script setup lang="ts">
-import TextFieldConfig from './TextFieldConfig.vue'
-import NumberFieldConfig from './NumberFieldConfig.vue'
-import RadioFieldConfig from './RadioFieldConfig.vue'
-import DatePrecisionConfig from './DatePrecisionConfig.vue'
-import UploadFieldConfig from './UploadFieldConfig.vue'
+import TextFieldConfig from './config/TextFieldConfig.vue'
+import NumberFieldConfig from './config/NumberFieldConfig.vue'
+import RadioFieldConfig from './config/RadioFieldConfig.vue'
+import DatePrecisionConfig from './config/DatePrecisionConfig.vue'
+import UploadFieldConfig from './config/UploadFieldConfig.vue'
 import { FieldType, FieldTypeLabel, BooleanOptions, BooleanEnum, EncFlagOptions } from '@/config/constants'
 
 const { query } = useRoute() // 查询参数

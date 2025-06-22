@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
-import FieldPoolItem from './FieldPoolItem.vue'
+import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 

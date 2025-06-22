@@ -112,7 +112,7 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
-import FieldPoolItem from './FieldPoolItem.vue'
+import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { OperatorOptions } from '@/config/constants/enums/label'

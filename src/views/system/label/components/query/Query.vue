@@ -5,7 +5,7 @@
       <el-button type="danger" @click="removeSelected" :disabled="!selectedRowKeys.length"
         >删除</el-button
       >
-      <el-button>预览</el-button>
+      <el-button @click="showPreviewDialog = true">预览</el-button>
     </div>
     <el-table
       row-key="key"
@@ -18,7 +18,16 @@
       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
       <el-table-column type="selection" width="40" />
-      <el-table-column label="查询字段" prop="label" />
+      <el-table-column label="查询字段" prop="label">
+        <template #default="{ row }">
+          <div class="flex flex-col">
+            <span>{{ row.label }}</span>
+            <span v-for="sub in row.subFields" :key="sub.key" class="text-gray-500 text-xs pl-2"
+              >- {{ sub.label }}</span
+            >
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="提示文字" prop="placeholder">
         <template #default="{ row }">
           <el-input v-model="row.placeholder" size="small" />
@@ -84,7 +93,7 @@
       </el-table-column>
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button v-if="row.queryType === 'search'" type="text" @click="addSubField(row)">
+          <el-button v-if="row.queryType === 'search'" type="text" @click="openSubFieldDialog(row)">
             添加字段
           </el-button>
         </template>
@@ -96,21 +105,52 @@
       </el-table-column>
     </el-table>
 
-    <!-- 字段选择弹窗 -->
+    <!-- 主字段选择弹窗 -->
     <FieldSelectDialog
       v-model="showDialog"
       :fieldList="allFields"
       :selectedKeys="tableData.map((i) => i.key)"
       @confirm="addFields"
     />
+    <!-- 子字段选择弹窗 -->
+    <SubFieldSelectDialog
+      v-model="showSubFieldDialog"
+      :field-list="allFields"
+      :excluded-keys="subFieldExcludedKeys"
+      :selected-keys-prop="currentRow?.subFields.map((f) => f.key)"
+      @confirm="addSubFields"
+    />
+    <!-- 预览弹窗 -->
+    <el-dialog v-model="showPreviewDialog" title="预览" width="80%">
+      <QueryPreview :query-fields="tableData" :enum-options="getEnumOptions" />
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { TableInstance } from 'element-plus'
-import FieldSelectDialog from './FieldSelectDialog.vue' // 路径按实际调整
+import FieldSelectDialog from '../common/FieldSelectDialog.vue'
+import SubFieldSelectDialog from './SubFieldSelectDialog.vue'
+import QueryPreview from './QueryPreview.vue'
 import Sortable from 'sortablejs'
-const allFields = ref([
+
+interface SubField {
+  key: string
+  label: string
+  type: string
+}
+
+interface TableRow {
+  key: string
+  label: string
+  type: string
+  placeholder: string
+  queryType: string
+  defaultValue: any
+  subFields: SubField[]
+}
+
+const allFields = ref<SubField[]>([
   { key: 'idType', label: '证件类型', type: 'enum' },
   { key: 'idNo', label: '证件号码', type: 'string' },
   { key: 'name', label: '姓名', type: 'string' },
@@ -133,14 +173,15 @@ const allFields = ref([
   { key: 'remark', label: '备注', type: 'string' }
 ])
 
-const tableData = ref([
+const tableData = ref<TableRow[]>([
   {
     key: 'name',
     label: '姓名',
     type: 'string',
     placeholder: '请输入姓名',
     queryType: 'search',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'idNo',
@@ -148,7 +189,8 @@ const tableData = ref([
     type: 'string',
     placeholder: '请输入证件号码',
     queryType: 'search',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'idType',
@@ -156,7 +198,8 @@ const tableData = ref([
     type: 'enum',
     placeholder: '请选择证件类型',
     queryType: 'radio',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'level',
@@ -164,7 +207,8 @@ const tableData = ref([
     type: 'enum',
     placeholder: '请选择等级',
     queryType: 'checkbox',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'addTime',
@@ -172,7 +216,8 @@ const tableData = ref([
     type: 'date',
     placeholder: '请选择时间',
     queryType: 'date',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'editTime',
@@ -180,7 +225,8 @@ const tableData = ref([
     type: 'date',
     placeholder: '请选择时间',
     queryType: 'daterange',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'gender',
@@ -188,7 +234,8 @@ const tableData = ref([
     type: 'enum',
     placeholder: '请选择性别',
     queryType: 'radio',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'age',
@@ -196,7 +243,8 @@ const tableData = ref([
     type: 'number',
     placeholder: '请输入年龄',
     queryType: 'search',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'phone',
@@ -204,7 +252,8 @@ const tableData = ref([
     type: 'string',
     placeholder: '请输入手机号',
     queryType: 'search',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   },
   {
     key: 'status',
@@ -212,13 +261,25 @@ const tableData = ref([
     type: 'enum',
     placeholder: '请选择状态',
     queryType: 'checkbox',
-    defaultValue: ''
+    defaultValue: '',
+    subFields: []
   }
 ])
+
 const showDialog = ref(false)
+const showSubFieldDialog = ref(false)
+const showPreviewDialog = ref(false)
+const currentRow = ref<TableRow | null>(null)
 const selectedRowKeys = ref<string[]>([])
 const tableRef = ref<TableInstance | null>(null)
 const sortable = ref(null)
+
+const subFieldExcludedKeys = computed(() => {
+  // 只排除所有已在主表中的字段
+  const mainKeys = tableData.value.map((i) => i.key)
+  return mainKeys
+})
+
 function addFields(keys: string[]) {
   const existKeys = tableData.value.map((i) => i.key)
   const toAdd = allFields.value.filter((f) => keys.includes(f.key) && !existKeys.includes(f.key))
@@ -229,7 +290,8 @@ function addFields(keys: string[]) {
       type: f.type,
       placeholder: '',
       queryType: f.type === 'string' || f.type === 'number' ? 'search' : '',
-      defaultValue: ''
+      defaultValue: '',
+      subFields: []
     }))
   )
 }
@@ -261,22 +323,21 @@ function removeSelected() {
   selectedRowKeys.value = []
 }
 
-function onSelectionChange(rows: any[]) {
+function onSelectionChange(rows: TableRow[]) {
   selectedRowKeys.value = rows.map((r) => r.key)
 }
 
-function addSubField(row: any) {
-  // 这里可以实现“添加字段”按钮的具体逻辑
-  console.log(row)
-  showDialog.value = true
-  tableData.value.push({
-    key: row.key,
-    label: row.label,
-    type: row.type,
-    placeholder: '',
-    queryType: row.queryType,
-    defaultValue: ''
-  })
+function openSubFieldDialog(row: TableRow) {
+  currentRow.value = row
+  showSubFieldDialog.value = true
+}
+
+function addSubFields(keys: string[]) {
+  if (!currentRow.value) return
+  const toAdd = allFields.value.filter((f) => keys.includes(f.key))
+  // 直接用 keys 重新生成 subFields，确保移除未勾选的
+  currentRow.value.subFields = toAdd
+  showSubFieldDialog.value = false
 }
 
 // 初始化 Sortable
