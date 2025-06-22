@@ -24,7 +24,6 @@
           <Operation ref="operationRef" />
         </el-tab-pane>
         <el-tab-pane label="查询配置" name="query">
-          <!-- 没写完啊 -->
           <Query ref="queryRef" />
         </el-tab-pane>
         <el-tab-pane label="数据配置" name="Data">
