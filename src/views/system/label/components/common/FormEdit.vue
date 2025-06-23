@@ -1,35 +1,36 @@
 <template>
-  <div class="flex gap-4 h-[calc(100vh-200px)] bg-gray-100 p-4">
-    <!-- Left Panel: Available Fields -->
+  <el-radio-group v-show="tab.name === 'formEdit'" v-model="activeMode">
+    <el-radio-button value="add">新增表单</el-radio-button>
+    <el-radio-button value="edit">编辑表单</el-radio-button>
+  </el-radio-group>
+  <div class="flex gap-4 h-[calc(100vh-200px)] bg-gray-100 p-2 mt-2">
     <div class="w-50 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
-      <h3 class="text-base font-semibold mb-4 border-b border-gray-100 pb-[10px]">数据字段</h3>
-      <div class="flex flex-col gap-2">
-        <div
+      <h3 class="text-base font-semibold border-b border-gray-100 pb-[10px]">数据字段</h3>
+      <div class="flex flex-col">
+        <FieldPoolItem
           v-for="element in availableFields"
-          :key="element.type"
-          class="field-item"
-          :class="{ disabled: isFieldUsed(element.type) }"
-          :draggable="!isFieldUsed(element.type)"
+          :key="element.id"
+          :draggable="!isFieldUsed(element.id)"
           @dragstart="handleDragStart($event, element)"
           @dragend="handleDragEnd"
-        >
-          <el-icon><Rank /></el-icon>
-          <span>{{ element.label }}</span>
-        </div>
+          :hasKeyString="'id'"
+          :element="element"
+          :isFieldUsed="isFieldUsed"
+        />
       </div>
     </div>
 
     <!-- Center Panel: Form Canvas -->
-    <div class="panel center-panel">
-      <div class="canvas-toolbar">
+    <div class="bg-white rounded shadow-sm p-4 h-full overflow-y-auto flex-grow flex flex-col">
+      <div class="mb-4 flex-shrink-0">
         <el-button type="success" @click="oneClickLayout">一键布局</el-button>
-        <el-button type="primary" @click="saveLayout">保存布局</el-button>
+        <el-button type="primary" @click="viewLinkage">查看关联关系</el-button>
       </div>
-      <div class="canvas-droppable-area" @dragover.prevent @drop="handleDropOnCanvas">
+      <div class="flex-grow flex flex-col" @dragover.prevent @drop="handleDropOnCanvas">
         <draggable
           v-if="formRows.length > 0"
           v-model="formRows"
-          class="form-canvas"
+          class="flex-grow min-h-[calc(100%-16px)] p-2 rounded"
           group="rows-group"
           handle=".row-drag-handle"
           item-key="id"
@@ -50,7 +51,9 @@
                 >
                   <Plus />
                 </el-icon>
-                <el-icon title="拖拽整行" class="row-action-icon row-drag-handle"><Rank /></el-icon>
+                <el-icon title="拖拽整行" class="row-action-icon row-drag-handle">
+                  <Rank />
+                </el-icon>
                 <el-icon
                   title="删除整行"
                   class="row-action-icon row-delete-icon"
@@ -99,159 +102,74 @@
                   @dragover.prevent
                   @drop.stop="handleDropOnPlaceholder(row, $event)"
                 >
-                  <el-icon><Plus /></el-icon>
+                  <el-icon>
+                    <Plus />
+                  </el-icon>
                   <span>将字段拖到此处</span>
                 </div>
               </div>
             </div>
           </template>
         </draggable>
-        <div v-else class="empty-canvas-placeholder">
-          <el-icon><Plus /></el-icon>
+        <div
+          v-else
+          class="empty-canvas-placeholder flex-grow flex flex-col justify-center items-center h-full border-2 border-dashed border-gray-300 rounded text-gray-500 text-sm"
+        >
+          <el-icon>
+            <Plus />
+          </el-icon>
           <span>将左侧字段拖到此处创建新行</span>
         </div>
       </div>
     </div>
 
-    <!-- Right Panel: Field Properties -->
-    <div class="panel right-panel">
+    <div
+      v-show="tab.name === 'formEdit'"
+      class="w-[280px] flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto"
+    >
       <h3 class="text-base font-semibold mb-4 border-b border-gray-100 pb-[10px]">字段配置</h3>
-      <div v-if="selectedField" class="properties-form">
-        <el-form label-position="top">
-          <el-form-item label="标题">
-            <el-input v-model="selectedField.label" />
-          </el-form-item>
-          <el-form-item label="占位提示">
-            <el-input v-model="selectedField.placeholder" />
-          </el-form-item>
-          <el-form-item label="是否必填">
-            <el-switch v-model="selectedField.required" />
-          </el-form-item>
-          <el-divider>字段联动设置</el-divider>
-          <el-form-item>
-            <template #label>
-              <span>
-                启用联动
-                <el-tooltip content="当前字段会根据其他字段的某个值来判断是否显示" placement="top">
-                  <el-icon><QuestionFilled /></el-icon>
-                </el-tooltip>
-              </span>
-            </template>
-            <el-switch v-model="selectedField.linkage.enabled" />
-          </el-form-item>
-
-          <template v-if="selectedField.linkage.enabled">
-            <el-form-item label="选择联动字段">
-              <el-select
-                :model-value="selectedField && selectedField.linkage ? selectedField.linkage.targetFieldId ?? '' : ''"
-                placeholder="选择要关联的字段"
-                style="width: 100%"
-                clearable
-                @update:model-value="val => { if(selectedField && selectedField.linkage) selectedField.linkage.targetFieldId = val }"
-              >
-                <el-option
-                  v-for="field in otherFields"
-                  :key="field.id"
-                  :label="field.label"
-                  :value="String(field.id)"
-                />
-              </el-select>
-            </el-form-item>
-            <template v-if="selectedField.linkage.targetFieldId">
-              <el-form-item label="当值等于">
-                <el-select
-                  v-model="selectedField.linkage.targetFieldValue"
-                  placeholder="选择触发联动的字段值"
-                  style="width: 100%"
-                  clearable
-                >
-                  <el-option
-                    v-for="option in linkedFieldOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="联动效果">
-                <el-select
-                  v-model="selectedField.linkage.effect"
-                  placeholder="选择联动效果"
-                  style="width: 100%"
-                >
-                  <el-option label="显示当前字段" value="show" />
-                  <el-option label="隐藏当前字段" value="hide" />
-                </el-select>
-              </el-form-item>
-            </template>
-          </template>
-        </el-form>
+      <div v-if="selectedField">
+        <FieldPropertyForm
+          :field="selectedField"
+          :other-fields="otherFields"
+          :linked-field-options="linkedFieldOptions"
+          @update:field="updateField"
+        />
       </div>
-      <div v-else class="no-selection">
+      <div v-else class="flex justify-center items-center h-full text-gray-400 text-center">
         <p>请选择一个字段进行配置</p>
       </div>
     </div>
   </div>
+  <LinkageRelationDialog
+    v-model="linkageRelationDialogVisible"
+    :form-rows="formRows"
+  />
 </template>
 
 <script setup lang="ts">
 import draggable from 'vuedraggable'
-import {
-  ElInput,
-  ElSelect,
-  ElSwitch,
-  ElForm,
-  ElFormItem,
-  ElIcon,
-  ElButton,
-  ElMessageBox,
-  ElMessage
-} from 'element-plus'
-import { Rank, Delete, Plus, QuestionFilled } from '@element-plus/icons-vue'
+import { ElFormItem, ElIcon, ElButton, ElMessageBox, ElMessage } from 'element-plus'
+import { Rank, Delete, Plus } from '@element-plus/icons-vue'
+import { useFormEditHandlers, FormRow, FormField } from '@/hooks/web/useFormEditHandlers'
+import FieldPropertyForm from './FieldPropertyForm.vue'
+import FieldPoolItem from '../common/FieldPoolItem.vue'
+import LinkageRelationDialog from './LinkageRelationDialog.vue'
 
-// --- Types ---
-interface FormField {
-  id: string
-  type: string
-  label: string
-  placeholder?: string
-  required?: boolean
-  options?: { label: string; value: any }[]
-  linkage: {
-    enabled: boolean
-    targetFieldId: string | null
-    targetFieldValue: any | null
-    effect: 'show' | 'hide'
-    condition: 'equals' | 'not_equals'
+const props = defineProps({
+  tab: {
+    type: Object,
+    required: true
   }
-}
+})
 
-interface Placeholder {
-  id: string
-  type: 'placeholder'
-}
+const activeMode = ref('add')
 
-type RowItem = FormField | Placeholder
-
-interface FormRow {
-  id: string
-  fields: RowItem[]
-  showPlaceholder?: boolean
-}
-
-interface Linkage {
-  enabled: boolean
-  targetFieldId: string | null
-  targetFieldValue: string | null
-  effect: 'show' | 'hide'
-  condition: 'equals' | 'not_equals'
-}
-
-// --- State ---
 const availableFields = ref([
-  { type: 'text', label: '单行文本' },
-  { type: 'textarea', label: '多行文本' },
+  { id: 'text', type: 'text', label: '单行文本' },
+  { id: 'textarea', type: 'textarea', label: '多行文本' },
   {
+    id: 'select',
     type: 'select',
     label: '下拉选择',
     options: [
@@ -260,6 +178,7 @@ const availableFields = ref([
     ]
   },
   {
+    id: 'id_card',
     type: 'select',
     label: '证件类型',
     options: [
@@ -267,27 +186,26 @@ const availableFields = ref([
       { label: '护照', value: 'passport' }
     ]
   },
-  { type: 'date', label: '日期选择' }
+  { id: 'date', type: 'date', label: '日期选择' }
 ])
 
 const formRows = ref<FormRow[]>([])
+const linkageRelationDialogVisible = ref(false)
 const selectedField = ref<FormField | null>(null)
 const isDraggingNewField = ref(false)
-let idCounter = 0
+const idCounter = ref(0)
 
-// --- State for Save/Load Demo ---
-const savedLayout = ref<FormRow[] | null>(null)
-
-// --- Computed ---
-const usedFieldTypes = computed(() => {
-  return new Set(formRows.value.flatMap((row) => row.fields.map((field) => field.type)))
+const usedFieldIds = computed(() => {
+  return new Set(formRows.value.flatMap((row) => row.fields.map((field) => field.id)))
 })
 
 const otherFields = computed(() => {
   if (!selectedField.value) return []
   const allFormFields = formRows.value
     .flatMap((row) => row.fields)
-    .filter((field): field is FormField => 'type' in field && (field as FormField).type !== 'placeholder')
+    .filter(
+      (field): field is FormField => 'type' in field && (field as FormField).type !== 'placeholder'
+    )
   const currentFieldId = selectedField.value.id
   return allFormFields.filter(
     (field) =>
@@ -301,7 +219,9 @@ const linkedFieldOptions = computed(() => {
   }
   const allFormFields = formRows.value
     .flatMap((row) => row.fields)
-    .filter((field): field is FormField => 'type' in field && (field as FormField).type !== 'placeholder')
+    .filter(
+      (field): field is FormField => 'type' in field && (field as FormField).type !== 'placeholder'
+    )
   const targetField = allFormFields.find(
     (field) => field.id === selectedField.value!.linkage.targetFieldId
   )
@@ -317,51 +237,30 @@ watch(
   }
 )
 
-// --- Drag & Drop Handlers ---
+const {
+  handleDragStart,
+  handleDragEnd,
+  handleDropOnCanvas,
+  handleDropOnPlaceholder,
+  cloneField,
+  isFieldUsed,
+  selectField,
+  isRowSelected,
+  addColumn,
+  deleteRow,
+  deleteField,
+  getFieldComponent
+} = useFormEditHandlers({
+  availableFields,
+  formRows,
+  selectedField,
+  usedFieldIds
+})
 
-const handleDragStart = (event: DragEvent, field: { type: string }) => {
-  if (event.dataTransfer) {
-    event.dataTransfer.setData('field-type', field.type)
-    isDraggingNewField.value = true
-  }
+const viewLinkage = () => {
+  console.log('viewLinkage')
+  linkageRelationDialogVisible.value = true
 }
-
-const handleDragEnd = () => {
-  isDraggingNewField.value = false
-}
-
-const handleDropOnCanvas = (event: DragEvent) => {
-  if (!isDraggingNewField.value) return
-
-  const fieldType = event.dataTransfer?.getData('field-type')
-  if (!fieldType) return
-
-  const field = availableFields.value.find((f) => f.type === fieldType)
-  if (field && !isFieldUsed(fieldType)) {
-    const newField = cloneField(field)
-    formRows.value.push({
-      id: `row-${++idCounter}`,
-      fields: [newField],
-      showPlaceholder: false
-    })
-    selectField(newField)
-  }
-}
-
-const handleDropOnPlaceholder = (row: FormRow, event: DragEvent) => {
-  event.stopPropagation() // Prevent drop event from bubbling up to the canvas
-  const fieldType = event.dataTransfer?.getData('field-type')
-  if (!fieldType) return
-
-  const field = availableFields.value.find((f) => f.type === fieldType)
-  if (field && !isFieldUsed(fieldType)) {
-    const newField = cloneField(field)
-    row.fields.push(newField)
-    row.showPlaceholder = false
-  }
-}
-
-// --- Layout Management ---
 
 const oneClickLayout = async () => {
   try {
@@ -378,10 +277,10 @@ const oneClickLayout = async () => {
     const newRows: FormRow[] = []
     selectedField.value = null
 
-    availableFields.value.forEach((field, index) => {
+    availableFields.value.forEach((field) => {
       const newField = cloneField(field)
       newRows.push({
-        id: `row-${++idCounter}-${index}`,
+        id: field.id,
         fields: [newField],
         showPlaceholder: false
       })
@@ -402,6 +301,7 @@ const getLayoutData = (): FormRow[] => {
   return JSON.parse(JSON.stringify(formRows.value))
 }
 
+
 const setLayoutData = (data: FormRow[]) => {
   if (!data || !Array.isArray(data)) {
     console.error('加载布局失败：提供了无效的数据。')
@@ -420,196 +320,26 @@ const setLayoutData = (data: FormRow[]) => {
       if (fieldIdNum > maxId) maxId = fieldIdNum
     })
   })
-  idCounter = maxId
+  idCounter.value = maxId
 }
 
-const saveLayout = () => {
+const updateField = (field: FormField) => {
+  // 改变选中字段的属性
+  if (selectedField.value) {
+    Object.assign(selectedField.value, field)
+  }
+}
+
+const submitForm = () => {
   const layoutData = getLayoutData()
-  savedLayout.value = layoutData
   console.log('保存的布局数据:', layoutData)
   ElMessage.success('布局已保存到控制台！')
 }
 
-
-// --- Helper Methods ---
-
-const cloneField = (field: any) => {
-  return {
-    ...field,
-    id: `field-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`,
-    required: false,
-    placeholder: '',
-    linkage: {
-      enabled: false,
-      targetFieldId: null,
-      targetFieldValue: null,
-      effect: 'show',
-      condition: 'equals'
-    }
-  }
-}
-
-const isFieldUsed = (fieldType: string): boolean => {
-  return usedFieldTypes.value.has(fieldType)
-}
-
-const selectField = (field: FormField) => {
-  selectedField.value = field
-}
-
-const isRowSelected = (row: FormRow): boolean => {
-  return !!(selectedField.value && row.fields.some((f) => (f as FormField).id === selectedField.value!.id))
-}
-
-const addColumn = (row: FormRow) => {
-  if (row.fields.length < 2) {
-    row.showPlaceholder = true
-  }
-}
-
-const deleteRow = (rowIndex: number) => {
-  const deletedRow = formRows.value[rowIndex]
-  if (selectedField.value && isRowSelected(deletedRow)) {
-    selectedField.value = null
-  }
-  formRows.value.splice(rowIndex, 1)
-}
-
-const deleteField = (row: FormRow, field: RowItem) => {
-  const fieldIndex = row.fields.findIndex((f) => (f as FormField).id === (field as FormField).id)
-  if (fieldIndex === -1) return
-
-  if (selectedField.value && selectedField.value.id === (field as FormField).id) {
-    selectedField.value = null
-  }
-
-  row.fields.splice(fieldIndex, 1)
-  row.showPlaceholder = false
-
-  if (row.fields.length === 0) {
-    const rowIndex = formRows.value.findIndex((r) => r.id === row.id)
-    if (rowIndex !== -1) {
-      formRows.value.splice(rowIndex, 1)
-    }
-  }
-}
-
-const getFieldComponent = (type: string) => {
-  switch (type) {
-    case 'select':
-      return ElSelect
-    case 'date':
-      return 'el-date-picker'
-    case 'textarea':
-      return 'el-input'
-    default:
-      return ElInput
-  }
-}
-
-defineExpose({ getLayoutData, setLayoutData, oneClickLayout })
+defineExpose({ getLayoutData, setLayoutData, submitForm })
 </script>
 
 <style scoped>
-.form-builder-container {
-  display: flex;
-  gap: 16px;
-  height: calc(100vh - 200px);
-  background-color: #f7f8fa;
-  padding: 16px;
-}
-
-.panel {
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  padding: 16px;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.left-panel {
-  width: 200px;
-  flex-shrink: 0;
-}
-
-.center-panel {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.right-panel {
-  width: 280px;
-  flex-shrink: 0;
-}
-
-.canvas-toolbar {
-  margin-bottom: 16px;
-  flex-shrink: 0;
-}
-
-.canvas-droppable-area {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 16px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-.field-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.field-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  cursor: grab;
-  background-color: #fff;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.field-item:hover {
-  border-color: #409eff;
-  color: #409eff;
-}
-.field-item.disabled {
-  cursor: not-allowed;
-  background-color: #f5f7fa;
-  color: #c0c4cc;
-}
-
-.form-canvas {
-  flex-grow: 1;
-  min-height: calc(100% - 16px);
-  padding: 8px;
-  border-radius: 4px;
-}
-
-.empty-canvas-placeholder {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  border: 2px dashed #dcdfe6;
-  border-radius: 4px;
-  color: #a8abb2;
-  font-size: 14px;
-}
 .empty-canvas-placeholder .el-icon {
   font-size: 24px;
   margin-bottom: 8px;
@@ -643,7 +373,9 @@ defineExpose({ getLayoutData, setLayoutData, oneClickLayout })
   padding: 4px;
   border-radius: 6px;
   opacity: 0;
-  transition: opacity 0.2s, top 0.2s;
+  transition:
+    opacity 0.2s,
+    top 0.2s;
   z-index: 10;
 }
 .row-action-icon {
@@ -710,7 +442,9 @@ defineExpose({ getLayoutData, setLayoutData, oneClickLayout })
   border: 1px solid transparent;
   border-radius: 4px;
   position: relative;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
   height: 100%;
 }
 .form-field-wrapper:hover {
@@ -738,14 +472,5 @@ defineExpose({ getLayoutData, setLayoutData, oneClickLayout })
 }
 .delete-icon:hover {
   color: #f78989;
-}
-
-.no-selection {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: #909399;
-  text-align: center;
 }
 </style>
