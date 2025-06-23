@@ -113,7 +113,7 @@ const props = defineProps({
     default: () => []
   }
 })
-
+const { query } = useRoute() // 查询参数
 const emits = defineEmits(['update:data', 'edit', 'row-click', 'delete'])
 
 const tableRef = ref<TableInstance | null>(null)
@@ -122,11 +122,6 @@ const sortable = ref(null)
 const tableData = ref<LabelApi.LabelFieldConfig[]>([...(props.data as LabelApi.LabelFieldConfig[])])
 
 const selectable = (row: any) => ![1].includes(row.bizType) // todo 系统字段不可点击
-
-// 更新父组件数据
-const updateParentData = () => {
-  emits('update:data', [...tableData.value])
-}
 
 // 初始化 Sortable
 const initSortable = () => {
@@ -152,10 +147,9 @@ const initSortable = () => {
         onEnd: (evt) => {
           const { oldIndex, newIndex } = evt
           if (oldIndex !== newIndex) {
-            // 调整表格数据顺序
+            // 调整表格数据顺
             const item = tableData.value.splice(oldIndex, 1)[0]
             tableData.value.splice(newIndex, 0, item)
-            updateParentData()
           }
         }
       })
@@ -171,9 +165,24 @@ const handleRowClick = (row: any) => {
   formRef.value.open('show', row)
 }
 
+const getDataFieldConfListByManageId = async () => {
+  const res = await LabelApi.getFieldConfigList({
+    manageId: query.id as string
+  })
+  tableData.value = res.map(item => {
+    return {
+      ...item,
+      uuid: item.id ? item.id : generateUUID()
+    }
+  })
+}
+
+
+
 // 生命周期钩子
 onMounted(() => {
   initSortable()
+  getDataFieldConfListByManageId()
 })
 
 onBeforeUnmount(() => {
@@ -223,8 +232,6 @@ const updateData = (data) => {
   } else {
     tableData.value.push({ ...data });
   }
-
-  updateParentData()
 }
 
 const handleViewFlag = (row: any, flag: string) => {

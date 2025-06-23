@@ -1,39 +1,21 @@
 <template>
   <ContentWrap>
-    <div class="h-[calc(100vh-160px)] position">
-      <div  class="absolute right-36px z-2" >
+    <div class="relative h-[calc(100vh-160px)]">
+      <div class="absolute right-36px z-2">
         <el-button type="primary" @click="save">保存</el-button>
       </div>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="字段配置" name="field">
-          <Field
-            :data="tableData"
-            @update:data="onDataUpdate"
-            ref="fieldRef"
+      <el-tabs v-model="activeName">
+        <el-tab-pane
+          v-for="tab in tabsConfig"
+          :key="tab.name"
+          :label="tab.label"
+          :name="tab.name"
+          lazy
+        >
+          <component
+            :is="tab.component"
+            :ref="(el) => setComponentRef(el, tab.name)"
           />
-        </el-tab-pane>
-        <el-tab-pane label="表单配置" name="Form">
-          <!-- 还得再调 -->
-          <Form />
-        </el-tab-pane>
-        <el-tab-pane label="详情配置" name="details">
-          <!-- 还得再调 -->
-          <Details />
-        </el-tab-pane>
-        <el-tab-pane label="操作配置" name="operation">
-          <Operation ref="operationRef" />
-        </el-tab-pane>
-        <el-tab-pane label="查询配置" name="query">
-          <Query ref="queryRef" />
-        </el-tab-pane>
-        <el-tab-pane label="数据配置" name="Data">
-          <Filter ref="filterRef" />
-        </el-tab-pane>
-        <el-tab-pane label="排序配置" name="Sorting">
-          <Sort ref="sortRef" />
-        </el-tab-pane>
-        <el-tab-pane label="统计配置" name="Statistical">
-          <StatisticConfig ref="statisticRef" />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -41,77 +23,61 @@
 </template>
 <script lang="ts" setup>
 defineOptions({ name: 'SystemLabelCustomDetail' })
-import type { TabsPaneContext } from 'element-plus'
-import * as LabelApi from '@/api/system/label'
-import Field from '../../components/field/Field.vue'
-import Form from '../../components/common/Form.vue'
-import Operation from '../../components/common/Operation.vue'
-import Query from '../../components/query/Query.vue'
-import Filter from '../../components/filter/Filter.vue'
-import Sort from '../../components/sort/Sort.vue'
-import Details from '../../components/common/Details.vue'
-import StatisticConfig from '../../components/statistic/StatisticConfig.vue'
-import { generateUUID } from '@/utils'
 
-
-const { query } = useRoute() // 查询参数
-
-
-const activeName = ref('field')
-// 模拟数据
-const tableData = ref([]);
-const fieldRef = ref(null);
-const statisticRef = ref(null);
-const sortRef = ref(null);
-const filterRef = ref(null);
-const queryRef = ref(null);
-const operationRef = ref(null);
-
-// tab name 到 ref 和方法名的映射
-const tabActionMap: Record<string, { ref: any, method: string }> = {
-  field:        { ref: fieldRef,      method: 'saveTableData' },
-  operation:    { ref: operationRef,  method: 'submitForm' },
-  query:        { ref: queryRef,      method: 'submitForm' },
-  Data:         { ref: filterRef,     method: 'submitForm' },
-  Sorting:      { ref: sortRef,       method: 'submitForm' },
-  Statistical:  { ref: statisticRef,  method: 'submitForm' }
+interface SaveableComponent {
+  saveTableData?: () => void
+  submitForm?: () => void
+  [key: string]: any
 }
 
-function handleTabAction() {
-  const action = tabActionMap[activeName.value]
-  if (action && action.ref.value && typeof action.ref.value[action.method] === 'function') {
-    action.ref.value[action.method]()
+interface TabConfig {
+  name: string
+  label: string
+  component: Component
+  saveMethod?: keyof SaveableComponent
+}
+
+const tabsConfig: readonly TabConfig[] = [
+  { name: 'field', label: '字段配置', component: defineAsyncComponent(() => import('../../components/field/Field.vue')), saveMethod: 'saveTableData' },
+  { name: 'Form', label: '表单配置', component: defineAsyncComponent(() => import('../../components/common/Form.vue')) },
+  { name: 'details', label: '详情配置', component: defineAsyncComponent(() => import('../../components/common/Details.vue')) },
+  { name: 'operation', label: '操作配置', component: defineAsyncComponent(() => import('../../components/common/Operation.vue')), saveMethod: 'submitForm' },
+  { name: 'query', label: '查询配置', component: defineAsyncComponent(() => import('../../components/query/Query.vue')), saveMethod: 'submitForm' },
+  { name: 'Data', label: '数据配置', component: defineAsyncComponent(() => import('../../components/filter/Filter.vue')), saveMethod: 'submitForm' },
+  { name: 'Sorting', label: '排序配置', component: defineAsyncComponent(() => import('../../components/sort/Sort.vue')), saveMethod: 'submitForm' },
+  { name: 'Statistical', label: '统计配置', component: defineAsyncComponent(() => import('../../components/statistic/StatisticConfig.vue')), saveMethod: 'submitForm' }
+]
+
+const activeName = ref<string>('field')
+
+
+const componentRefs = shallowRef<Record<string, SaveableComponent>>({})
+
+
+const setComponentRef = (el: any, name: string) => {
+  if (el) {
+    componentRefs.value[name] = el
   }
 }
 
-// 数据更新回调
-const onDataUpdate = (newData) => {
-  tableData.value = newData;
-};
-
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
-}
+const activeTabConfig = computed(() => tabsConfig.find(tab => tab.name === activeName.value))
 
 const save = () => {
-  handleTabAction()
+  const tab = activeTabConfig.value
+  if (!tab?.saveMethod) {
+    console.warn(`Tab "${activeName.value}" has no save action defined.`)
+    return
+  }
+
+  const componentInstance = componentRefs.value[tab.name]
+  const saveMethod = componentInstance?.[tab.saveMethod]
+
+  if (typeof saveMethod === 'function') {
+    saveMethod()
+  } else {
+    console.error(
+      `Save method '${tab.saveMethod}' not found on component for tab '${tab.name}'.`
+    )
+  }
 }
-
-const getDataFieldConfListByManageId = async () => {
-  const res = await LabelApi.getFieldConfigList({
-    manageId: query.id as string
-  })
-  tableData.value = res.map(item => {
-    return {
-      ...item,
-      uuid: item.id ? item.id : generateUUID()
-    }
-  })
-}
-
-
-/** 初始化 **/
-onMounted(() => {
-  getDataFieldConfListByManageId()
-})
 </script>

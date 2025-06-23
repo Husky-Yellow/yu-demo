@@ -445,18 +445,18 @@ watch(
   { immediate: true }
 )
 
-function findAllPredecessorsExcludingStart(elementId, modeler) {
+function findAllPredecessorsExcludingStart(elementId: string, modeler: any): ReturnTaskItem[] {
   const elementRegistry = modeler.get('elementRegistry')
-  const allConnections = elementRegistry.filter((element) => element.type === 'bpmn:SequenceFlow')
-  const predecessors = new Set() // 使用 Set 来避免重复节点
+  const allConnections = elementRegistry.filter((element: any) => element.type === 'bpmn:SequenceFlow')
+  const predecessors = new Set<ReturnTaskItem>() // 使用 Set 来避免重复节点
   const visited = new Set() // 用于记录已访问的节点
 
   // 检查是否是开始事件节点
-  function isStartEvent(element) {
+  function isStartEvent(element: any) {
     return element.type === 'bpmn:StartEvent'
   }
 
-  function findPredecessorsRecursively(element) {
+  function findPredecessorsRecursively(element: any) {
     // 如果该节点已经访问过，直接返回，避免循环
     if (visited.has(element)) {
       return
@@ -466,14 +466,17 @@ function findAllPredecessorsExcludingStart(elementId, modeler) {
     visited.add(element)
 
     // 获取与当前节点相连的所有连接
-    const incomingConnections = allConnections.filter((connection) => connection.target === element)
+    const incomingConnections = allConnections.filter((connection: any) => connection.target === element)
 
-    incomingConnections.forEach((connection) => {
+    incomingConnections.forEach((connection: any) => {
       const source = connection.source // 获取前置节点
 
       // 只添加不是开始事件的前置节点
       if (!isStartEvent(source)) {
-        predecessors.add(source.businessObject)
+        predecessors.add({
+          id: source.businessObject.id,
+          name: source.businessObject.name || source.businessObject.id
+        })
         // 递归查找前置节点
         findPredecessorsRecursively(source)
       }
