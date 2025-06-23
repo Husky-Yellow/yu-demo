@@ -21,8 +21,6 @@
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
-
-    <!-- 当数据校验为"自定义正则"时显示 -->
     <template v-if="form.dataValidation === 'custom'">
       <el-form-item label="输入正则代码" prop="regex" >
         <el-input 
@@ -40,16 +38,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import {
   TextTypeOptions,
   DuplicateCheckOptions,
   DataValidationOptions,
-  TextType,
-  DuplicateCheck,
-  DataValidation,
 } from '@/config/constants/enums/field'
+import { defaultTextFieldForm, TextFieldForm } from '@/config/constants/enums/fieldDefault'
+import { convertObjectToArray } from '@/utils'
 
 const promptMap = {
   'none': '请输入正确的手机号',
@@ -59,13 +55,6 @@ const promptMap = {
   'phone': '请输入正确的手机号',
 }
 
-interface TextFieldForm {
-  textType: TextType
-  duplicateCheck: DuplicateCheck
-  dataValidation: DataValidation
-  regex?: string // 正则表达式
-  prompt?: string // 提示信息
-}
 
 const props = defineProps<{
   modelValue?: TextFieldForm
@@ -73,12 +62,12 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue'])
 
 const form = reactive<TextFieldForm>({
-  textType: props.modelValue?.textType || 'single',
-  duplicateCheck: props.modelValue?.duplicateCheck || 'check',
-  dataValidation: props.modelValue?.dataValidation || 'none',
-  regex: props.modelValue?.regex || '',
-  prompt: props.modelValue?.prompt || ''
+  ...defaultTextFieldForm,
+  ...(props.modelValue ? Object.fromEntries(
+    Object.keys(defaultTextFieldForm).map(key => [key, props.modelValue?.[key as keyof TextFieldForm] ?? defaultTextFieldForm[key as keyof TextFieldForm]])
+  ) : {})
 })
+const formRef = ref<FormInstance>()
 
 // 表单验证规则
 const rules: FormRules = {
@@ -88,7 +77,7 @@ const rules: FormRules = {
   regex: [
     { required: true, message: '请输入正则表达式', trigger: 'blur' },
     { 
-      validator: (rule, value, callback) => {
+      validator: (_rule, value, callback) => {
         if (form.dataValidation === 'custom' && value) {
           try {
             new RegExp(value)
@@ -108,7 +97,7 @@ const rules: FormRules = {
       required: true, 
       message: '请输入触发提示', 
       trigger: 'blur',
-      validator: (rule, value, callback) => {
+      validator: (_rule, value, callback) => {
         if (form.dataValidation !== 'none' && !value) {
           callback(new Error('请输入触发提示'))
         } else {
@@ -118,16 +107,6 @@ const rules: FormRules = {
     }
   ]
 }
-
-const formRef = ref<FormInstance>()
-
-watch(
-  form,
-  (val) => {
-    emit('update:modelValue', { ...val })
-  },
-  { deep: true }
-)
 
 // 暴露验证方法
 const validate = async () => {
@@ -140,9 +119,25 @@ const validate = async () => {
   }
 }
 
+
+const convertFormForSubmission = () => {
+  const arr = convertObjectToArray(JSON.parse(JSON.stringify(form)))
+  const optionsJsonMap = {
+    textType: TextTypeOptions,
+    duplicateCheck: DuplicateCheckOptions,
+    dataValidation: DataValidationOptions,
+  }
+  return arr.map((item) => ({
+    ...item,
+    type: 'text' as any,
+    optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []
+  }))
+}
+
 // 暴露给父组件
 defineExpose({
   validate,
-  formRef
+  formRef,
+  convertFormForSubmission
 })
 </script>

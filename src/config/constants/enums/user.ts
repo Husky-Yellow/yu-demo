@@ -16,10 +16,6 @@ export enum ViewLevel {
   ALL = '展示所有成员',
 }
 
-// 类型定义
-export type UserStatusType = UserStatus | '';
-export type PostStatusType = PostStatus | '';
-export type ViewLevelType = ViewLevel;
 
 export const USER_STATUS_OPTIONS = [
   { label: '全部', value: UserStatus.ALL },

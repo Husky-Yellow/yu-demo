@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="form" label-width="150px">
+  <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
     <el-form-item label="数字类型" required>
       <el-radio-group v-model="form.numberType">
         <el-radio v-for="item in NumberTypeOptions" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
@@ -10,22 +10,14 @@
         <el-select
         v-model="form.decimalPlaces"
         placeholder="Select"
-        size="large"
-        style="width: 240px"
+        class="!w-240px"
       >
           <el-option
-            label="1"
-            value="1"
+            v-for="item in DecimalPlacesOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
-          <el-option
-            label="2"
-            value="2"
-          />
-          <el-option
-            label="3"
-            value="3"
-          />
-  
       </el-select>
       </el-form-item>
     </template>
@@ -41,31 +33,63 @@
 import {
   NumberTypeOptions,
   DuplicateCheckOptions,
-  NumberType,
-  DuplicateCheck
+  DecimalPlacesOptions
 } from '@/config/constants/enums/field'
+import { defaultNumberFieldForm, NumberFieldForm } from '@/config/constants/enums/fieldDefault'
+import type { FormInstance, FormRules } from 'element-plus'
+import { convertObjectToArray } from '@/utils'
 
-interface NumberFieldForm {
-  numberType: NumberType;
-  duplicateCheck: DuplicateCheck;
-  decimalPlaces: number;
-}
 
 const props = defineProps<{
   modelValue?: NumberFieldForm;
 }>();
 
-const emit = defineEmits<{
-  'update:modelValue': [value: NumberFieldForm]
-}>();
 
 const form = reactive<NumberFieldForm>({
-  numberType: props.modelValue?.numberType || 'integer',
-  duplicateCheck: props.modelValue?.duplicateCheck || 'noCheck',
-  decimalPlaces: props.modelValue?.decimalPlaces || 0
-});
+  ...defaultNumberFieldForm,
+  ...(props.modelValue ? Object.fromEntries(
+    Object.keys(defaultNumberFieldForm).map(key => [key, props.modelValue?.[key as keyof NumberFieldForm] ?? defaultNumberFieldForm[key as keyof NumberFieldForm]])
+  ) : {})
+})
 
-watch(form, (val) => {
-  emit('update:modelValue', { ...val });
-}, { deep: true });
+const formRef = ref<FormInstance>()
+
+const rules: FormRules = {
+  numberType: [{ required: true, message: '请选择数字类型', trigger: 'change' }],
+  decimalPlaces: [{ required: true, message: '请选择小数位数', trigger: 'change' }],
+  duplicateCheck: [{ required: true, message: '请选择是否进行查重校验', trigger: 'change' }],
+}
+
+// 暴露验证方法
+const validate = async () => {
+  if (!formRef.value) return false
+  try {
+    await formRef.value.validate()
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+
+const convertFormForSubmission = () => {
+  const arr = convertObjectToArray(JSON.parse(JSON.stringify(form)))
+  const optionsJsonMap = {
+    numberType: NumberTypeOptions,
+    decimalPlaces: DecimalPlacesOptions,
+    duplicateCheck: DuplicateCheckOptions,
+  }
+  return arr.map((item) => ({
+    ...item,
+    type: 'text' as any,
+    optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []
+  }))
+}
+
+// 暴露给父组件
+defineExpose({
+  validate,
+  formRef,
+  convertFormForSubmission
+})
 </script>
