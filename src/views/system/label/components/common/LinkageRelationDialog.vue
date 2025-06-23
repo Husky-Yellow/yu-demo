@@ -20,6 +20,14 @@
           class="absolute h-0.5 rounded bg-blue-500"
           :style="line.style"
         ></div>
+        <div
+          v-for="line in lines"
+          :key="line.key + '-label'"
+          class="absolute text-xs bg-white px-1 rounded border border-gray-300 pointer-events-none select-none"
+          :style="{ left: line.labelPos.left + 'px', top: line.labelPos.top + 'px', transform: 'translate(-50%, -100%)' }"
+        >
+          {{ line.label }}
+        </div>
       </div>
     </div>
     <template #footer>
@@ -54,40 +62,67 @@ const allFields = computed(() => {
 const containerRef = ref<HTMLElement | null>(null)
 const lines = ref<any[]>([])
 
+function getLinkages(field: FormField) {
+  // 兼容单对象和数组
+  if (Array.isArray((field as any).linkages)) {
+    return (field as any).linkages
+  }
+  return field.linkage ? [field.linkage] : []
+}
+
+function getOptionLabel(field: FormField, value: any) {
+  if (!field.options) return value
+  const opt = field.options.find(o => o.value === value)
+  return opt ? opt.label : value
+}
+
 function drawLines() {
   const newLines: any[] = []
   allFields.value.forEach((field: FormField) => {
-    if (field.linkage?.enabled && field.linkage.targetFieldId) {
-      const sourceEl = document.getElementById(`dialog-field-${field.id}`)
-      const targetEl = document.getElementById(`dialog-field-${field.linkage.targetFieldId}`)
-      const container = containerRef.value
-      if (sourceEl && targetEl && container) {
-        const cRect = container.getBoundingClientRect()
-        const sRect = sourceEl.getBoundingClientRect()
-        const tRect = targetEl.getBoundingClientRect()
-        // 连线从 source 右边中点到 target 左边中点
-        const x1 = sRect.right - cRect.left
-        const y1 = sRect.top + sRect.height / 2 - cRect.top
-        const x2 = tRect.left - cRect.left
-        const y2 = tRect.top + tRect.height / 2 - cRect.top
-        const dx = x2 - x1
-        const dy = y2 - y1
-        const length = Math.sqrt(dx * dx + dy * dy)
-        const angle = Math.atan2(dy, dx) * 180 / Math.PI
-        newLines.push({
-          key: field.id + '-' + field.linkage.targetFieldId,
-          style: {
-            left: `${x1}px`,
-            top: `${y1}px`,
-            width: `${length}px`,
-            background: field.linkage.effect === 'show' ? '#409EFF' : '#67C23A',
-            transform: `rotate(${angle}deg)`,
-            'transform-origin': '0 50%',
-            'z-index': 2,
-          }
-        })
+    getLinkages(field).forEach((linkage: any, idx: number) => {
+      if (linkage?.enabled && linkage.targetFieldId) {
+        const sourceEl = document.getElementById(`dialog-field-${field.id}`)
+        const targetEl = document.getElementById(`dialog-field-${linkage.targetFieldId}`)
+        const container = containerRef.value
+        if (sourceEl && targetEl && container) {
+          const cRect = container.getBoundingClientRect()
+          const sRect = sourceEl.getBoundingClientRect()
+          const tRect = targetEl.getBoundingClientRect()
+          // 连线从 source 右边中点到 target 左边中点
+          const x1 = sRect.right - cRect.left
+          const y1 = sRect.top + sRect.height / 2 - cRect.top
+          const x2 = tRect.left - cRect.left
+          const y2 = tRect.top + tRect.height / 2 - cRect.top
+          const dx = x2 - x1
+          const dy = y2 - y1
+          const length = Math.sqrt(dx * dx + dy * dy)
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI
+          // 线中点
+          const midX = x1 + dx / 2
+          const midY = y1 + dy / 2
+          // 查找源字段的选项label
+          const label = linkage.condition === 'equals'
+            ? `= ${getOptionLabel(field, linkage.targetFieldValue)}`
+            : linkage.condition === 'not_equals'
+              ? `≠ ${getOptionLabel(field, linkage.targetFieldValue)}`
+              : ''
+          newLines.push({
+            key: field.id + '-' + linkage.targetFieldId + '-' + idx,
+            style: {
+              left: `${x1}px`,
+              top: `${y1}px`,
+              width: `${length}px`,
+              background: linkage.effect === 'show' ? '#409EFF' : '#67C23A',
+              transform: `rotate(${angle}deg)`,
+              'transform-origin': '0 50%',
+              'z-index': 2,
+            },
+            label,
+            labelPos: { left: midX, top: midY - 18 }
+          })
+        }
       }
-    }
+    })
   })
   lines.value = newLines
 }
