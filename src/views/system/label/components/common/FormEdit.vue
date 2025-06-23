@@ -407,7 +407,7 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
   display: flex;
   gap: 16px;
   flex: 1;
-  min-height: 80px;
+  min-height: 60px;
 }
 
 .form-field-col {
@@ -438,7 +438,7 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
 }
 
 .form-field-wrapper {
-  padding: 12px;
+  padding: 12px 12px 0 12px;
   border: 1px solid transparent;
   border-radius: 4px;
   position: relative;
@@ -469,6 +469,7 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
 .delete-icon {
   cursor: pointer;
   color: #f56c6c;
+  z-index: 1;
 }
 .delete-icon:hover {
   color: #f78989;
