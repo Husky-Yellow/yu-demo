@@ -1,7 +1,7 @@
 <template>
   <ContentWrap>
-    <el-row :gutter="20">
-      <el-col :span="12">
+    <el-row :gutter="20" class="mb-4">
+      <el-col :span="10">
         <el-alert
           title="仅能删除本次新增字段，保存后字段无法再删除"
           type="info"
@@ -9,7 +9,7 @@
           show-icon
         />
       </el-col>
-      <el-col :span="6" :offset="6">
+      <el-col :span="6" :offset="8">
         <el-button @click="openForm">添加基础字段</el-button>
         <el-button :disabled="multipleSelection.length === 0" type="primary" @click="handleEdit"
           >编辑</el-button
@@ -98,14 +98,13 @@
 </template>
 
 <script setup lang="ts">
-import * as LabelApi from '@/api/system/label'
-import type { TableInstance } from 'element-plus'
-import { generateUUID } from '@/utils'
 import Sortable from 'sortablejs'
-import FieldEdit from './FieldEdit.vue'
 import { View, Hide } from '@element-plus/icons-vue'
+import type { TableInstance } from 'element-plus'
+import * as LabelApi from '@/api/system/label'
+import { generateUUID } from '@/utils'
+import FieldEdit from './FieldEdit.vue'
 import { FieldTypeLabel } from '@/config/constants'
-
 
 const props = defineProps({
   data: {
@@ -114,13 +113,12 @@ const props = defineProps({
   }
 })
 const { query } = useRoute() // 查询参数
-const emits = defineEmits(['update:data', 'edit', 'row-click', 'delete'])
+const emits = defineEmits(['edit', 'delete'])
 
 const tableRef = ref<TableInstance | null>(null)
 const multipleSelection = ref<any[]>([])
 const sortable = ref(null)
-const tableData = ref<LabelApi.LabelFieldConfig[]>([...(props.data as LabelApi.LabelFieldConfig[])])
-
+const tableData = ref<LabelApi.LabelFieldConfig[]>([])
 const selectable = (row: any) => ![1].includes(row.bizType) // todo 系统字段不可点击
 
 // 初始化 Sortable

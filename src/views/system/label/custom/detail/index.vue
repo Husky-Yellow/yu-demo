@@ -39,13 +39,15 @@ interface TabConfig {
 
 const tabsConfig: readonly TabConfig[] = [
   { name: 'field', label: '字段配置', component: defineAsyncComponent(() => import('../../components/field/Field.vue')), saveMethod: 'saveTableData' },
-  { name: 'Form', label: '表单配置', component: defineAsyncComponent(() => import('../../components/common/Form.vue')) },
-  { name: 'details', label: '详情配置', component: defineAsyncComponent(() => import('../../components/common/Details.vue')) },
+  // { name: 'Form', label: '表单配置', component: defineAsyncComponent(() => import('../../components/common/Form.vue')) },
+  // { name: 'details', label: '详情配置', component: defineAsyncComponent(() => import('../../components/common/Details.vue')) },
   { name: 'operation', label: '操作配置', component: defineAsyncComponent(() => import('../../components/common/Operation.vue')), saveMethod: 'submitForm' },
   { name: 'query', label: '查询配置', component: defineAsyncComponent(() => import('../../components/query/Query.vue')), saveMethod: 'submitForm' },
   { name: 'Data', label: '数据配置', component: defineAsyncComponent(() => import('../../components/filter/Filter.vue')), saveMethod: 'submitForm' },
   { name: 'Sorting', label: '排序配置', component: defineAsyncComponent(() => import('../../components/sort/Sort.vue')), saveMethod: 'submitForm' },
-  { name: 'Statistical', label: '统计配置', component: defineAsyncComponent(() => import('../../components/statistic/StatisticConfig.vue')), saveMethod: 'submitForm' }
+  { name: 'Statistical', label: '统计配置', component: defineAsyncComponent(() => import('../../components/statistic/StatisticConfig.vue')), saveMethod: 'submitForm' },
+
+  { name: 'formEdit', label: '表单编辑', component: defineAsyncComponent(() => import('../../components/common/FormEdit.vue')) },
 ]
 
 const activeName = ref<string>('field')

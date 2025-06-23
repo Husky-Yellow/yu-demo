@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="添加基础字段" width="80%" @close="handleClose">
+  <el-dialog v-model="dialogVisible" title="添加基础字段" width="60%" @close="handleClose">
     <el-row :gutter="10">
       <el-col :span="10">
         <el-card>
