@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ElTable, ElTableColumn } from 'element-plus';
+import type { ElTable } from 'element-plus';
 import Sortable from 'sortablejs';
 import { Rank } from '@element-plus/icons-vue';
 

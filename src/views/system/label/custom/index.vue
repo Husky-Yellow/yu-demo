@@ -125,7 +125,7 @@ const formatTagType: (
   column: TableColumnCtx<any>,
   cellValue: number, // 假设实际数据类型是 number
   index: number
-) => string = (row, column, cellValue, index) => {
+) => string = (_row, _column, cellValue, _index) => {
   const tagType = cellValue as BooleanEnum
   const option = TagTypeOptions.find((item) => item.value === tagType)
   return option?.label || '未知类型'

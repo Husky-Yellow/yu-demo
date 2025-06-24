@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { FieldType } from '@/config/constants';
+import { FieldType } from '@/config/constants/enums/field';
 const datePrecisionOptions = [
   { label: '选至年', value: 'year', example: 'YYYY' },
   { label: '选至月', value: 'month', example: 'YYYY/MM' },
@@ -33,7 +33,7 @@ const props = defineProps<{
     datePrecision: string;
     code2: string;
   }
-  type: string;
+  type: FieldType;
 }>();
 const emit = defineEmits(['update:modelValue']);
 

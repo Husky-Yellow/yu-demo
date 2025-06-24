@@ -53,7 +53,6 @@ const whiteList = [
   '/auth-redirect',
   '/bind',
   '/register',
-  '/oauthLogin/gitee'
 ]
 
 // 路由加载前

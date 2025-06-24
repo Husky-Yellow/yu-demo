@@ -1,4 +1,13 @@
 /**
+ * 操作符选项类型
+ */
+export interface OperatorOption {
+  label: string;
+  value: string;
+}
+
+
+/**
  * 是否枚举
  */
 export enum YesNoEnum {
@@ -17,7 +26,7 @@ export enum BooleanEnum {
 /**
  * 标签类型选项
  */
-export const TagTypeOptions = [
+export const TagTypeOptions: { label: string; value: BooleanEnum }[] = [
   { label: '基础标签', value: BooleanEnum.FALSE },
   { label: '业务标签', value: BooleanEnum.TRUE }
 ];
@@ -25,18 +34,11 @@ export const TagTypeOptions = [
 /**
  * 是否选项
  */
-export const BooleanOptions = [
+export const BooleanOptions: { label: string; value: BooleanEnum }[] = [
   { label: YesNoEnum.YES, value: BooleanEnum.TRUE },
   { label: YesNoEnum.NO, value: BooleanEnum.FALSE }
 ];
 
-/**
- * 操作符选项类型
- */
-export interface OperatorOption {
-  label: string;
-  value: string;
-}
 
 /**
  * 操作符选项
@@ -44,5 +46,23 @@ export interface OperatorOption {
 export const OperatorOptions: OperatorOption[] = [
   { label: '等于', value: '=' },
   { label: '不等于', value: '!=' }
-  // 可继续添加
 ];
+
+
+/**
+ * 操作类型枚举
+ * @description 定义系统支持的操作按钮类型
+ */
+export enum OperateType {
+  /** 添加操作 */
+  ADD = 0,
+  /** 编辑操作 */
+  EDIT = 1,
+  /** 删除操作 */
+  DELETE = 2,
+  /** 导入操作 */
+  IMPORT = 3,
+  /** 导出操作 */
+  EXPORT = 4
+}
+

@@ -148,6 +148,7 @@
 </template>
 
 <script setup lang="ts">
+import * as LabelApi from '@/api/system/label'
 import draggable from 'vuedraggable'
 import { ElFormItem, ElIcon, ElButton, ElMessageBox, ElMessage } from 'element-plus'
 import { Rank, Delete, Plus } from '@element-plus/icons-vue'
@@ -163,6 +164,7 @@ const props = defineProps({
   }
 })
 
+const { query } = useRoute() // 查询参数
 const activeMode = ref('add')
 
 const availableFields = ref([
@@ -335,6 +337,18 @@ const submitForm = () => {
   console.log('保存的布局数据:', layoutData)
   ElMessage.success('布局已保存到控制台！')
 }
+
+const fetchFormData = async () => {
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId: query.labelId as string
+  })
+  console.log('res', res)
+}
+
+// 生命周期钩子
+onMounted(() => {
+  fetchFormData()
+})
 
 defineExpose({ getLayoutData, setLayoutData, submitForm })
 </script>

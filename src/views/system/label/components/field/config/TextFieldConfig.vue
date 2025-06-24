@@ -23,9 +23,9 @@
     </el-form-item>
     <template v-if="form.dataValidation === 'custom'">
       <el-form-item label="输入正则代码" prop="regex" >
-        <el-input 
-          v-model="form.regex" 
-          placeholder="请输入正则表达式" 
+        <el-input
+          v-model="form.regex"
+          placeholder="请输入正则表达式"
         />
       </el-form-item>
     </template>
@@ -43,6 +43,7 @@ import {
   TextTypeOptions,
   DuplicateCheckOptions,
   DataValidationOptions,
+  FieldType
 } from '@/config/constants/enums/field'
 import { defaultTextFieldForm, TextFieldForm } from '@/config/constants/enums/fieldDefault'
 import { convertObjectToArray } from '@/utils'
@@ -76,7 +77,7 @@ const rules: FormRules = {
   dataValidation: [{ required: true, message: '请选择数据校验', trigger: 'change' }],
   regex: [
     { required: true, message: '请输入正则表达式', trigger: 'blur' },
-    { 
+    {
       validator: (_rule, value, callback) => {
         if (form.dataValidation === 'custom' && value) {
           try {
@@ -88,14 +89,14 @@ const rules: FormRules = {
         } else {
           callback()
         }
-      }, 
-      trigger: 'blur' 
+      },
+      trigger: 'blur'
     }
   ],
   prompt: [
-    { 
-      required: true, 
-      message: '请输入触发提示', 
+    {
+      required: true,
+      message: '请输入触发提示',
       trigger: 'blur',
       validator: (_rule, value, callback) => {
         if (form.dataValidation !== 'none' && !value) {
@@ -129,7 +130,7 @@ const convertFormForSubmission = () => {
   }
   return arr.map((item) => ({
     ...item,
-    type: 'text' as any,
+    type: FieldType.TEXT,
     optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []
   }))
 }

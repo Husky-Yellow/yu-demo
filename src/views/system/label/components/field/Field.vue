@@ -14,7 +14,7 @@
         <el-button :disabled="multipleSelection.length === 0" type="primary" @click="handleEdit"
           >编辑</el-button
         >
-        <el-button :disabled="multipleSelection.length === 0 || !multipleSelection[0]?.id" type="success" @click="handleDelete"
+        <el-button :disabled="!(multipleSelection.length > 0 && multipleSelection.every(item => !item.id))" type="success" @click="handleDelete"
           >删除</el-button
         >
       </el-col>
@@ -63,12 +63,12 @@
       </el-table-column>
       <el-table-column prop="addFlag" label="新增表单" align="center">
         <template #default="scope">
-          <el-checkbox v-model="scope.row.addFlag" label="" />
+          <el-checkbox v-model="scope.row.addFlag" true-value="1" false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="editFlag" label="编辑表单" align="center">
         <template #default="scope">
-          <el-checkbox v-model="scope.row.editFlag" label="" />
+          <el-checkbox v-model="scope.row.editFlag" true-value="1" false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="appViewFlag" label="移动端列表" align="center">
@@ -104,7 +104,11 @@ import type { TableInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
 import { generateUUID } from '@/utils'
 import FieldEdit from './FieldEdit.vue'
-import { FieldTypeLabel } from '@/config/constants'
+import { FieldTypeLabel } from '@/config/constants/enums/field'
+import {
+  BooleanEnum,
+} from '@/config/constants/enums/label'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 const props = defineProps({
   data: {
@@ -113,13 +117,14 @@ const props = defineProps({
   }
 })
 const { query } = useRoute() // 查询参数
+const message = useMessage() // 消息弹窗
 const emits = defineEmits(['edit', 'delete'])
 
 const tableRef = ref<TableInstance | null>(null)
-const multipleSelection = ref<any[]>([])
+const multipleSelection = ref<LabelFieldConfig[]>([])
 const sortable = ref(null)
-const tableData = ref<LabelApi.LabelFieldConfig[]>([])
-const selectable = (row: any) => ![1].includes(row.bizType) // todo 系统字段不可点击
+const tableData = ref<LabelFieldConfig[]>([])
+const selectable = (row: LabelFieldConfig) => ![BooleanEnum.TRUE].includes(row.bizType) // todo 系统字段不可点击
 
 // 初始化 Sortable
 const initSortable = () => {
@@ -155,17 +160,17 @@ const initSortable = () => {
   })
 }
 
-const handleSelectionChange = (val: any[]) => {
+const handleSelectionChange = (val: LabelFieldConfig[]) => {
   multipleSelection.value = val
 }
 
-const handleRowClick = (row: any) => {
-  formRef.value.open('show', row)
+const handleRowClick = (row: LabelFieldConfig) => {
+  formRef.value.open('show', row, tableData.value)
 }
 
 const getDataFieldConfListByManageId = async () => {
   const res = await LabelApi.getFieldConfigList({
-    manageId: query.id as string
+    manageId: query.labelId as string
   })
   tableData.value = res.map(item => {
     return {
@@ -174,8 +179,6 @@ const getDataFieldConfListByManageId = async () => {
     }
   })
 }
-
-
 
 // 生命周期钩子
 onMounted(() => {
@@ -195,7 +198,7 @@ onBeforeUnmount(() => {
 watch(
   () => props.data,
   (newVal) => {
-    tableData.value = [...(newVal as LabelApi.LabelFieldConfig[])]
+    tableData.value = [...(newVal as LabelFieldConfig[])]
     // 如果表格已渲染，重新初始化 Sortable
     if (tableRef.value) {
       initSortable()
@@ -232,8 +235,8 @@ const updateData = (data) => {
   }
 }
 
-const handleViewFlag = (row: any, flag: string) => {
-  row[flag] = !row[flag]
+const handleViewFlag = (row: LabelFieldConfig, flag: string) => {
+  row[flag] = row[flag] === BooleanEnum.TRUE ? BooleanEnum.FALSE : BooleanEnum.TRUE
 }
 
 const saveTableData = async () => {
@@ -245,13 +248,17 @@ const saveTableData = async () => {
     }
   })
   handleSelectionChange([])
-  await LabelApi.updateFieldConfigList(data)
+  await LabelApi.updateFieldConfigList(data).then(() => {
+    message.success('保存成功')
+  }).catch(() => {
+    message.error('保存失败，请稍后重试')
+  })
 }
 
 /** 添加/修改操作 */
 const formRef = ref()
 const openForm = () => {
-  formRef.value.open('add', null)
+  formRef.value.open('add', null, tableData.value)
 }
 defineExpose({ saveTableData })
 </script>

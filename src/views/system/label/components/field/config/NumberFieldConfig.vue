@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import {
+  FieldType,
   NumberTypeOptions,
   DuplicateCheckOptions,
   DecimalPlacesOptions
@@ -81,7 +82,7 @@ const convertFormForSubmission = () => {
   }
   return arr.map((item) => ({
     ...item,
-    type: 'number' as string,
+    type: FieldType.NUMBER,
     optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []
   }))
 }
