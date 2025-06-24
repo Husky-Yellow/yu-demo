@@ -156,3 +156,39 @@ export const updateViewFormConf = async (data: { id: string, manageId: string, f
 export const createViewFormConf = async (data: { manageId: string, formType: number, formJson: string }) => {
   return await request.post({ url: '/data/view-form-conf/create', data })
 }
+
+
+/**
+ * 创建排序配置
+ * @param data
+ * @param data.manageId - 管理ID
+ * @param data.sortJson - 排序配置
+ * @returns {Promise<any>} 排序配置
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076038
+ */
+export const createSortConf = async (data: { manageId: string, sortJson: string }) => {
+  return await request.post({ url: '/data/sort-conf/create', data })
+}
+
+/**
+ * 获取排序配置
+ * @param data
+ * @param data.manageId - 管理ID
+ * @returns {Promise<any>} 排序配置
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076037
+ */
+export const getSortConf = async (data: { manageId: string }) => {
+  return await request.get({ url: '/data/sort-conf/list', data })
+}
+
+/**
+ * 更新排序配置
+ * @param data
+ * @param data.manageId - 管理ID
+ * @param data.sortJson - 排序配置
+ * @returns {Promise<any>} 排序配置
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076036
+ */
+export const updateSortConf = async (data: { manageId: string, sortJson: string }) => {
+  return await request.put({ url: '/data/sort-conf/update', data })
+}

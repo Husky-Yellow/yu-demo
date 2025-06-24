@@ -34,20 +34,20 @@
           </div>
           <el-form-item label="排序类型" :prop="`sortItems.${index}.sortType`">
             <el-radio-group v-model="item.sortType">
-              <el-radio label="dataAddTime">数据添加时间</el-radio>
-              <el-radio label="dataModifyTime">数据修改时间</el-radio>
-              <el-radio label="custom">自定义排序</el-radio>
+              <el-radio :label="0">数据添加时间</el-radio>
+              <el-radio :label="1">数据修改时间</el-radio>
+              <el-radio :label="2">自定义排序</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="item.sortType === 'custom'"
+            v-if="item.sortType === 2"
             label="排序字段"
             :prop="`sortItems.${index}.field`"
             :rules="[{ validator: validateFieldsNotEmpty(item), trigger: 'submit' }]"
           >
             <div class="min-h-[20px] bg-gray-100 border border-dashed border-gray-300 rounded px-2 py-2 w-full" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
               <div v-if="item.field" class="sort-field-item">
-                <span>{{ item.field.label }}</span>
+                <span>{{ item.field.name }}</span>
                 <el-button type="danger" size="small" circle @click="removeField(index)">
                   <Icon icon="ep:close" />
                 </el-button>
@@ -57,8 +57,8 @@
           </el-form-item>
           <el-form-item label="排序规则" :prop="`sortItems.${index}.sortRule`">
             <el-select v-model="item.sortRule" placeholder="请选择排序规则">
-              <el-option label="升序" value="asc" />
-              <el-option label="降序" value="desc" />
+              <el-option label="升序" :value="1" />
+              <el-option label="降序" :value="0" />
             </el-select>
           </el-form-item>
         </div>
@@ -73,30 +73,26 @@ import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-
-interface SortField {
-  label: string
-  value: string
-}
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 interface SortItem {
   id: number
-  sortType: 'dataAddTime' | 'dataModifyTime' | 'custom'
-  sortRule: 'asc' | 'desc'
-  field?: SortField | null
+  sortType: 0 | 1 | 2
+  sortRule: 0 | 1
+  field?: LabelFieldConfig | null
 }
 
 const { query } = useRoute() // 查询参数
 
 // 左侧可选字段
-const sortFields = ref<SortField[]>([])
+const sortFields = ref<LabelFieldConfig[]>([])
 
 const formModel = ref<{ sortItems: SortItem[] }>({
   sortItems: [
     {
       id: Date.now(),
-      sortType: 'dataAddTime',
-      sortRule: 'asc',
+      sortType: 0,
+      sortRule: 1,
       field: null
     }
   ]
@@ -105,23 +101,23 @@ const formModel = ref<{ sortItems: SortItem[] }>({
 const sortFormRef = ref<FormInstance>()
 
 // 当前拖拽的字段
-const draggedField = ref<SortField | null>(null)
+const draggedField = ref<LabelFieldConfig | null>(null)
 
 // 检查字段是否已被使用
 const isFieldUsed = (fieldValue: string) => {
-  return formModel.value.sortItems.some((item) => item.field?.value === fieldValue)
+  return formModel.value.sortItems.some((item) => item.field?.id === fieldValue)
 }
 
 // 克隆字段函数，如果字段已使用则返回false阻止拖拽
-function cloneField(field: SortField) {
-  return isFieldUsed(field.value) ? false : { ...field }
+function cloneField(field: LabelFieldConfig) {
+  return isFieldUsed(field.id as string) ? false : { ...field }
 }
 
 function addSortItem() {
   formModel.value.sortItems.push({
     id: Date.now(),
-    sortType: 'custom',
-    sortRule: 'asc',
+    sortType: 2,
+    sortRule: 1,
     field: null
   })
 }
@@ -137,7 +133,7 @@ function onDragStart(evt: any) {
   console.log(sortFields.value[evt.oldIndex]);
 
   const field = sortFields.value[evt.oldIndex]
-  if (field && !isFieldUsed(field.id)) {
+  if (field && !isFieldUsed(field.id as string)) {
     draggedField.value = field
   }
 }
@@ -147,7 +143,7 @@ function onFieldDrop(e: DragEvent, sortIndex: number) {
   console.log(draggedField.value);
 
   e.preventDefault()
-  if (draggedField.value && !isFieldUsed(draggedField.value.value)) {
+  if (draggedField.value && !isFieldUsed(draggedField.value.id as string)) {
     formModel.value.sortItems[sortIndex].field = { ...draggedField.value }
     draggedField.value = null
   }
@@ -189,8 +185,6 @@ const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.labelId as string
   })
-  console.log(res);
-
   sortFields.value = res
 }
 

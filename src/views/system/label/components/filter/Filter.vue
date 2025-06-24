@@ -13,7 +13,7 @@
         @start="onDragStart"
       >
         <template #item="{ element }">
-          <FieldPoolItem :hasKeyString="'key'" :element="element" :isFieldUsed="isFieldUsed" />
+          <FieldPoolItem :hasKeyString="'id'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -73,12 +73,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import VueDraggable from 'vuedraggable'
+import * as LabelApi from '@/api/system/label'
 import { OperatorOptions } from '@/config/constants/enums/label'
 import type { FormInstance } from 'element-plus'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 interface FilterField {
   key: string
@@ -94,12 +95,10 @@ interface FilterRule {
   logic: 'and' | 'or'
 }
 
+const { query } = useRoute() // 查询参数
+
 // 左侧可选字段
-const filterFields = ref<FilterField[]>([
-  { key: 'sysTag', label: '系统标签', type: 'text' },
-  { key: 'certType', label: '证件类型', type: 'text' },
-  { key: 'region', label: '区域', type: 'text' }
-])
+const filterFields = ref<LabelFieldConfig[]>([])
 const filterFormRef = ref<FormInstance>()
 
 // 右侧规则列表
@@ -115,7 +114,7 @@ const filterRules = ref<FilterRule[]>([
 
 
 // 当前拖拽的字段
-const draggedField = ref<FilterField | null>(null)
+const draggedField = ref<LabelFieldConfig | null>(null)
 
 // 检查字段是否已被使用
 const isFieldUsed = (fieldKey: string) => {
@@ -124,13 +123,13 @@ const isFieldUsed = (fieldKey: string) => {
 
 // 获取字段显示标签
 const getFieldLabel = (fieldKey: string) => {
-  return filterFields.value.find((f) => f.key === fieldKey)?.label || fieldKey
+  return filterFields.value.find((f) => f.id === fieldKey)?.name || fieldKey
 }
 
 // 开始拖拽时保存字段数据
 function onDragStart(evt: any) {
   const field = filterFields.value[evt.oldIndex]
-  if (field && !isFieldUsed(field.key)) {
+  if (field && !isFieldUsed(field.id as string)) {
     draggedField.value = field
   }
 }
@@ -143,8 +142,8 @@ function cloneField(field: FilterField) {
 // 字段放置处理
 function onFieldDrop(e: DragEvent, ruleIndex: number) {
   e.preventDefault()
-  if (draggedField.value && !isFieldUsed(draggedField.value.key)) {
-    filterRules.value[ruleIndex].field = draggedField.value.key
+  if (draggedField.value && !isFieldUsed(draggedField.value.id as string)) {
+    filterRules.value[ruleIndex].field = draggedField.value.id as string
     draggedField.value = null
   }
 }
@@ -211,6 +210,16 @@ function toggleLogic(index: number) {
 }
 
 
+const fetchData = async () => {
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId: query.labelId as string
+  })
+  filterFields.value = res
+}
+
+
+
+
 
 const submitForm = () => {
   if (!filterFormRef.value) return
@@ -223,6 +232,10 @@ const submitForm = () => {
     }
   })
 }
+// 生命周期钩子
+onMounted(() => {
+  fetchData()
+})
 
 defineExpose({
   submitForm

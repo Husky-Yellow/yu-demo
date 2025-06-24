@@ -11,7 +11,7 @@
         class="min-h-[100px]"
       >
         <template #item="{ element }">
-          <FieldPoolItem :hasKeyString="'key'" :element="element" :isFieldUsed="isFieldUsed" />
+          <FieldPoolItem :hasKeyString="'id'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -56,7 +56,7 @@
                 <template #item="{ element, index }">
                   <div class="stat-field-item">
                     <!-- todo 这里要改成标签类型 -->
-                    <span class="!w-[80px] text-right mr-6px">{{ element.label }}</span>
+                    <span class="!w-[80px] text-right mr-6px">{{ element.name }}</span>
                     <el-form-item
                       :prop="`${idx}.fields.${index}.condition`"
                       :rules="{ required: true, message: '请选择条件' }"
@@ -66,7 +66,7 @@
                           v-for="operatorItem in OperatorOptions"
                           :key="operatorItem.value"
                           :label="operatorItem.label"
-                          :value="operatorItem.value"
+                          :value="Number(operatorItem.value)"
                         />
                       </el-select>
                     </el-form-item>
@@ -112,10 +112,12 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
-import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
+import * as LabelApi from '@/api/system/label'
+import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 /** 字段定义 */
 interface Field {
@@ -125,44 +127,29 @@ interface Field {
   options?: Array<{ label: string; value: string }>
 }
 
-/** 统计项中的字段定义，继承自 Field 并增加了条件和值 */
-interface StatisticField extends Field {
-  condition: '=' | '!='
+interface StatisticField extends Partial<LabelFieldConfig> {
+  condition: number
   value: string
 }
+
+/** 统计项中的字段定义，继承自 Field 并增加了条件和值 */
+
 
 /** 单个统计项的定义 */
 interface StatisticItem {
   id: number
   name: string
-  fields: StatisticField[]
+  fields:StatisticField[] // 推荐
 }
-
+const { query } = useRoute() // 查询参数
 // 示例字段
-const fields = ref<Field[]>([
-  {
-    key: 'type',
-    label: '证件类型',
-    type: 'select',
-    options: [
-      { label: '身份证', value: 'id' },
-      { label: '护照', value: 'passport' }
-    ]
-  },
-  {
-    key: 'area',
-    label: '区域',
-    type: 'select',
-    options: [
-      { label: '北京', value: 'bj' },
-      { label: '上海', value: 'sh' }
-    ]
-  },
-  { key: 'label', label: '系统标签', type: 'input' }
-])
-
+const fields = ref<LabelFieldConfig[]>([])
 /** 统计项列表：用户配置的统计规则 */
-const statistics = ref<StatisticItem[]>([{ id: Date.now(), name: '', fields: [] }])
+const statistics = ref<StatisticItem[]>([{
+  id: Date.now(),
+  name: '',
+  fields: []
+}])
 const statFormRef = ref<FormInstance>()
 
 /** 计算所有统计项中已使用的字段的 key 集合 */
@@ -170,7 +157,7 @@ const usedFieldKeys = computed(() => {
   const keys = new Set<string>()
   statistics.value.forEach((stat) => {
     stat.fields.forEach((field) => {
-      keys.add(field.key)
+      keys.add(field.id as string)
     })
   })
   return keys
@@ -190,16 +177,17 @@ function isFieldUsed(key: string): boolean {
  * @param field - 要克隆的字段
  * @returns 克隆后的字段对象，如果字段已使用则返回 false
  */
-function cloneField(field: Field): Field | false {
-  if (isFieldUsed(field.key)) {
+function cloneField(field: StatisticField): StatisticField | false {
+  if (isFieldUsed(field.id as string)) {
     return false
   }
-  return { ...field }
+  return { ...field, condition: 1, value: '' }
 }
 
 /** 添加一个新的空统计项 */
 function addStatistic() {
-  statistics.value.push({ id: Date.now(), name: '', fields: [] })
+  statistics.value.push({ id: Date.now(), name: '', fields: [
+  ] })
 }
 
 /** 删除最后一个统计项 */
@@ -223,15 +211,11 @@ function removeField(statIdx: number, fieldIdx: number) {
  * @param statIdx - 目标统计项的索引
  * @param evt - 拖放事件对象，包含添加的元素信息
  */
-function onFieldDrop(statIdx: number, evt: { added: { element: Field; newIndex: number } }) {
-  if (evt.added) {
-    const field = evt.added.element
-    // 将普通字段转换为带默认值的统计字段
-    statistics.value[statIdx].fields[evt.added.newIndex] = {
-      ...field,
-      condition: '=',
-      value: ''
-    }
+ function onFieldDrop(statIdx: number, evt: any) {
+  const field = statistics.value[statIdx].fields[evt.newIndex]
+  if (field) {
+    if (field.condition === undefined) field.condition = 1
+    if (field.value === undefined) field.value = ''
   }
 }
 
@@ -278,6 +262,19 @@ const submitForm = () => {
     }
   })
 }
+
+const fetchData = async () => {
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId: query.labelId as string
+  })
+  fields.value = res
+}
+
+
+// 生命周期钩子
+onMounted(() => {
+  fetchData()
+})
 
 /** 向父组件暴露 submitForm 方法 */
 defineExpose({ submitForm })
