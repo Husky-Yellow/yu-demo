@@ -129,6 +129,7 @@
 
 <script setup lang="ts">
 import type { TableInstance } from 'element-plus'
+import * as LabelApi from '@/api/system/label'
 import FieldSelectDialog from '../common/FieldSelectDialog.vue'
 import SubFieldSelectDialog from './SubFieldSelectDialog.vue'
 import QueryPreview from './QueryPreview.vue'
@@ -149,6 +150,8 @@ interface TableRow {
   defaultValue: any
   subFields: SubField[]
 }
+
+const { query } = useRoute() // 查询参数
 
 const allFields = ref<SubField[]>([
   { key: 'idType', label: '证件类型', type: 'enum' },
@@ -374,9 +377,16 @@ const initSortable = () => {
   })
 }
 
+const fetchData = async () => {
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId: query.labelId as string
+  })
+}
+
 // 生命周期钩子
 onMounted(() => {
   initSortable()
+  fetchData()
 })
 
 const submitForm = () => {

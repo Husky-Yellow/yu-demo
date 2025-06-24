@@ -209,7 +209,7 @@ watch(
 
 // 事件处理
 const handleEdit = () => {
-  formRef.value.open('edit', multipleSelection.value[0])
+  formRef.value.open('edit', multipleSelection.value[0], tableData.value)
 }
 
 // 事件处理

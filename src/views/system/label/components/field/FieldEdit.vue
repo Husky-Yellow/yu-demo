@@ -35,7 +35,7 @@
                   v-for="(label, type) in FieldTypeLabel"
                   :key="type"
                   :label="label"
-                  :value="type"
+                  :value="Number(type)"
                 />
               </el-select>
             </el-form-item>
@@ -194,7 +194,9 @@ const rules = reactive({
     { required: true, message: '请输入 Code', trigger: 'blur' },
     {
       validator: (_rule, value, callback) => {
-        console.log('tableData', tableData.value, value)
+        if (codeInputDisabled.value) {
+          return  callback()
+        }
         if (tableData.value.find((item: any) => item.code === value)) {
           callback(new Error('Code 已存在'))
         }
@@ -207,6 +209,9 @@ const rules = reactive({
     { required: true, message: '请输入字段名称', trigger: 'blur' },
     {
       validator: (_rule, value, callback) => {
+        if (codeInputDisabled.value) {
+          return  callback()
+        }
         if (tableData.value.find((item: any) => item.name === value)) {
           callback(new Error('字段名称已存在'))
         }
@@ -295,12 +300,9 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
     code: item.code,
     name: item.name
   }))
-  console.log('tableData', tableData.value)
-  // todo 这里需要调用接口了。
   if (row) {
     const detail = await LabelApi.getFieldConfigDetail({ 'id': row.id as string })
     Object.assign(form, detail, {
-      // fieldJson 也要深拷贝，防止引用污染  todo 这里需要转换
       fieldConfExtDOList: detail.fieldConfExtDOList
         ? convertArrayToObject(JSON.parse(JSON.stringify(detail.fieldConfExtDOList)))
         : { ...defaultFieldConfExt }

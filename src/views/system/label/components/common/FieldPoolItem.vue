@@ -6,7 +6,7 @@
     }"
   >
     <div class="flex items-center">
-      <span>{{ element.label }}</span>
+      <span>{{ element.name }}</span>
       <el-tag v-if="isFieldUsed(element[hasKeyString])" size="small" class="ml-10px">已使用</el-tag>
     </div>
     <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />

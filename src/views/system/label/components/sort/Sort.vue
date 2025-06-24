@@ -13,7 +13,7 @@
         @start="onDragStart"
       >
         <template #item="{ element }">
-          <FieldPoolItem :hasKeyString="'value'" :element="element" :isFieldUsed="isFieldUsed" />
+          <FieldPoolItem :hasKeyString="'id'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
+import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
@@ -85,18 +86,10 @@ interface SortItem {
   field?: SortField | null
 }
 
+const { query } = useRoute() // 查询参数
+
 // 左侧可选字段
-const sortFields = ref<SortField[]>([
-  { label: '证件类型', value: 'certType' },
-  { label: '证件号码', value: 'certNo' },
-  { label: '姓名', value: 'name' },
-  { label: '区域', value: 'region' },
-  { label: '人员等级', value: 'level' },
-  { label: '数据添加时间', value: 'dataAddTime' },
-  { label: '数据修改时间', value: 'dataModifyTime' },
-  { label: '数据添加人', value: 'dataAdder' },
-  { label: '数据修改人', value: 'dataModifier' }
-])
+const sortFields = ref<SortField[]>([])
 
 const formModel = ref<{ sortItems: SortItem[] }>({
   sortItems: [
@@ -141,14 +134,18 @@ function removeLastSortItem() {
 
 // 开始拖拽时保存字段数据
 function onDragStart(evt: any) {
+  console.log(sortFields.value[evt.oldIndex]);
+
   const field = sortFields.value[evt.oldIndex]
-  if (field && !isFieldUsed(field.value)) {
+  if (field && !isFieldUsed(field.id)) {
     draggedField.value = field
   }
 }
 
 // 修改 onFieldDrop 函数
 function onFieldDrop(e: DragEvent, sortIndex: number) {
+  console.log(draggedField.value);
+
   e.preventDefault()
   if (draggedField.value && !isFieldUsed(draggedField.value.value)) {
     formModel.value.sortItems[sortIndex].field = { ...draggedField.value }
@@ -187,6 +184,21 @@ const submitForm = () => {
     }
   })
 }
+
+const fetchData = async () => {
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId: query.labelId as string
+  })
+  console.log(res);
+
+  sortFields.value = res
+}
+
+
+// 生命周期钩子
+onMounted(() => {
+  fetchData()
+})
 
 defineExpose({ submitForm })
 </script>

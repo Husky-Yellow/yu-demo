@@ -80,7 +80,7 @@ export interface LabelFieldConfig {
   /** 字段UUID，前端临时处理 */
   uuid?: string
   /** 字段ID */
-  id?: number
+  id?: string
   /** 管理ID */
   manageId: string
   /**
@@ -147,7 +147,7 @@ export interface LabelFieldConfig {
    * 字段配置详情列表
    * @description 字段的扩展配置信息
    */
-  fieldConfExtDOList: FieldConfExt[]
+  fieldConfExtDOList: FieldConfExt & { optionsJson: any[], value: never, name: string }[]
 }
 
 /**
@@ -196,3 +196,22 @@ export const OperateTypeText = {
   [OperateType.IMPORT]: '导入',
   [OperateType.EXPORT]: '导出'
 } satisfies Record<OperateType, string>
+
+
+export type LabelDragField = LabelFieldConfig & {
+  label: string
+  id: string
+  fieldConfExtObj: {
+    options?: any[],
+    value?: any,
+    name?: string
+  }
+  type: 'placeholder' | 'field'  // 占位符 字段 ？？？ 我忘了什么意思了
+  linkage: {
+    enabled: boolean
+    targetFieldId: string | null
+    targetFieldValue: any | null
+    effect: 'show' | 'hide'
+    condition: 'equals' | 'not_equals'
+  }
+}

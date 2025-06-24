@@ -1,52 +1,40 @@
 import { Ref, ComputedRef } from 'vue'
-import { ElInput, ElSelect } from 'element-plus'
-
+import { ElInput, ElSelect, ElRadio, ElDatePicker } from 'element-plus'
+import { FieldType } from '@/config/constants/enums/field'
+import { LabelDragField } from '@/config/constants/enums/fieldDefault'
+import * as LabelApi from '@/api/system/label'
+// todo ts 类型得整合一下
 // --- Types ---
-export interface FormField {
-  id: string
-  type: string
-  label: string
-  placeholder?: string
-  required?: boolean
-  options?: { label: string; value: any }[]
-  linkage: {
-    enabled: boolean
-    targetFieldId: string | null
-    targetFieldValue: any | null
-    effect: 'show' | 'hide'
-    condition: 'equals' | 'not_equals'
-  }
-}
 
 export interface Placeholder {
   id: string
   type: 'placeholder'
 }
 
-export type RowItem = FormField | Placeholder
+export type RowItem = LabelDragField | Placeholder
 
 export interface FormRow {
   id: string
   fields: RowItem[]
-  showPlaceholder?: boolean
+  showPlaceholder?: boolean // 是否展示占位符 单列多列使用
 }
 
 interface UseFormEditHandlersOptions {
-  availableFields: Ref<any[]>
+  isDraggingNewField: Ref<boolean>
+  availableFields: Ref<LabelDragField[]>
   formRows: Ref<FormRow[]>
-  selectedField: Ref<FormField | null>
+  selectedField: Ref<LabelDragField | null>
   usedFieldIds: ComputedRef<Set<string>>
 }
 
 export function useFormEditHandlers({
+  isDraggingNewField,
   availableFields,
   formRows,
   selectedField,
   usedFieldIds,
 }: UseFormEditHandlersOptions) {
-  const isDraggingNewField = { value: false }
-
-  const handleDragStart = (event: DragEvent, field: { id: string }) => {
+  const handleDragStart = (event: DragEvent, field: LabelDragField) => {
     if (event.dataTransfer) {
       event.dataTransfer.setData('field-id', field.id)
       isDraggingNewField.value = true
@@ -57,13 +45,24 @@ export function useFormEditHandlers({
     isDraggingNewField.value = false
   }
 
-  const handleDropOnCanvas = (event: DragEvent) => {
+  const handleDropOnCanvas = async (event: DragEvent) => {
     if (!isDraggingNewField.value) return
     const fieldId = event.dataTransfer?.getData('field-id')
     if (!fieldId) return
     const field = availableFields.value.find((f) => f.id === fieldId)
+    const detail = await LabelApi.getFieldConfigDetail({ 'id': fieldId as string })
+
     if (field && !isFieldUsed(fieldId)) {
-      const newField = cloneField(field)
+
+      const fieldConfExtObj = detail.fieldConfExtDOList.find(item => item.name === "textType")?.value
+
+      const newField = cloneField({
+        ...detail,
+        ...field,
+        fieldConfExtObj: {
+          value: fieldConfExtObj,
+        }
+      }) as LabelDragField
       formRows.value.push({
         id: field.id,
         fields: [newField],
@@ -79,13 +78,13 @@ export function useFormEditHandlers({
     if (!fieldId) return
     const field = availableFields.value.find((f) => f.id === fieldId)
     if (field && !isFieldUsed(fieldId)) {
-      const newField = cloneField(field)
+      const newField = cloneField(field) as LabelDragField
       row.fields.push(newField)
       row.showPlaceholder = false
     }
   }
 
-  const cloneField = (field: any) => {
+  const cloneField = (field: LabelDragField) => {
     return {
       ...field,
       id: field.id,
@@ -105,12 +104,13 @@ export function useFormEditHandlers({
     return usedFieldIds.value.has(fieldId)
   }
 
-  const selectField = (field: FormField) => {
+  const selectField = (field: LabelDragField) => {
+    console.log('selectField', field)
     selectedField.value = field
   }
 
   const isRowSelected = (row: FormRow): boolean => {
-    return !!(selectedField.value && row.fields.some((f) => (f as FormField).id === selectedField.value!.id))
+    return !!(selectedField.value && row.fields.some((f) => (f as LabelDragField).id === selectedField.value!.id))
   }
 
   const addColumn = (row: FormRow) => {
@@ -128,9 +128,9 @@ export function useFormEditHandlers({
   }
 
   const deleteField = (row: FormRow, field: RowItem) => {
-    const fieldIndex = row.fields.findIndex((f) => (f as FormField).id === (field as FormField).id)
+    const fieldIndex = row.fields.findIndex((f) => (f as LabelDragField).id === (field as LabelDragField).id)
     if (fieldIndex === -1) return
-    if (selectedField.value && selectedField.value.id === (field as FormField).id) {
+    if (selectedField.value && selectedField.value.id === (field as LabelDragField).id) {
       selectedField.value = null
     }
     row.fields.splice(fieldIndex, 1)
@@ -143,16 +143,48 @@ export function useFormEditHandlers({
     }
   }
 
-  const getFieldComponent = (type: string) => {
+  const getFieldComponent = (type: FieldType) => {
     switch (type) {
-      case 'select':
+      case FieldType.TEXT:
+        return ElInput
+      case FieldType.RADIO:
+        return ElRadio
+      case FieldType.CHECKBOX:
         return ElSelect
-      case 'date':
-        return 'el-date-picker'
-      case 'textarea':
-        return 'el-input'
+      case FieldType.DATE:
+      case FieldType.DATE_RANGE:
+        return ElDatePicker
       default:
         return ElInput
+    }
+  }
+  // 对于一些特定的，比如文本域，日期区间，需要特殊处理
+  const getFieldComponentType = (field: LabelDragField) => {
+    // console.log('getFieldComponentType', field)
+
+    switch (field.fieldType) {
+      case FieldType.TEXT:
+        if (field.fieldConfExtObj?.value === 'multi') {
+          return {
+            type: 'textarea',
+            rows: 2
+          }
+        }
+        return null
+      case FieldType.DATE_RANGE:
+        return {
+          type: 'daterange',
+          rangeSeparator: '至',
+          startPlaceholder: '开始日期',
+          endPlaceholder: '结束日期'
+        }
+      case 'multi':
+        return {
+          type: 'textarea',
+          rows: 4
+        }
+      default:
+        return null
     }
   }
 
@@ -169,6 +201,7 @@ export function useFormEditHandlers({
     addColumn,
     deleteRow,
     deleteField,
-    getFieldComponent
+    getFieldComponent,
+    getFieldComponentType
   }
 }

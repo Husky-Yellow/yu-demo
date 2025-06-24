@@ -1,16 +1,16 @@
 <template>
-  <el-radio-group v-show="tab.name === 'formEdit'" v-model="activeMode">
-    <el-radio-button value="add">新增表单</el-radio-button>
-    <el-radio-button value="edit">编辑表单</el-radio-button>
+  <el-radio-group v-show="tab.name === 'formEdit'" v-model="activeMode" @change="fetchFormData">
+    <el-radio-button :value="1">新增表单</el-radio-button>
+    <el-radio-button :value="2">编辑表单</el-radio-button>
   </el-radio-group>
-  <div class="flex gap-4 h-[calc(100vh-200px)] bg-gray-100 p-2 mt-2">
+  <div v-loading="loading" class="flex gap-4 h-[calc(100vh-200px)] bg-gray-100 p-2 mt-2">
     <div class="w-50 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
       <h3 class="text-base font-semibold border-b border-gray-100 pb-[10px]">数据字段</h3>
       <div class="flex flex-col">
         <FieldPoolItem
           v-for="element in availableFields"
           :key="element.id"
-          :draggable="!isFieldUsed(element.id)"
+          :draggable="!isFieldUsed(element.id!)"
           @dragstart="handleDragStart($event, element)"
           @dragend="handleDragEnd"
           :hasKeyString="'id'"
@@ -85,9 +85,10 @@
                             <Delete />
                           </el-icon>
                         </div>
-                        <el-form-item :label="field.label" :required="field.required">
+                        <el-form-item :label="field.name" :required="field.required">
                           <component
-                            :is="getFieldComponent(field.type)"
+                            :is="getFieldComponent(field.fieldType)"
+                            v-bind="getFieldComponentType(field)"
                             :placeholder="field.placeholder"
                             style="width: 100%"
                           />
@@ -152,7 +153,8 @@ import * as LabelApi from '@/api/system/label'
 import draggable from 'vuedraggable'
 import { ElFormItem, ElIcon, ElButton, ElMessageBox, ElMessage } from 'element-plus'
 import { Rank, Delete, Plus } from '@element-plus/icons-vue'
-import { useFormEditHandlers, FormRow, FormField } from '@/hooks/web/useFormEditHandlers'
+import { useFormEditHandlers, FormRow } from '@/hooks/web/useFormEditHandlers'
+import type {  LabelDragField } from '@/config/constants/enums/fieldDefault'
 import FieldPropertyForm from './FieldPropertyForm.vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import LinkageRelationDialog from './LinkageRelationDialog.vue'
@@ -165,37 +167,16 @@ const props = defineProps({
 })
 
 const { query } = useRoute() // 查询参数
-const activeMode = ref('add')
+const activeMode = ref<0| 1 | 2>(1) // 0 编辑 1 为新增 2 为详情
 
-const availableFields = ref([
-  { id: 'text', type: 'text', label: '单行文本' },
-  { id: 'textarea', type: 'textarea', label: '多行文本' },
-  {
-    id: 'select',
-    type: 'select',
-    label: '下拉选择',
-    options: [
-      { label: '选项一', value: 'option1' },
-      { label: '选项二', value: 'option2' }
-    ]
-  },
-  {
-    id: 'id_card',
-    type: 'select',
-    label: '证件类型',
-    options: [
-      { label: '公民身份证', value: 'id_card' },
-      { label: '护照', value: 'passport' }
-    ]
-  },
-  { id: 'date', type: 'date', label: '日期选择' }
-])
+const availableFields = ref<LabelDragField[]>([])
 
 const formRows = ref<FormRow[]>([])
+const formData = ref<any>(null) // 接口返回来的表单配置 null 为需要调创建
 const linkageRelationDialogVisible = ref(false)
-const selectedField = ref<FormField | null>(null)
+const selectedField = ref<LabelDragField | null>(null)
 const isDraggingNewField = ref(false)
-const idCounter = ref(0)
+const loading = ref(false)
 
 const usedFieldIds = computed(() => {
   return new Set(formRows.value.flatMap((row) => row.fields.map((field) => field.id)))
@@ -206,12 +187,12 @@ const otherFields = computed(() => {
   const allFormFields = formRows.value
     .flatMap((row) => row.fields)
     .filter(
-      (field): field is FormField => 'type' in field && (field as FormField).type !== 'placeholder'
+      (field): field is LabelDragField => 'type' in field && (field as LabelDragField).type !== 'placeholder'
     )
   const currentFieldId = selectedField.value.id
   return allFormFields.filter(
     (field) =>
-      field.id !== currentFieldId && Array.isArray(field.options) && field.options.length > 0
+      field.id !== currentFieldId && Array.isArray(field.fieldConfExtObj?.options) && field.fieldConfExtObj?.options.length > 0
   )
 })
 
@@ -222,12 +203,12 @@ const linkedFieldOptions = computed(() => {
   const allFormFields = formRows.value
     .flatMap((row) => row.fields)
     .filter(
-      (field): field is FormField => 'type' in field && (field as FormField).type !== 'placeholder'
+      (field): field is LabelDragField => 'type' in field && (field as LabelDragField).type !== 'placeholder'
     )
   const targetField = allFormFields.find(
     (field) => field.id === selectedField.value!.linkage.targetFieldId
   )
-  return targetField?.options || []
+  return targetField?.fieldConfExtObj?.options || []
 })
 
 watch(
@@ -251,8 +232,10 @@ const {
   addColumn,
   deleteRow,
   deleteField,
-  getFieldComponent
+  getFieldComponent,
+  getFieldComponentType
 } = useFormEditHandlers({
+  isDraggingNewField,
   availableFields,
   formRows,
   selectedField,
@@ -260,7 +243,6 @@ const {
 })
 
 const viewLinkage = () => {
-  console.log('viewLinkage')
   linkageRelationDialogVisible.value = true
 }
 
@@ -275,17 +257,30 @@ const oneClickLayout = async () => {
         type: 'warning'
       }
     )
-
-    const newRows: FormRow[] = []
     selectedField.value = null
 
-    availableFields.value.forEach((field) => {
-      const newField = cloneField(field)
-      newRows.push({
+    const details = await Promise.all(
+      availableFields.value.map(field =>
+        LabelApi.getFieldConfigDetail({ id: field.id as string })
+      )
+    )
+
+    // 构建新行
+    const newRows: FormRow[] = details.map((detail, idx) => {
+      const field = availableFields.value[idx]
+      const fieldConfExtObj = detail.fieldConfExtDOList.find(item => item.name === "textType")?.value
+
+      const newField = cloneField({
+        ...detail,
+        ...field,
+        fieldConfExtObj: { value: fieldConfExtObj }
+      }) as LabelDragField
+
+      return {
         id: field.id,
         fields: [newField],
         showPlaceholder: false
-      })
+      }
     })
 
     formRows.value = newRows
@@ -311,8 +306,6 @@ const setLayoutData = (data: FormRow[]) => {
   }
   formRows.value = JSON.parse(JSON.stringify(data))
   selectedField.value = null
-
-  // Update idCounter to prevent future ID collisions
   let maxId = 0
   data.forEach((row) => {
     const rowIdNum = parseInt(row.id.split('-')[1])
@@ -322,27 +315,63 @@ const setLayoutData = (data: FormRow[]) => {
       if (fieldIdNum > maxId) maxId = fieldIdNum
     })
   })
-  idCounter.value = maxId
 }
 
-const updateField = (field: FormField) => {
+const updateField = (field: LabelDragField) => {
   // 改变选中字段的属性
   if (selectedField.value) {
     Object.assign(selectedField.value, field)
   }
 }
 
-const submitForm = () => {
+const submitForm = async () => {
   const layoutData = getLayoutData()
   console.log('保存的布局数据:', layoutData)
   ElMessage.success('布局已保存到控制台！')
+  loading.value = true
+  try {
+    const params = {
+      manageId: query.labelId as string,
+      formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
+      formJson: JSON.stringify(layoutData)
+    }
+    if (!formData.value?.id) {
+      const id = await LabelApi.createViewFormConf(params)
+      formData.value.id = id
+    } else {
+      await LabelApi.updateViewFormConf({ ...params, id: formData.value.id as string })
+    }
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
 }
 
 const fetchFormData = async () => {
+  availableFields.value = []
+  formRows.value = []
+  formData.value = null
+  linkageRelationDialogVisible.value = false
+  selectedField.value = null
+  isDraggingNewField.value = false
+
+
+  loading.value = true
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.labelId as string
   })
-  console.log('res', res)
+  const formConfData = await LabelApi.getViewFormConf({
+    manageId: query.labelId as string,
+    formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
+    id: query.id as string
+  })
+  availableFields.value = res
+  formData.value = formConfData
+  if (formConfData) {
+    setLayoutData(JSON.parse(formConfData.formJson))
+  }
+  loading.value = false
 }
 
 // 生命周期钩子

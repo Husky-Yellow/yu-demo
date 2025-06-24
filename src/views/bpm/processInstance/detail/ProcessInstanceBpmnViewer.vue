@@ -1,11 +1,10 @@
 <template>
   <el-card v-loading="loading" class="box-card">
-    <MyProcessViewer key="designer" :xml="view.bpmnXml" :view="view" class="process-viewer" />
+    流程图删掉了
   </el-card>
 </template>
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
-import { MyProcessViewer } from '@/components/bpmnProcessDesigner/package'
 
 defineOptions({ name: 'BpmProcessInstanceBpmnViewer' })
 

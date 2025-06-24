@@ -1,14 +1,12 @@
 <template>
   <el-form label-position="top">
-    <el-form-item label="标题">
-      <el-input v-model="localField.label" />
+    <el-form-item label="是否必填">
+      <el-switch v-model="localField.required" />
     </el-form-item>
     <el-form-item label="占位提示">
       <el-input v-model="localField.placeholder" />
     </el-form-item>
-    <el-form-item label="是否必填">
-      <el-switch v-model="localField.required" />
-    </el-form-item>
+
     <el-divider>字段联动设置</el-divider>
     <el-form-item>
       <template #label>

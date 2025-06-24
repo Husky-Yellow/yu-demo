@@ -20,6 +20,7 @@ import type { TableColumn } from '@/components/Draggable/table.vue'
 import type { OperateConfig } from '@/config/constants/enums/fieldDefault'
 import { OperateTypeText } from '@/config/constants/enums/fieldDefault'
 import { BooleanEnum } from '@/config/constants/enums/label'
+import { generateOperationMock } from '@/utils/label'
 
 const { query } = useRoute()
 const tableData = ref<OperateConfig[]>([])
@@ -88,14 +89,14 @@ const handleSortEnd = (oldIndex: number, newIndex: number) => {
 
 // 更新行数据
 const updateRowData = (updatedRow: OperateConfig) => {
-  const index = tableData.value.findIndex(item => item.id === updatedRow.id)
+  const index = tableData.value.findIndex(item => item.operateType === updatedRow.operateType)
   if (index !== -1) tableData.value[index] = updatedRow
 }
 
 // 获取数据
 const getDataFieldConfListByManageId = async () => {
   const res = await LabelApi.getOperateConfigList({ manageId: query.labelId as string })
-  tableData.value = res
+  tableData.value = res.length ? res : generateOperationMock(query.labelId as string)
 }
 
 // 提交表单

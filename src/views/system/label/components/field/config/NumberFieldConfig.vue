@@ -82,7 +82,7 @@ const convertFormForSubmission = () => {
   }
   return arr.map((item) => ({
     ...item,
-    type: FieldType.NUMBER,
+    fieldType: FieldType.NUMBER,
     optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []
   }))
 }
