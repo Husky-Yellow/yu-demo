@@ -44,8 +44,8 @@ export const BooleanOptions: { label: string; value: BooleanEnum }[] = [
  * 操作符选项
  */
 export const OperatorOptions: OperatorOption[] = [
-  { label: '等于', value: 1 },
-  { label: '不等于', value: 2 }
+  { label: '等于', value: BooleanEnum.TRUE },
+  { label: '不等于', value: BooleanEnum.FALSE }
 ];
 
 

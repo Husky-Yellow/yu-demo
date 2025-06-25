@@ -28,7 +28,7 @@
         </div>
       </div>
       <el-form :model="filterRules" ref="filterFormRef" :inline="true">
-        <div v-for="(rule, index) in filterRules" :key="rule.id" class="rule-item">
+        <div v-for="(rule, index) in filterRules" :key="rule.uuid" class="rule-item">
           <div class="rule-content">
             <el-form-item :prop="`filterRules.${index}.field`" :rules="[{ validator: validateFieldsNotEmpty(rule), trigger: 'submit' }]">
               <div class=" bg-gray-100 border border-dashed border-gray-300 rounded px-2px py-2px w-full mt-18px min-w-300px" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
@@ -46,8 +46,8 @@
                 <div v-else class="text-[#bbb] text-center"> 请拖入筛选字段 </div>
               </div>
             </el-form-item>
-            <el-form-item :prop="`filterRules.${index}.operator`">
-              <el-select class="!w-[200px] mt-18px" v-model="rule.operator" placeholder="选择操作符">
+            <el-form-item :prop="`filterRules.${index}.filterType`">
+              <el-select class="!w-[200px] mt-18px" v-model="rule.filterType" placeholder="选择操作符">
                 <el-option
                   v-for="operatorItem in OperatorOptions"
                   :key="operatorItem.value"
@@ -56,14 +56,14 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item :prop="`filterRules.${index}.value`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
-              <el-input v-model="rule.value" placeholder="请输入值"  class="!w-[200px] mt-18px"/>
+            <el-form-item :prop="`filterRules.${index}.data`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
+              <el-input v-model="rule.data" placeholder="请输入值"  class="!w-[200px] mt-18px"/>
             </el-form-item>
           </div>
           <!-- 且/或按钮 -->
           <div v-if="index < filterRules.length - 1" class="logic-button">
             <el-button type="primary" plain @click="toggleLogic(index)">
-              {{ rule.logic === 'and' ? '且' : '或' }}
+              {{ rule.connectType === BooleanEnum.TRUE ? '且' : '或' }}
             </el-button>
           </div>
         </div>
@@ -80,19 +80,14 @@ import type { FormInstance } from 'element-plus'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
 import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
-
-interface FilterField {
-  key: string
-  label: string
-  type: string
-}
+import { BooleanEnum } from '@/config/constants/enums/label'
 
 interface FilterRule {
-  id: number
+  uuid: number
   field: string | null
-  operator: string
-  value: string
-  logic: 'and' | 'or'
+  filterType: BooleanEnum.TRUE | BooleanEnum.FALSE
+  data: string | undefined
+  connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
 }
 
 const { query } = useRoute() // 查询参数
@@ -104,11 +99,11 @@ const filterFormRef = ref<FormInstance>()
 // 右侧规则列表
 const filterRules = ref<FilterRule[]>([
   {
-    id: Date.now(),
+    uuid: Date.now(),
     field: null,
-    operator: '=',
-    value: '',
-    logic: 'and'
+    filterType: BooleanEnum.TRUE,
+    data: undefined,
+    connectType: BooleanEnum.TRUE
   }
 ])
 
@@ -135,8 +130,8 @@ function onDragStart(evt: any) {
 }
 
 // 克隆字段函数
-function cloneField(field: FilterField) {
-  return isFieldUsed(field.key) ? false : { ...field }
+function cloneField(field: LabelFieldConfig) {
+  return isFieldUsed(field.uuid!) ? false : { ...field }
 }
 
 // 字段放置处理
@@ -158,11 +153,11 @@ function removeField(ruleIndex: number) {
 // 添加新规则
 function addRule() {
   filterRules.value.push({
-    id: Date.now(),
+    uuid: Date.now(),
     field: null,
-    operator: '=',
-    value: '',
-    logic: 'and'
+    filterType: BooleanEnum.TRUE,
+    data: undefined,
+    connectType: BooleanEnum.TRUE
   })
 }
 
@@ -176,7 +171,7 @@ function removeLastRule() {
 // 切换逻辑操作符
 function toggleLogic(index: number) {
   const rule = filterRules.value[index]
-  rule.logic = rule.logic === 'and' ? 'or' : 'and'
+  rule.connectType = rule.connectType === BooleanEnum.TRUE ? BooleanEnum.FALSE : BooleanEnum.TRUE
 }
 
 
@@ -202,7 +197,7 @@ function toggleLogic(index: number) {
  */
  const validateValueNotEmpty = (item: any) => {
   return (_rule: any, _value: any, callback: any) => {
-    if (!item.value) {
+    if (!item.data) {
       return callback(new Error('请输入值'))
     }
     callback()
@@ -227,6 +222,14 @@ const submitForm = () => {
     if (valid) {
       console.log('submit!')
       console.log(filterRules.value)
+      const submitData = filterRules.value.map((item) => {
+        return {
+          ...item,
+          fieldCode: filterFields.value.find((f) => f.id === item.field)?.code,
+          manageId: query.labelId as string,
+        }
+      })
+      console.log(submitData)
     } else {
       console.log('error submit!')
     }
