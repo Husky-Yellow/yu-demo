@@ -260,3 +260,11 @@ export interface StatisticItem {
   name: string
   fields:StatisticField[] // 推荐
 }
+
+export interface FilterRuleConfig {
+  uuid: string
+  fieldId: string | null
+  filterType: BooleanEnum.TRUE | BooleanEnum.FALSE
+  data: string | undefined
+  connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
+}

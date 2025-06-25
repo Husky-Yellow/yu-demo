@@ -28,12 +28,12 @@
         </div>
       </div>
       <el-form :model="filterRules" ref="filterFormRef" :inline="true">
-        <div v-for="(rule, index) in filterRules" :key="rule.uuid" class="rule-item">
+        <div v-for="(rule, index) in filterRules" :key="rule.uuid" class="rule-item" @click="setClickIndex(rule)">
           <div class="rule-content">
             <el-form-item :prop="`filterRules.${index}.field`" :rules="[{ validator: validateFieldsNotEmpty(rule), trigger: 'submit' }]">
               <div class=" bg-gray-100 border border-dashed border-gray-300 rounded px-2px py-2px w-full mt-18px min-w-300px" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
-                <div v-if="rule.field" class="field-display">
-                  <span>{{ getFieldLabel(rule.field) }}</span>
+                <div v-if="rule.fieldId" class="field-display">
+                  <span>{{ getFieldLabel(rule.fieldId) }}</span>
                   <el-button
                     type="danger"
                     size="small"
@@ -57,6 +57,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :prop="`filterRules.${index}.data`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
+              <!-- 、todo @zhaokun 多选的话，需要选择框，然后提交的时候，需要把选择框的值转换为字符串 -->
               <el-input v-model="rule.data" placeholder="请输入值"  class="!w-[200px] mt-18px"/>
             </el-form-item>
           </div>
@@ -79,28 +80,22 @@ import { OperatorOptions } from '@/config/constants/enums/label'
 import type { FormInstance } from 'element-plus'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
-import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
 import { BooleanEnum } from '@/config/constants/enums/label'
-
-interface FilterRule {
-  uuid: number
-  field: string | null
-  filterType: BooleanEnum.TRUE | BooleanEnum.FALSE
-  data: string | undefined
-  connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
-}
+import { generateUUID } from '@/utils'
 
 const { query } = useRoute() // 查询参数
 
 // 左侧可选字段
 const filterFields = ref<LabelFieldConfig[]>([])
 const filterFormRef = ref<FormInstance>()
+const clickIndex = ref<number>(-1)
 
 // 右侧规则列表
-const filterRules = ref<FilterRule[]>([
+const filterRules = ref<FilterRuleConfig[]>([
   {
-    uuid: Date.now(),
-    field: null,
+    uuid: generateUUID(),
+    fieldId: null,
     filterType: BooleanEnum.TRUE,
     data: undefined,
     connectType: BooleanEnum.TRUE
@@ -113,7 +108,7 @@ const draggedField = ref<LabelFieldConfig | null>(null)
 
 // 检查字段是否已被使用
 const isFieldUsed = (fieldKey: string) => {
-  return filterRules.value.some((rule) => rule.field === fieldKey)
+  return filterRules.value.some((rule) => rule.fieldId === fieldKey)
 }
 
 // 获取字段显示标签
@@ -138,23 +133,29 @@ function cloneField(field: LabelFieldConfig) {
 function onFieldDrop(e: DragEvent, ruleIndex: number) {
   e.preventDefault()
   if (draggedField.value && !isFieldUsed(draggedField.value.id as string)) {
-    filterRules.value[ruleIndex].field = draggedField.value.id as string
+    filterRules.value[ruleIndex].fieldId = draggedField.value.id as string
     draggedField.value = null
   }
+}
+
+const setClickIndex = (rule: FilterRuleConfig) => {
+  console.log('rule', rule, filterRules.value)
+  clickIndex.value = filterRules.value.findIndex((item) => item.uuid === rule.uuid)
+  console.log('clickIndex', clickIndex.value)
 }
 
 // 移除字段
 function removeField(ruleIndex: number) {
   if (filterRules.value[ruleIndex]) {
-    filterRules.value[ruleIndex].field = null
+    filterRules.value[ruleIndex].fieldId = null
   }
 }
 
 // 添加新规则
 function addRule() {
   filterRules.value.push({
-    uuid: Date.now(),
-    field: null,
+    uuid: generateUUID(),
+    fieldId: null,
     filterType: BooleanEnum.TRUE,
     data: undefined,
     connectType: BooleanEnum.TRUE
@@ -164,7 +165,25 @@ function addRule() {
 // 移除最后一个规则
 function removeLastRule() {
   if (filterRules.value.length > 1) {
-    filterRules.value.pop()
+    console.log('clickIndex', clickIndex.value)
+    if (filterRules.value[clickIndex.value]?.id) {
+      LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].id }).then(() => {
+        ElMessage.success('删除成功')
+        if (clickIndex.value !== -1) {
+          filterRules.value.splice(clickIndex.value, 1)
+        } else {
+          filterRules.value.pop()
+        }
+      }).catch(() => {
+        ElMessage.error('删除失败')
+      })
+    } else {
+      if (clickIndex.value !== -1) {
+        filterRules.value.splice(clickIndex.value, 1)
+      } else {
+        filterRules.value.pop()
+      }
+    }
   }
 }
 
@@ -182,7 +201,7 @@ function toggleLogic(index: number) {
  */
  const validateFieldsNotEmpty = (item: any) => {
   return (_rule: any, _value: any, callback: any) => {
-    if (!item.field) {
+    if (!item.fieldId) {
       return callback(new Error('请拖入排序字段'))
     }
     callback()
@@ -209,27 +228,35 @@ const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.labelId as string
   })
+  const filterRes = await LabelApi.getFilterConfList({
+    manageId: query.labelId as string
+  })
+  console.log('filterRes', filterRes)
   filterFields.value = res
+  filterRules.value = filterRes.map((item) => {
+    return {
+      ...item,
+      uuid: generateUUID()
+    }
+  })
 }
-
-
-
-
 
 const submitForm = () => {
   if (!filterFormRef.value) return
   filterFormRef.value.validate((valid) => {
     if (valid) {
-      console.log('submit!')
-      console.log(filterRules.value)
       const submitData = filterRules.value.map((item) => {
         return {
           ...item,
-          fieldCode: filterFields.value.find((f) => f.id === item.field)?.code,
+          fieldCode: filterFields.value.find((f) => f.id === item.fieldId)?.code,
           manageId: query.labelId as string,
         }
       })
-      console.log(submitData)
+      LabelApi.updateFilterConfList(submitData).then(() => {
+        ElMessage.success('更新成功')
+      }).catch(() => {
+        ElMessage.error('更新失败')
+      })
     } else {
       console.log('error submit!')
     }
