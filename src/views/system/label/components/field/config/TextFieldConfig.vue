@@ -131,7 +131,7 @@ const convertFormForSubmission = () => {
   return arr.map((item) => ({
     ...item,
     fieldType: FieldType.TEXT,
-    optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []
+    optionsJson: optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []  // todd 格式调整 [{0:value, 1: value}]
   }))
 }
 

@@ -41,7 +41,7 @@ interface TabConfig {
 const tabsConfig: readonly TabConfig[] = [
   // todo 只调整了，文本、数字 其余的还没有调试
   { name: 'field', label: '字段配置', component: defineAsyncComponent(() => import('../../components/field/Field.vue')), saveMethod: 'saveTableData' },
-  // 多选、单选、上传、标签没有调试， 只处理了文本、时间控件，关联关系还没看数据有没有保存
+  // 多选、单选、上传、标签没有调试， 只处理了文本、时间控件，关联关系还没看数据有没有保存 ，字段的过滤还没有加， 字段排序没有加
   { name: 'formEdit', label: '表单配置', component: defineAsyncComponent(() => import('../../components/common/FormEdit.vue')), saveMethod: 'submitForm' },
   { name: 'detailEdit', label: '详情配置', component: defineAsyncComponent(() => import('../../components/common/FormEdit.vue')), saveMethod: 'submitForm' },
   // 调试完成

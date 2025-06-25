@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import type { LabelFieldConfig, OperateConfig } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig, OperateConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
 
 
 /**
@@ -49,7 +49,7 @@ export const getLabelConfigList = async (params: PageParam) => {
  * @returns {Promise<any>} 字段配置列表
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076064
  */
-export const getFieldConfigListByManageId = async (params: { manageId: string }) => {
+export const getFieldConfigListByManageId = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
   return await request.get({ url: '/data/field-conf/list-by-manage-id', params })
 }
 
@@ -191,4 +191,28 @@ export const getSortConf = async (data: { manageId: string }) => {
  */
 export const updateSortConf = async (data: { manageId: string, sortJson: string }) => {
   return await request.put({ url: '/data/sort-conf/update', data })
+}
+
+/**
+ * 获取查询配置列表
+ * @param data
+ * @param data.manageId - 管理ID
+ * @returns {Promise<any>} 查询配置列表
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076035
+ */
+export const getQueryConfList = async (params: { manageId: string }) => {
+  return await request.get({ url: '/data/query-conf/list', params })
+}
+
+
+/**
+ * 更新查询配置列表
+ * @param data
+ * @param data.manageId - 管理ID
+ * @param data.queryJson - 查询配置
+ * @returns {Promise<any>} 更新结果
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076034
+ */
+export const updateQueryConfList = async (data: { manageId: string, queryJson: QueryResItem[] }) => {
+  return await request.put({ url: '/data/query-conf/update-list', data })
 }

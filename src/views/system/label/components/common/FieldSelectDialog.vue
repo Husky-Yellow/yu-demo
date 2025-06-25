@@ -1,11 +1,11 @@
 <template>
   <el-dialog v-model="visible" title="新增" width="500px" @close="onCancel">
     <el-checkbox-group v-model="checkedKeys">
-      <el-row  v-for="item in fieldList" :key="item.key" class="mb-2">
+      <el-row  v-for="item in fieldList" :key="item.id" class="mb-2">
         <el-col :span="24">
           <Icon icon="ep:text" class="mr-2" />
-          <span>{{ item.label }}</span>
-          <el-checkbox :label="item.key" />
+          <span>{{ item.name }}</span>
+          <el-checkbox :disabled="item.fieldType === FieldType.ATTACHMENT" :label="item.name" :value="item.id" />
         </el-col>
       </el-row>
     </el-checkbox-group>
@@ -17,13 +17,14 @@
 </template>
 
 <script setup lang="ts">
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import { FieldType } from '@/config/constants/enums/field'
 const props = defineProps<{
   modelValue: boolean
-  fieldList: Array<{ key: string; label: string }>
+  fieldList: LabelFieldConfig[]
   selectedKeys: string[]
 }>()
 const emit = defineEmits(['update:modelValue', 'confirm'])
-
 const visible = ref(props.modelValue)
 watch(() => props.modelValue, v => visible.value = v)
 watch(visible, v => emit('update:modelValue', v))

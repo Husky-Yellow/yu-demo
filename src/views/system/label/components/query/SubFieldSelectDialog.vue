@@ -3,7 +3,7 @@
     <el-input v-model="searchKeyword" placeholder="搜索字段" class="mb-2" />
     <el-table ref="tableRef" :data="filteredFields" @selection-change="handleSelectionChange" height="300px">
       <el-table-column type="selection" width="55" />
-      <el-table-column property="label" label="字段名" />
+      <el-table-column property="name" label="字段名" />
     </el-table>
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
@@ -13,13 +13,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import type { ElTable } from 'element-plus'
-import { ElDialog, ElInput, ElTableColumn, ElButton } from 'element-plus'
+import { FieldType } from '@/config/constants/enums/field'
 
 const props = defineProps<{
   modelValue: boolean
-  fieldList: Array<{ key: string; label: string; type: string }>
+  fieldList: LabelFieldConfig[]
   excludedKeys?: string[]
   selectedKeysProp?: string[]
 }>()
@@ -28,7 +28,7 @@ const emit = defineEmits(['update:modelValue', 'confirm'])
 
 const dialogVisible = ref(props.modelValue)
 const searchKeyword = ref('')
-const selectedFields = ref<any[]>([])
+const selectedFields = ref<LabelFieldConfig[]>([])
 const tableRef = ref<InstanceType<typeof ElTable>>()
 
 watch(
@@ -37,7 +37,7 @@ watch(
     dialogVisible.value = val
     if (val) {
       nextTick(() => {
-        const preSelected = filteredFields.value.filter(f => props.selectedKeysProp?.includes(f.key))
+        const preSelected = filteredFields.value.filter(f => props.selectedKeysProp?.includes(f.id!))
         preSelected.forEach(row => {
           tableRef.value?.toggleRowSelection(row, true)
         })
@@ -50,20 +50,25 @@ watch(
 )
 
 const filteredFields = computed(() => {
-  return props.fieldList.filter((field) => {
-    const isTextType = field.type === 'string'
-    const isNotExcluded = !props.excludedKeys?.includes(field.key)
-    const matchesSearch = field.label.toLowerCase().includes(searchKeyword.value.toLowerCase())
-    return isTextType && isNotExcluded && matchesSearch
+  return props.fieldList.filter((field: LabelFieldConfig) => {
+    const isTextType = field.fieldType === FieldType.TEXT || field.fieldType === FieldType.NUMBER
+    // const isNotExcluded = !props.excludedKeys?.includes(field.id!)
+    const matchesSearch = field.code.toLowerCase().includes(searchKeyword.value.toLowerCase())
+    return isTextType && matchesSearch
   })
 })
 
-function handleSelectionChange(selection: any[]) {
+function handleSelectionChange(selection: LabelFieldConfig[]) {
   selectedFields.value = selection
 }
 
 function handleConfirm() {
-  const selectedKeys = selectedFields.value.map((f) => f.key)
+  // 如果一个没选中，则不触发 给出消息提示
+  if (selectedFields.value.length === 0) {
+    ElMessage.error('请选择字段')
+    return
+  }
+  const selectedKeys = selectedFields.value.map((f) => f.id!)
   emit('confirm', selectedKeys)
   handleClose()
 }
@@ -76,4 +81,4 @@ function handleClose() {
 .mb-2 {
   margin-bottom: 8px;
 }
-</style> 
+</style>

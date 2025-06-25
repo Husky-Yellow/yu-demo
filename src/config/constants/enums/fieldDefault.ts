@@ -219,3 +219,18 @@ export type LabelDragField = LabelFieldConfig & {
     condition: 'equals' | 'not_equals'
   }
 }
+
+
+export type QueryResItem = {
+  id?: string
+  manageId: string
+  field?: LabelFieldConfig[] // 临时存储
+  fieldCodes?: string // 字段编码  提交的时候逗号隔开
+  fieldIds?: string // 字段id  提交的时候逗号隔开
+  queryType: string // 查询类型 0-搜索 1-单选 2-多选 3-日期区间
+  defaultValue: any // 默认值
+  hint: string // 提示文字
+  sort: number // 排序
+}
+
+export type QueryTableRow = LabelFieldConfig & QueryResItem
