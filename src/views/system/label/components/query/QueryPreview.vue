@@ -35,7 +35,7 @@
         <el-col :span="8" class="action-buttons">
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
-          <el-button v-if="queryFields.length > 2" type="text" @click="toggleExpand">
+          <el-button v-if="queryFields.length > 2"  @click="toggleExpand">
             {{ isExpanded ? '收起' : '更多搜索' }}
             <el-icon>
               <ArrowUp v-if="isExpanded" />
@@ -146,4 +146,4 @@ function handleReset() {
   display: flex;
   align-items: center;
 }
-</style> 
+</style>

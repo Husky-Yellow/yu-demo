@@ -2,7 +2,7 @@
   <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
     <el-form-item label="数字类型" required>
       <el-radio-group v-model="form.numberType">
-        <el-radio v-for="item in NumberTypeOptions" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+        <el-radio v-for="item in NumberTypeOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <template v-if="form.numberType === 'decimal'">
@@ -23,7 +23,7 @@
     </template>
     <el-form-item label="是否进行查重校验" required>
       <el-radio-group v-model="form.duplicateCheck">
-        <el-radio v-for="item in DuplicateCheckOptions" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+        <el-radio v-for="item in DuplicateCheckOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
   </el-form>

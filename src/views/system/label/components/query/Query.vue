@@ -36,16 +36,16 @@
       <el-table-column label="查询类型" prop="queryType">
         <template #default="{ row }">
           <el-radio-group v-model="row.queryType">
-            <el-radio v-if="row.type === 'string' || row.type === 'number'" label="search"
+            <el-radio v-if="row.type === 'string' || row.type === 'number'" value="search"
               >搜索</el-radio
             >
             <template v-else-if="row.type === 'enum'">
-              <el-radio label="radio">单选</el-radio>
-              <el-radio label="checkbox">多选</el-radio>
+              <el-radio value="radio">单选</el-radio>
+              <el-radio value="checkbox">多选</el-radio>
             </template>
             <template v-else-if="row.type === 'date'">
-              <el-radio label="date">时间</el-radio>
-              <el-radio label="daterange">时间区间</el-radio>
+              <el-radio value="date">时间</el-radio>
+              <el-radio value="daterange">时间区间</el-radio>
             </template>
           </el-radio-group>
         </template>
@@ -93,7 +93,7 @@
       </el-table-column>
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button v-if="row.queryType === 'search'" type="text" @click="openSubFieldDialog(row)">
+          <el-button v-if="row.queryType === 'search'" @click="openSubFieldDialog(row)">
             添加字段
           </el-button>
         </template>

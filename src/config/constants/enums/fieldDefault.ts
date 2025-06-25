@@ -49,8 +49,15 @@ export const defaultFieldConfExt = {
   duplicateCheck: 'noCheck' as DuplicateCheck,
   /** 数据验证 */
   dataValidation: 'none' as DataValidation,
+  /** 正则表达式 */
+  regex: '',
+  /** 提示信息 */
+  prompt: '',
   /** 数字类型 */
   numberType: 'integer' as NumberType,
+  /** 小数位数 */
+  decimalPlaces: 0,
+
   /** 日期精度 */
   datePrecision: 'date',
   /** 编码2 */
@@ -63,10 +70,7 @@ export const defaultFieldConfExt = {
   formatSearch: '',
   /** 选中的字典编码 */
   selectedDictCode: '',
-  /** 正则表达式 */
-  regex: '',
-  /** 提示信息 */
-  prompt: ''
+
 }
 
 /** 字段扩展配置类型 */

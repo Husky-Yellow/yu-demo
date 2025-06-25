@@ -34,9 +34,9 @@
           </div>
           <el-form-item label="排序类型" :prop="`sortItems.${index}.sortType`">
             <el-radio-group v-model="item.sortType">
-              <el-radio :label="0">数据添加时间</el-radio>
-              <el-radio :label="1">数据修改时间</el-radio>
-              <el-radio :label="2">自定义排序</el-radio>
+              <el-radio :value="0">数据添加时间</el-radio>
+              <el-radio :value="1">数据修改时间</el-radio>
+              <el-radio :value="2">自定义排序</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item

@@ -2,21 +2,21 @@
   <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
     <el-form-item label="文本类型" prop="textType" >
       <el-radio-group v-model="form.textType">
-        <el-radio v-for="item in TextTypeOptions" :key="item.value" :label="item.value">{{
+        <el-radio v-for="item in TextTypeOptions" :key="item.value" :value="item.value">{{
           item.label
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="是否进行查重校验" prop="duplicateCheck" >
       <el-radio-group v-model="form.duplicateCheck">
-        <el-radio v-for="item in DuplicateCheckOptions" :key="item.value" :label="item.value">{{
+        <el-radio v-for="item in DuplicateCheckOptions" :key="item.value" :value="item.value">{{
           item.label
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="数据校验" prop="dataValidation" >
       <el-radio-group v-model="form.dataValidation">
-        <el-radio v-for="item in DataValidationOptions" :key="item.value" :label="item.value">{{
+        <el-radio v-for="item in DataValidationOptions" :key="item.value" :value="item.value">{{
           item.label
         }}</el-radio>
       </el-radio-group>

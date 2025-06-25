@@ -93,7 +93,7 @@
                         <el-input v-model="element.value" class="!w-[200px] mt-18px mr-6px" />
                       </el-form-item>
                     </template>
-                    <el-button type="text" @click="removeField(idx, index)">删除</el-button>
+                    <el-button @click="removeField(idx, index)">删除</el-button>
                   </div>
                 </template>
                 <template #footer>

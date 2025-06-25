@@ -4,19 +4,17 @@
     v-show="total > 0"
     v-model:current-page="currentPage"
     v-model:page-size="pageSize"
-    :background="true"
-    :page-sizes="[10, 20, 30, 50, 100]"
     :pager-count="pagerCount"
+    :size="size"
+    :page-sizes="[10, 20, 30, 50, 100]"
     :total="total"
-    :small="isSmall"
-    class="float-right mb-15px mt-15px"
     layout="total, sizes, prev, pager, next, jumper"
+    class="float-right mb-15px mt-15px"
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
   />
 </template>
 <script lang="ts" setup>
-import { computed, watchEffect } from 'vue'
 import { useAppStore } from '@/store/modules/app'
 
 defineOptions({ name: 'Pagination' })
@@ -24,9 +22,9 @@ defineOptions({ name: 'Pagination' })
 // 此处解决了当全局size为small的时候分页组件样式太大的问题
 const appStore = useAppStore()
 const layoutCurrentSize = computed(() => appStore.currentSize)
-const isSmall = ref<boolean>(layoutCurrentSize.value === 'small')
+const size = ref< "small" | "default" | "large"  >(layoutCurrentSize.value)
 watchEffect(() => {
-  isSmall.value = layoutCurrentSize.value === 'small'
+  size.value = layoutCurrentSize.value
 })
 
 const props = defineProps({

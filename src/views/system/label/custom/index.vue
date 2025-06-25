@@ -81,8 +81,8 @@ const { push } = useRouter() // 路由
 const { query } = useRoute() // 查询参数
 
 const loading = ref(true) // 列表的加载中
-const list = ref() // 列表的数据
-const total = ref() // 列表的数据
+const list = ref<any[]>([]) // 列表的数据
+const total = ref<number>(0) // 列表的数据
 const isExpandAll = ref(true) // 是否展开，默认全部展开
 const queryParams = reactive({
   pageNo: 1,
