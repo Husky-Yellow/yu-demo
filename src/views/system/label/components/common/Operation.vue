@@ -101,9 +101,10 @@ const getDataFieldConfListByManageId = async () => {
 
 // 提交表单
 const submitForm = () => {
-  const submitData = tableData.value.map(item => ({
+  const submitData = tableData.value.map((item, index) => ({
     ...item,
-    operateName: item.operateName.trim()
+    operateName: item.operateName.trim(),
+    sort: index
   }))
 
   if (submitData.some(item => !item.operateName)) {

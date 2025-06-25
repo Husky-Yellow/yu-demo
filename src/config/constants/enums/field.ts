@@ -84,3 +84,14 @@ export const DecimalPlacesOptions = [
   { label: '3', value: 3 },
 ] as const;
 export type DecimalPlaces = typeof DecimalPlacesOptions[number]['value'];
+
+
+export const LableDatePrecisionOptions = [
+  { label: '选至年', value: 'year', example: 'YYYY' },
+  { label: '选至月', value: 'month', example: 'YYYY/MM' },
+  { label: '选至日', value: 'date', example: 'YYYY/MM/DD' },
+  { label: '选至时', value: 'hour', example: 'YYYY/MM/DD HH:00' },
+  { label: '选至分', value: 'minute', example: 'YYYY/MM/DD HH:mm' },
+  { label: '选至秒', value: 'second', example: 'YYYY/MM/DD HH:mm:ss' }
+];
+export type LableDatePrecision = typeof LableDatePrecisionOptions[number]['value'];

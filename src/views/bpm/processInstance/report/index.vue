@@ -70,7 +70,6 @@
         :label="item.title"
         :prop="item.field"
       >
-        <!-- TODO @lesan：目前只支持input类型的字符串搜索 -->
         <el-input
           :disabled="item.type !== 'input'"
           v-model="queryParams.formFieldsParams[item.field]"

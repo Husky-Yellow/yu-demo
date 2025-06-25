@@ -37,7 +37,7 @@ watch(
     dialogVisible.value = val
     if (val) {
       nextTick(() => {
-        const preSelected = filteredFields.value.filter(f => props.selectedKeysProp?.includes(f.id!))
+        const preSelected = filteredFields.value.filter(f => props.selectedKeysProp?.includes(f.uuid!))
         preSelected.forEach(row => {
           tableRef.value?.toggleRowSelection(row, true)
         })
@@ -68,7 +68,7 @@ function handleConfirm() {
     ElMessage.error('请选择字段')
     return
   }
-  const selectedKeys = selectedFields.value.map((f) => f.id!)
+  const selectedKeys = selectedFields.value.map((f) => f.uuid!)
   emit('confirm', selectedKeys)
   handleClose()
 }

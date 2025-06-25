@@ -319,7 +319,6 @@ const handleUserSelectConfirm = (activityId: string, userList: any[]) => {
 
 /** 跳转子流程 */
 const handleChildProcess = (activity: any) => {
-  // TODO @lesan：貌似跳不过去？！
   push({
     name: 'BpmProcessInstanceDetail',
     query: {

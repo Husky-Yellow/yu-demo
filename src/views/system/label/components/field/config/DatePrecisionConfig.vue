@@ -1,12 +1,12 @@
 <template>
-  <el-form :model="form" label-width="120px">
-    <el-form-item label="Code2" required v-show="type === FieldType.DATE_RANGE">
+  <el-form :model="form" :rules="rules" ref="formRef" label-width="120px">
+    <el-form-item label="Code2" required v-show="type === FieldType.DATE_RANGE" prop="code2">
       <el-input v-model="form.code2" />
     </el-form-item>
     <el-form-item label="日期精度" required>
       <el-radio-group v-model="form.datePrecision">
         <el-radio
-          v-for="item in datePrecisionOptions"
+          v-for="item in LableDatePrecisionOptions"
           :key="item.value"
           :label="item.value"
         >
@@ -18,31 +18,58 @@
 </template>
 
 <script setup lang="ts">
-import { FieldType } from '@/config/constants/enums/field';
-const datePrecisionOptions = [
-  { label: '选至年', value: 'year', example: 'YYYY' },
-  { label: '选至月', value: 'month', example: 'YYYY/MM' },
-  { label: '选至日', value: 'date', example: 'YYYY/MM/DD' },
-  { label: '选至时', value: 'hour', example: 'YYYY/MM/DD HH:00' },
-  { label: '选至分', value: 'minute', example: 'YYYY/MM/DD HH:mm' },
-  { label: '选至秒', value: 'second', example: 'YYYY/MM/DD HH:mm:ss' }
-];
+import type { FormInstance, FormRules } from 'element-plus'
+import { FieldType, LableDatePrecisionOptions } from '@/config/constants/enums/field';
+import { defaultDatePrecisionForm, DatePrecisionForm } from '@/config/constants/enums/fieldDefault';
+import { convertObjectToArray } from '@/utils'
 
 const props = defineProps<{
-  modelValue?: {
-    datePrecision: string;
-    code2: string;
-  }
+  modelValue?: DatePrecisionForm;
   type: FieldType;
 }>();
 const emit = defineEmits(['update:modelValue']);
 
-const form = reactive({
-  datePrecision: props.modelValue?.datePrecision || 'date',
-  code2: props.modelValue?.code2 || '',
-});
+const formRef = ref<FormInstance>()
+const form = reactive<DatePrecisionForm>({
+  ...defaultDatePrecisionForm,
+  ...(props.modelValue ? Object.fromEntries(
+    Object.keys(defaultDatePrecisionForm).map(key => [key, props.modelValue?.[key as keyof DatePrecisionForm] ?? defaultDatePrecisionForm[key as keyof DatePrecisionForm]])
+  ) : {})
+})
+const rules: FormRules = {
+  code2: [{ required: true, message: '请输入code2', trigger: 'blur' }],
+}
 
-watch(form, (val) => {
-  emit('update:modelValue', { ...val });
-}, { deep: true });
+const convertFormForSubmission = () => {
+  const arr = convertObjectToArray(JSON.parse(JSON.stringify(form)))
+  const optionsJsonMap = {
+    datePrecision: LableDatePrecisionOptions,
+  }
+  return arr.map((item) => ({
+    ...item,
+    fieldType: FieldType.NUMBER,
+    optionsJson: JSON.stringify(Object.fromEntries(
+        (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])
+      ))
+  }))
+}
+
+// 暴露验证方法
+const validate = async () => {
+  if (!formRef.value) return false
+  try {
+    await formRef.value.validate()
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+
+// 暴露给父组件
+defineExpose({
+  validate,
+  formRef,
+  convertFormForSubmission
+})
 </script>

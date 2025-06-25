@@ -73,14 +73,7 @@ import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
-
-interface SortItem {
-  id: number
-  sortType: 0 | 1 | 2
-  sortRule: 0 | 1
-  field?: LabelFieldConfig | null
-}
+import type { LabelFieldConfig, SortItem } from '@/config/constants/enums/fieldDefault'
 
 const { query } = useRoute() // 查询参数
 
@@ -175,6 +168,14 @@ const submitForm = () => {
     if (valid) {
       console.log('submit!')
       console.log(formModel.value.sortItems)
+      LabelApi.updateSortConfList(formModel.value.sortItems.map((item, index) => ({
+          ...item,
+          sort: index
+        }))).then(() => {
+        ElMessage.success('排序配置更新成功')
+      }).catch(() => {
+        ElMessage.error('排序配置更新失败')
+      })
     } else {
       console.log('error submit!')
     }
@@ -186,6 +187,12 @@ const fetchData = async () => {
     manageId: query.labelId as string
   })
   sortFields.value = res
+  const sortConfList = await LabelApi.getSortConfList({
+    manageId: query.labelId as string
+  })
+  if (sortConfList.length > 0) {
+    formModel.value.sortItems = sortConfList
+  }
 }
 
 

@@ -52,7 +52,7 @@ const tabsConfig: readonly TabConfig[] = [
   { name: 'Data', label: '数据配置', component: defineAsyncComponent(() => import('../../components/filter/Filter.vue')), saveMethod: 'submitForm' },
   // 接口调整
   { name: 'Sorting', label: '排序配置', component: defineAsyncComponent(() => import('../../components/sort/Sort.vue')), saveMethod: 'submitForm' },
-  // 接口调整
+  // 接口调整 调不好了！！！
   { name: 'Statistical', label: '统计配置', component: defineAsyncComponent(() => import('../../components/statistic/StatisticConfig.vue')), saveMethod: 'submitForm' },
 ]
 

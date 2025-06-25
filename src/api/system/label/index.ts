@@ -1,6 +1,5 @@
 import request from '@/config/axios'
-import type { LabelFieldConfig, OperateConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
-
+import type { LabelFieldConfig, OperateConfig, QueryResItem, SortItem, StatisticItem } from '@/config/constants/enums/fieldDefault'
 
 /**
  * 获取标签管理分页数据
@@ -54,6 +53,38 @@ export const getFieldConfigListByManageId = async (params: { manageId: string })
 }
 
 /**
+ * 根据管理ID获取统计配置列表
+ * @param {Object} params - 查询参数
+ * @param {string} params.manageId - 管理ID
+ * @returns {Promise<any>} 统计配置列表
+ * @see https://app.apifox.com/link/project/6505154/apis/api-313182051
+ */
+export const getCountConfigListByManageId = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
+  return await request.get({ url: '/data/count-conf/list-fieId', params })
+}
+
+/**
+ * 获取统计配置列表
+ * @param {Object} params - 查询参数
+ * @param {string} params.manageId - 管理ID
+ * @returns {Promise<any>} 统计配置列表
+ * @see https://app.apifox.com/link/project/6505154/apis/api-313182051
+ */
+export const getCountConfigList = async (params: { manageId: string }): Promise<StatisticItem[]> => {
+  return await request.get({ url: '/data/count-conf/list', params })
+}
+
+/**
+ * 更新统计配置列表
+ * @param {any} data - 统计配置数据列表
+ * @returns {Promise<any>} 更新结果
+ * @see https://app.apifox.com/link/project/6505154/apis/api-313182051
+ */
+export const updateCountConfigList = async (data: StatisticItem[]) => {
+  return await request.put({ url: '/data/count-conf/update-list', data })
+}
+
+/**
  * 创建标签配置列表（已弃用）
  * @deprecated 自 v2.3.0 起弃用，请使用 updateFieldConfigList 函数
  * @param {LabelFieldConfig[]} data - 标签配置数据列表
@@ -100,7 +131,7 @@ export const getOperateConfigList = async (params: { manageId: string }) => {
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076043
  */
 export const updateOperateConfigList = async (data: OperateConfig[]) => {
-  return await request.put({ url: '/data/operate-conf/update', data })
+  return await request.put({ url: '/data/operate-conf/update-list', data })
 }
 
 /**
@@ -177,8 +208,8 @@ export const createSortConf = async (data: { manageId: string, sortJson: string 
  * @returns {Promise<any>} 排序配置
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076037
  */
-export const getSortConf = async (data: { manageId: string }) => {
-  return await request.get({ url: '/data/sort-conf/list', data })
+export const getSortConfList = async (params: { manageId: string }): Promise<SortItem[]> => {
+  return await request.get({ url: '/data/sort-conf/list', params })
 }
 
 /**
@@ -189,8 +220,8 @@ export const getSortConf = async (data: { manageId: string }) => {
  * @returns {Promise<any>} 排序配置
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076036
  */
-export const updateSortConf = async (data: { manageId: string, sortJson: string }) => {
-  return await request.put({ url: '/data/sort-conf/update', data })
+export const updateSortConfList = async (data: SortItem[]) => {
+  return await request.put({ url: '/data/sort-conf/update-list', data })
 }
 
 /**
@@ -200,7 +231,7 @@ export const updateSortConf = async (data: { manageId: string, sortJson: string 
  * @returns {Promise<any>} 查询配置列表
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076035
  */
-export const getQueryConfList = async (params: { manageId: string }) => {
+export const getQueryConfList = async (params: { manageId: string }): Promise<QueryResItem[]> => {
   return await request.get({ url: '/data/query-conf/list', params })
 }
 
@@ -213,6 +244,19 @@ export const getQueryConfList = async (params: { manageId: string }) => {
  * @returns {Promise<any>} 更新结果
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076034
  */
-export const updateQueryConfList = async (data: { manageId: string, queryJson: QueryResItem[] }) => {
+export const updateQueryConfList = async (data: QueryResItem[]) => {
   return await request.put({ url: '/data/query-conf/update-list', data })
+}
+
+
+/**
+ * 删除查询配置列表
+ * @param data
+ * @param data.manageId - 管理ID
+ * @param data.queryJson - 查询配置
+ * @returns {Promise<any>} 删除结果
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076059
+ */
+export const deleteQueryConfList = async (params: { ids: string[] }) => {
+  return await request.delete({ url: '/data/query-conf/delete-list', params })
 }

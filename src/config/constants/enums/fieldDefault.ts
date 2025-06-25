@@ -34,9 +34,15 @@ export const defaultNumberFieldForm = {
   /** 小数位数 */
   decimalPlaces: 0
 }
-
 /** 数字字段表单类型 */
 export type NumberFieldForm = typeof defaultNumberFieldForm
+
+export const defaultDatePrecisionForm = {
+  datePrecision: 'date',
+  code2: ''
+}
+export type DatePrecisionForm = typeof defaultDatePrecisionForm
+
 
 /**
  * 字段扩展配置默认值
@@ -227,10 +233,30 @@ export type QueryResItem = {
   field?: LabelFieldConfig[] // 临时存储
   fieldCodes?: string // 字段编码  提交的时候逗号隔开
   fieldIds?: string // 字段id  提交的时候逗号隔开
-  queryType: string // 查询类型 0-搜索 1-单选 2-多选 3-日期区间
+  queryType: number // 查询类型 0-搜索 1-单选 2-多选 3-日期区间 4-日期
   defaultValue: any // 默认值
   hint: string // 提示文字
   sort: number // 排序
 }
 
 export type QueryTableRow = LabelFieldConfig & QueryResItem
+
+
+export type SortItem = {
+  id: number
+  sortType: 0 | 1 | 2
+  sortRule: 0 | 1
+  field?: LabelFieldConfig | null
+}
+
+
+export interface StatisticField extends Partial<LabelFieldConfig> {
+  filterType: number
+  value: string
+}
+/** 单个统计项的定义 */
+export interface StatisticItem {
+  uuid: number
+  name: string
+  fields:StatisticField[] // 推荐
+}

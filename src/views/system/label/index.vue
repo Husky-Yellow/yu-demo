@@ -30,7 +30,6 @@ const queryParams = reactive({
 
 /** 查询标签列表 */
 const getList = async () => {
-  // todo 写死的几个标签没有返回来
   loading.value = true
   try {
     const data = await LabelApi.getLabelConfigList(queryParams)

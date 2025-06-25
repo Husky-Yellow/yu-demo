@@ -5,13 +5,13 @@
       <VueDraggable
         :list="fields"
         :group="{ name: 'fields', pull: 'clone', put: false }"
-        :item-key="'key'"
+        :item-key="'uuid'"
         :clone="cloneField"
         :sort="false"
         class="min-h-[100px]"
       >
         <template #item="{ element }">
-          <FieldPoolItem :hasKeyString="'id'" :element="element" :isFieldUsed="isFieldUsed" />
+          <FieldPoolItem :hasKeyString="'uuid'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -26,7 +26,7 @@
       <el-form :model="statistics" ref="statFormRef">
         <VueDraggable :list="statistics" :item-key="'id'" class="statistic-list">
           <template #item="{ element: item, index: idx }">
-            <div class="stat-item">
+            <div class="stat-item" @click="handleStatisticClick(idx)">
               <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
               <div class="stat-item-header">
                 名称：
@@ -58,10 +58,10 @@
                     <!-- todo 这里要改成标签类型 -->
                     <span class="!w-[80px] text-right mr-6px">{{ element.name }}</span>
                     <el-form-item
-                      :prop="`${idx}.fields.${index}.condition`"
+                      :prop="`${idx}.fields.${index}.filterType`"
                       :rules="{ required: true, message: '请选择条件' }"
                     >
-                      <el-select v-model="element.condition" class="!w-[120px] mt-18px mr-6px">
+                      <el-select v-model="element.filterType" class="!w-[120px] mt-18px mr-6px">
                         <el-option
                           v-for="operatorItem in OperatorOptions"
                           :key="operatorItem.value"
@@ -117,36 +117,16 @@ import type { FormInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
-import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig, StatisticItem, StatisticField } from '@/config/constants/enums/fieldDefault'
+import { pick } from 'lodash-es'
 
-/** 字段定义 */
-interface Field {
-  key: string
-  label: string
-  type: 'select' | 'input'
-  options?: Array<{ label: string; value: string }>
-}
-
-interface StatisticField extends Partial<LabelFieldConfig> {
-  condition: number
-  value: string
-}
-
-/** 统计项中的字段定义，继承自 Field 并增加了条件和值 */
-
-
-/** 单个统计项的定义 */
-interface StatisticItem {
-  id: number
-  name: string
-  fields:StatisticField[] // 推荐
-}
 const { query } = useRoute() // 查询参数
 // 示例字段
 const fields = ref<LabelFieldConfig[]>([])
+const slectIndex = ref<number>(-1)
 /** 统计项列表：用户配置的统计规则 */
 const statistics = ref<StatisticItem[]>([{
-  id: Date.now(),
+  uuid: Date.now(),
   name: '',
   fields: []
 }])
@@ -157,7 +137,7 @@ const usedFieldKeys = computed(() => {
   const keys = new Set<string>()
   statistics.value.forEach((stat) => {
     stat.fields.forEach((field) => {
-      keys.add(field.id as string)
+      keys.add(field.uuid as string)
     })
   })
   return keys
@@ -178,23 +158,32 @@ function isFieldUsed(key: string): boolean {
  * @returns 克隆后的字段对象，如果字段已使用则返回 false
  */
 function cloneField(field: StatisticField): StatisticField | false {
-  if (isFieldUsed(field.id as string)) {
+  if (isFieldUsed(field.uuid as string)) {
     return false
   }
-  return { ...field, condition: 1, value: '' }
+  return { ...field, filterType: 1, value: '' }
 }
 
 /** 添加一个新的空统计项 */
 function addStatistic() {
-  statistics.value.push({ id: Date.now(), name: '', fields: [
-  ] })
+  statistics.value.push({ uuid: Date.now(), name: '', fields: [] })
 }
 
 /** 删除最后一个统计项 */
 function removeLastStatistic() {
   if (statistics.value.length > 0) {
-    statistics.value.pop()
+    if (slectIndex.value >= 0 && slectIndex.value < statistics.value.length) {
+      statistics.value.splice(slectIndex.value, 1)
+      // 删除后重置选择索引
+      slectIndex.value = -1
+    } else {
+      statistics.value.pop()
+    }
   }
+}
+
+const handleStatisticClick = (idx: number) => {
+  slectIndex.value = idx
 }
 
 /**
@@ -214,7 +203,7 @@ function removeField(statIdx: number, fieldIdx: number) {
  function onFieldDrop(statIdx: number, evt: any) {
   const field = statistics.value[statIdx].fields[evt.newIndex]
   if (field) {
-    if (field.condition === undefined) field.condition = 1
+    if (field.filterType === undefined) field.filterType = 1
     if (field.value === undefined) field.value = ''
   }
 }
@@ -255,8 +244,29 @@ const submitForm = () => {
   if (!statFormRef.value) return
   statFormRef.value.validate((valid) => {
     if (valid) {
-      console.log('submit!')
       console.log(statistics.value)
+      const submitData = statistics.value.map((item, index) => {
+        console.log(item.fields);
+
+        const obj = pick({
+          ...item,
+          ...item.fields[0]
+        }, ['id', 'manageId', 'formId','fieldId','name','type','filterType','bizType'])
+        console.log(obj);
+
+        return {
+          ...obj,
+          type: item.type ||item.fields[0]?.bizType,
+          sort: index,
+          manageId: query.labelId as string,
+        }
+      }) as unknown as StatisticItem[]
+      console.log(submitData)
+      LabelApi.updateCountConfigList(submitData).then(() => {
+        ElMessage.success('统计配置更新成功')
+      }).catch(() => {
+        ElMessage.error('统计配置更新失败')
+      })
     } else {
       console.log('error submit!')
     }
@@ -267,7 +277,23 @@ const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.labelId as string
   })
-  fields.value = res
+  const countConfigList = await LabelApi.getCountConfigList({
+    manageId: query.labelId as string
+  })
+  fields.value = res.map((item) => {
+    delete item.id
+    item.uuid = item.id
+    return item
+  })
+
+  if (countConfigList.length > 0) {
+    statistics.value = countConfigList.map((item) => ({
+      ...item,
+      fields: [item]
+    })) as unknown as StatisticItem[]
+  }
+
+  console.log(statistics.value)
 }
 
 

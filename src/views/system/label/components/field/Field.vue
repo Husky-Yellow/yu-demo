@@ -124,7 +124,7 @@ const tableRef = ref<TableInstance | null>(null)
 const multipleSelection = ref<LabelFieldConfig[]>([])
 const sortable = ref(null)
 const tableData = ref<LabelFieldConfig[]>([])
-const selectable = (row: LabelFieldConfig) => ![BooleanEnum.TRUE].includes(row.bizType) // todo 系统字段不可点击
+const selectable = (row: LabelFieldConfig) => ![BooleanEnum.TRUE].includes(row.bizType)
 
 // 初始化 Sortable
 const initSortable = () => {

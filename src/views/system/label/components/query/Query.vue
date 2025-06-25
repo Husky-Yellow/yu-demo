@@ -25,28 +25,25 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="提示文字" prop="placeholder">
+      <el-table-column label="提示文字" prop="fieldType">
         <template #default="{ row }">
-          <el-input v-if="row.fieldType === FieldType.TEXT || row.fieldType === FieldType.NUMBER" v-model="row.placeholder" size="small" placeholder="请输入提示文字" />
+          <el-input v-if="row.fieldType === FieldType.TEXT || row.fieldType === FieldType.NUMBER" v-model="row.hint" size="small" placeholder="请输入提示文字" />
           <!-- todo @zhaokun 多选、单选、日期 控件-->
-          <el-select v-else-if="row.fieldType === FieldType.RADIO || row.fieldType === FieldType.CHECKBOX" v-model="row.placeholder" size="small" placeholder="请选择提示文字">
-            <el-option v-for="opt in getEnumOptions(row.key)" :key="opt.value" :label="opt.label" :value="opt.value" />
-          </el-select>
         </template>
       </el-table-column>
       <el-table-column label="查询类型" prop="queryType">
         <template #default="{ row }">
           <el-radio-group v-model="row.queryType">
-            <el-radio v-if="row.fieldType === FieldType.TEXT || row.fieldType === FieldType.NUMBER" value="0"
+            <el-radio v-if="row.fieldType === FieldType.TEXT || row.fieldType === FieldType.NUMBER" :value="0"
               >搜索</el-radio
             >
             <template v-else-if="row.fieldType === 'enum'">
-              <el-radio value="1">单选</el-radio>
-              <el-radio value="2">多选</el-radio>
+              <el-radio :value="1">单选</el-radio>
+              <el-radio :value="2">多选</el-radio>
             </template>
             <template v-else-if="row.fieldType === 'date'">
-              <el-radio value="3">时间</el-radio>
-              <el-radio value="4">时间区间</el-radio>
+              <el-radio :value="3">时间</el-radio>
+              <el-radio :value="4">时间区间</el-radio>
             </template>
           </el-radio-group>
         </template>
@@ -54,14 +51,14 @@
       <el-table-column label="默认值" prop="defaultValue">
         <template #default="{ row }">
           <!-- 搜索：输入框 -->
-          <el-input v-if="row.queryType === '0'" v-model="row.defaultValue" size="small" placeholder="请输入默认值" />
+          <el-input v-if="row.queryType === 0" v-model="row.defaultValue" size="small" placeholder="请输入默认值" />
           <!-- todo @zhaokun 多选、单选、日期 控件  默认值-->
           <!-- 单选/多选：下拉框 -->
           <el-select
-            v-else-if="row.queryType === 'radio' || row.queryType === 'checkbox'"
+            v-else-if="row.queryType === 1 || row.queryType === 2"
             v-model="row.defaultValue"
             size="small"
-            :multiple="row.queryType === 'checkbox'"
+            :multiple="row.queryType === 2"
             placeholder="请选择"
             style="width: 120px"
           >
@@ -74,7 +71,7 @@
           </el-select>
           <!-- 时间/时间区间：时间选择器 -->
           <el-date-picker
-            v-else-if="row.queryType === 'date'"
+            v-else-if="row.queryType === 3 || row.queryType === 4"
             v-model="row.defaultValue"
             type="date"
             placeholder="请选择日期"
@@ -82,7 +79,7 @@
             style="width: 140px"
           />
           <el-date-picker
-            v-else-if="row.queryType === 'daterange'"
+            v-else-if="row.queryType === 5"
             v-model="row.defaultValue"
             type="daterange"
             range-separator="至"
@@ -91,11 +88,12 @@
             size="small"
             style="width: 220px"
           />
+          <div v-else></div>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button link type="primary" v-if="row.queryType === '0'" @click="openSubFieldDialog(row)">
+          <el-button link type="primary" v-if="row.queryType === 0" @click="openSubFieldDialog(row)">
             添加字段
           </el-button>
         </template>
@@ -111,7 +109,7 @@
     <FieldSelectDialog
       v-model="showDialog"
       :fieldList="allFields"
-      :selectedKeys="tableData.map((i) => i.id!)"
+      :selectedKeys="tableData.map((i) => i.uuid!)"
       @confirm="addFields"
     />
     <!-- 子字段选择弹窗 -->
@@ -119,7 +117,7 @@
       v-model="showSubFieldDialog"
       :field-list="allFields"
       :excluded-keys="subFieldExcludedKeys"
-      :selected-keys-prop="currentRow?.field?.map((f) => f.id!) || []"
+      :selected-keys-prop="currentRow?.field?.map((f) => f.uuid!) || []"
       @confirm="addSubFields"
     />
     <!-- 预览弹窗 -->
@@ -141,115 +139,24 @@ import { FieldType } from '@/config/constants/enums/field'
 
 // 单选、多选、区域、标签为单选或者多选  日期和日期区间为日期或者日期区间  文本和数字可以多个字段合并查询
 const fieldTypeLabelMap = {
-  [FieldType.TEXT]: '0',
-  [FieldType.NUMBER]: '0',
-  [FieldType.RADIO]: '1',
-  [FieldType.CHECKBOX]: '2',
-  [FieldType.DATE]: '3',
-  [FieldType.DATE_RANGE]: '4',
-  [FieldType.ADDRESS]: '0',
-  [FieldType.REGION]: '0',
-  [FieldType.TAG]: '0',
-  [FieldType.ATTACHMENT]: '0',
+  [FieldType.TEXT]: 0,
+  [FieldType.NUMBER]: 0,
+  [FieldType.RADIO]: 1,
+  [FieldType.CHECKBOX]: 2,
+  [FieldType.DATE]: 3,
+  [FieldType.DATE_RANGE]: 4,
+  [FieldType.ADDRESS]: 0,
+  [FieldType.REGION]: 0,
+  [FieldType.TAG]: 0,
+  [FieldType.ATTACHMENT]: 0,
 }
 
 const { query } = useRoute() // 查询参数
-
+const message = useMessage()
 // 所有字段
 const allFields = shallowRef<LabelFieldConfig[]>([])
 // 表格数据
-const tableData = ref<QueryTableRow[]>([
-  // {
-  //   key: 'name',
-  //   label: '姓名',
-  //   type: 'string',
-  //   placeholder: '请输入姓名',
-  //   queryType: 'search',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'idNo',
-  //   label: '证件号码',
-  //   type: 'string',
-  //   placeholder: '请输入证件号码',
-  //   queryType: 'search',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'idType',
-  //   label: '证件类型',
-  //   type: 'enum',
-  //   placeholder: '请选择证件类型',
-  //   queryType: 'radio',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'level',
-  //   label: '人员等级',
-  //   type: 'enum',
-  //   placeholder: '请选择等级',
-  //   queryType: 'checkbox',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'addTime',
-  //   label: '数据添加时间',
-  //   type: 'date',
-  //   placeholder: '请选择时间',
-  //   queryType: 'date',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'editTime',
-  //   label: '数据修改时间',
-  //   type: 'date',
-  //   placeholder: '请选择时间',
-  //   queryType: 'daterange',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'gender',
-  //   label: '性别',
-  //   type: 'enum',
-  //   placeholder: '请选择性别',
-  //   queryType: 'radio',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'age',
-  //   label: '年龄',
-  //   type: 'number',
-  //   placeholder: '请输入年龄',
-  //   queryType: 'search',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'phone',
-  //   label: '手机号',
-  //   type: 'string',
-  //   placeholder: '请输入手机号',
-  //   queryType: 'search',
-  //   defaultValue: '',
-  //   subFields: []
-  // },
-  // {
-  //   key: 'status',
-  //   label: '状态',
-  //   type: 'enum',
-  //   placeholder: '请选择状态',
-  //   queryType: 'checkbox',
-  //   defaultValue: '',
-  //   subFields: []
-  // }
-])
+const tableData = ref<QueryTableRow[]>([])
 const showDialog = ref<boolean>(false)
 const showSubFieldDialog = ref<boolean>(false)
 const showPreviewDialog = ref<boolean>(false)
@@ -279,31 +186,21 @@ function addFields(ids: string[]) {
   })
 }
 
-function getEnumOptions(key) {
-  const map = {
-    idType: [
-      { label: '身份证', value: 'idcard' },
-      { label: '护照', value: 'passport' }
-    ],
-    level: [
-      { label: '一级', value: '1' },
-      { label: '二级', value: '2' }
-    ],
-    gender: [
-      { label: '男', value: 'male' },
-      { label: '女', value: 'female' }
-    ],
-    status: [
-      { label: '启用', value: 'enable' },
-      { label: '禁用', value: 'disable' }
-    ]
-  }
-  return map[key] || []
-}
 
 function removeSelected() {
-  tableData.value = tableData.value.filter((row) => !selectedRowKeys.value.includes(row.uuid!))
-  selectedRowKeys.value = []
+  ElMessageBox.confirm('确定删除吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(() => {
+    LabelApi.deleteQueryConfList({ ids: selectedRowKeys.value }).then(() => {
+    tableData.value = tableData.value.filter((row) => !selectedRowKeys.value.includes(row.uuid!))
+    selectedRowKeys.value = []
+    ElMessage.success('删除成功')
+  }).catch(() => {
+    ElMessage.error('删除失败')
+  })
+  })
 }
 
 function onSelectionChange(rows: QueryTableRow[]) {
@@ -360,13 +257,20 @@ const fetchData = async () => {
   const queryConfList = await LabelApi.getQueryConfList({
     manageId: query.labelId as string
   })
-  console.log(queryConfList)
-  tableData.value = queryConfList || []
-  allFields.value = res.map(item => ({
+  allFields.value = res.map(item => {
+    item.uuid = item.id
+    delete item.id
+    return item
+  })
+
+  tableData.value = (queryConfList || []).map(item => {
+    const field = item.fieldIds ? allFields.value.filter(f => item.fieldIds?.split(',').includes(f.uuid!)) : []
+    return {
     ...item,
-    uuid: item.id,
-    id:''
-  }))
+    fieldType: field[0]?.fieldType,
+    field,
+  }
+  }) as QueryTableRow[]
 }
 
 // 生命周期钩子
@@ -378,7 +282,7 @@ onMounted(() => {
 const submitForm = async () => {
   const submitData: QueryResItem[] = tableData.value.map((row, index) => {
     return {
-      fieldIds: row.field?.map(f => f.id!).join(',') || '',
+      fieldIds: row.field?.map(f => f.uuid!).join(',') || '',
       fieldCodes: row.field?.map(f => f.code).join(',') || '',
       queryType: row.queryType,
       sort: index,
@@ -388,11 +292,36 @@ const submitForm = async () => {
       id: row.id,
     }
   })
-  await LabelApi.updateQueryConfList({
-    manageId: query.labelId as string,
-    queryJson: submitData
+  LabelApi.updateQueryConfList(submitData).then(() => {
+    ElMessage.success('更新成功')
+  }).catch(() => {
+    ElMessage.error('更新失败')
   })
 }
 
 defineExpose({ submitForm })
+
+
+// todo @zhaokun 要处理
+function getEnumOptions(key) {
+  const map = {
+    idType: [
+      { label: '身份证', value: 'idcard' },
+      { label: '护照', value: 'passport' }
+    ],
+    level: [
+      { label: '一级', value: '1' },
+      { label: '二级', value: '2' }
+    ],
+    gender: [
+      { label: '男', value: 'male' },
+      { label: '女', value: 'female' }
+    ],
+    status: [
+      { label: '启用', value: 'enable' },
+      { label: '禁用', value: 'disable' }
+    ]
+  }
+  return map[key] || []
+}
 </script>

@@ -1,11 +1,11 @@
 <template>
   <el-dialog v-model="visible" title="新增" width="500px" @close="onCancel">
     <el-checkbox-group v-model="checkedKeys">
-      <el-row  v-for="item in fieldList" :key="item.id" class="mb-2">
+      <el-row  v-for="item in fieldList" :key="item.uuid" class="mb-2">
         <el-col :span="24">
           <Icon icon="ep:text" class="mr-2" />
           <span>{{ item.name }}</span>
-          <el-checkbox :disabled="item.fieldType === FieldType.ATTACHMENT" :label="item.name" :value="item.id" />
+          <el-checkbox :disabled="item.fieldType === FieldType.ATTACHMENT" :label="item.name" :value="item.uuid" />
         </el-col>
       </el-row>
     </el-checkbox-group>

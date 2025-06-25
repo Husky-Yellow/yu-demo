@@ -47,7 +47,7 @@
                 <el-radio
                   v-for="option in BooleanOptions"
                   :key="option.value"
-                  :label="option.value"
+                  :value="option.value"
                 >
                   {{ option.label }}
                 </el-radio>
@@ -59,7 +59,7 @@
               prop="encType"
             >
               <el-radio-group v-model="form.encType" placeholder="请选择加密类型">
-                <el-radio v-for="item in EncFlagOptions" :key="item.value" :label="item.value">{{
+                <el-radio v-for="item in EncFlagOptions" :key="item.value" :value="item.value">{{
                   item.label
                 }}</el-radio>
               </el-radio-group>
@@ -90,13 +90,14 @@
           <template
             v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX"
           >
-            <RadioFieldConfig :disabled="formDisabled" />
+            <RadioFieldConfig ref="radioFieldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
           <!-- 日期、日期区间 -->
           <template
             v-else-if="form.fieldType === FieldType.DATE || form.fieldType === FieldType.DATE_RANGE"
           >
             <DatePrecisionConfig
+              ref="datePrecisionConfigRef"
               :type="form.fieldType"
               v-model="form.fieldConfExt"
               :disabled="formDisabled"
@@ -184,6 +185,8 @@ const codeInputDisabled = ref(false)
 const tableData = ref<any[]>([])
 const textFieldConfigRef = ref<FieldConfigRef>()
 const numberFieldConfigRef = ref<FieldConfigRef>()
+const radioFieldConfigRef = ref<FieldConfigRef>()
+const datePrecisionConfigRef = ref<FieldConfigRef>()
 
 // 响应式表单数据
 const form = reactive(defaultForm())
