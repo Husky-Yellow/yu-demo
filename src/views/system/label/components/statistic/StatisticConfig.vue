@@ -3,7 +3,7 @@
     <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
       <div class="font-bold mb-16px">选择统计字段</div>
       <VueDraggable
-        :list="fields"
+        :list="statisticConfigFields"
         :group="{ name: 'fields', pull: 'clone', put: false }"
         :item-key="'uuid'"
         :clone="cloneField"
@@ -20,7 +20,7 @@
         <div class="font-bold">统计设置</div>
         <div class="panel-actions">
           <el-button type="primary" @click="addStatistic">添加</el-button>
-          <el-button type="danger" @click="removeLastStatistic">删除</el-button>
+          <el-button type="danger" :disabled="statistics.length <= 1" @click="removeLastStatistic">删除</el-button>
         </div>
       </div>
       <el-form :model="statistics" ref="statFormRef">
@@ -87,10 +87,10 @@
                     </template>
                     <template v-else>
                       <el-form-item
-                        :prop="`${idx}.fields.${index}.value`"
-                        :rules="{ required: true, message: '请选择值' }"
+                        :prop="`${idx}.fields.${index}.data`"
+                        :rules="{ required: true, message: '请输入值' }"
                       >
-                        <el-input v-model="element.value" class="!w-[200px] mt-18px mr-6px" />
+                        <el-input v-model="element.data" class="!w-[200px] mt-18px mr-6px" />
                       </el-form-item>
                     </template>
                     <el-button @click="removeField(idx, index)">删除</el-button>
@@ -118,15 +118,15 @@ import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
 import type { LabelFieldConfig, StatisticItem, StatisticField } from '@/config/constants/enums/fieldDefault'
-import { pick } from 'lodash-es'
+import { generateUUID } from '@/utils'
 
 const { query } = useRoute() // 查询参数
 // 示例字段
-const fields = ref<LabelFieldConfig[]>([])
+const statisticConfigFields = ref<LabelFieldConfig[]>([])
 const slectIndex = ref<number>(-1)
 /** 统计项列表：用户配置的统计规则 */
 const statistics = ref<StatisticItem[]>([{
-  uuid: Date.now(),
+  uuid: generateUUID(),
   name: '',
   fields: []
 }])
@@ -137,7 +137,7 @@ const usedFieldKeys = computed(() => {
   const keys = new Set<string>()
   statistics.value.forEach((stat) => {
     stat.fields.forEach((field) => {
-      keys.add(field.uuid as string)
+      (field && field.uuid) && keys.add(field.uuid as string)
     })
   })
   return keys
@@ -161,24 +161,36 @@ function cloneField(field: StatisticField): StatisticField | false {
   if (isFieldUsed(field.uuid as string)) {
     return false
   }
-  return { ...field, filterType: 1, value: '' }
+  return { ...field, filterType: 1, data: '' }
 }
 
 /** 添加一个新的空统计项 */
 function addStatistic() {
-  statistics.value.push({ uuid: Date.now(), name: '', fields: [] })
+  statistics.value.push({ uuid: generateUUID(), name: '', fields: [] })
 }
 
 /** 删除最后一个统计项 */
 function removeLastStatistic() {
-  if (statistics.value.length > 0) {
-    if (slectIndex.value >= 0 && slectIndex.value < statistics.value.length) {
-      statistics.value.splice(slectIndex.value, 1)
-      // 删除后重置选择索引
-      slectIndex.value = -1
-    } else {
-      statistics.value.pop()
-    }
+
+  const idx = slectIndex.value;
+  if (statistics.value.length <= 1) return;
+
+  const removeAt = (index: number) => statistics.value.splice(index, 1);
+  const removeLast = () => statistics.value.pop();
+
+  if (idx !== -1 && statistics.value[idx]?.id) {
+    LabelApi.deleteCountConfigList({ id: statistics.value[idx].id as string })
+      .then(() => {
+        ElMessage.success('删除成功');
+        removeAt(idx);
+      })
+      .catch(() => {
+        ElMessage.error('删除失败');
+      });
+  } else if (idx !== -1) {
+    removeAt(idx);
+  } else {
+    removeLast();
   }
 }
 
@@ -204,7 +216,7 @@ function removeField(statIdx: number, fieldIdx: number) {
   const field = statistics.value[statIdx].fields[evt.newIndex]
   if (field) {
     if (field.filterType === undefined) field.filterType = 1
-    if (field.value === undefined) field.value = ''
+    if (field.data === undefined) field.data = ''
   }
 }
 
@@ -244,26 +256,22 @@ const submitForm = () => {
   if (!statFormRef.value) return
   statFormRef.value.validate((valid) => {
     if (valid) {
-      console.log(statistics.value)
       const submitData = statistics.value.map((item, index) => {
-        console.log(item.fields);
-
-        const obj = pick({
-          ...item,
-          ...item.fields[0]
-        }, ['id', 'manageId', 'formId','fieldId','name','type','filterType','bizType'])
-        console.log(obj);
-
+        const [field] = item.fields;
         return {
-          ...obj,
-          type: item.type ||item.fields[0]?.bizType,
-          sort: index,
+          id: item.id ?? undefined,
           manageId: query.labelId as string,
-        }
+          fieldId: field?.uuid ?? '',
+          name: item.name,
+          type: field?.bizType ?? '',
+          filterType: field?.filterType ?? 1,
+          data: field?.data ?? '',
+          sort: index,
+        };
       }) as unknown as StatisticItem[]
-      console.log(submitData)
       LabelApi.updateCountConfigList(submitData).then(() => {
         ElMessage.success('统计配置更新成功')
+        fetchData()
       }).catch(() => {
         ElMessage.error('统计配置更新失败')
       })
@@ -280,20 +288,28 @@ const fetchData = async () => {
   const countConfigList = await LabelApi.getCountConfigList({
     manageId: query.labelId as string
   })
-  fields.value = res.map((item) => {
-    delete item.id
+  statisticConfigFields.value = res.map((item) => {
     item.uuid = item.id
+    delete item.id
     return item
   })
 
-  if (countConfigList.length > 0) {
-    statistics.value = countConfigList.map((item) => ({
-      ...item,
-      fields: [item]
-    })) as unknown as StatisticItem[]
-  }
 
-  console.log(statistics.value)
+  if (countConfigList.length > 0) {
+    statistics.value = countConfigList.map((item) => {
+      const field = res.find((f) => f.uuid === item.fieldId)
+      return {
+        ...item,
+        fields: field ? [{
+            ...(field as StatisticField),
+            filterType: item.filterType,
+            data: item.data,
+            bizType: item.type
+          }]
+        : []
+      }
+    }) as unknown as StatisticItem[]
+  }
 }
 
 

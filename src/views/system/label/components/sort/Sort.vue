@@ -6,7 +6,7 @@
       <VueDraggable
         :list="sortFields"
         :group="{ name: 'fields', pull: cloneField, put: false }"
-        :item-key="'value'"
+        :item-key="'id'"
         :clone="cloneField"
         :sort="false"
         class="min-h-[100px]"
@@ -148,8 +148,6 @@ function setClickIndex(item: SortItem) {
 
 // 开始拖拽时保存字段数据
 function onDragStart(evt: any) {
-  console.log(sortFields.value[evt.oldIndex]);
-
   const field = sortFields.value[evt.oldIndex]
   if (field && !isFieldUsed(field.id as string)) {
     draggedField.value = field
@@ -158,8 +156,6 @@ function onDragStart(evt: any) {
 
 // 修改 onFieldDrop 函数
 function onFieldDrop(e: DragEvent, sortIndex: number) {
-  console.log(draggedField.value);
-
   e.preventDefault()
   if (draggedField.value && !isFieldUsed(draggedField.value.id as string)) {
     formModel.value.sortItems[sortIndex].field = { ...draggedField.value }
@@ -199,7 +195,11 @@ const submitForm = () => {
         type: item.type,
         id: item?.id || ''
       })) as SortItem[]
-      LabelApi.updateSortConfList(submitData).catch(() => {
+      LabelApi.updateSortConfList(submitData).then(() => {
+        ElMessage.success('排序配置更新成功')
+        fetchData()
+      })
+      .catch(() => {
         ElMessage.error('排序配置更新失败')
       })
     } else {

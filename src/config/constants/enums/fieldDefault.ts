@@ -255,13 +255,19 @@ export type SortItem = {
 
 
 export interface StatisticField extends Partial<LabelFieldConfig> {
-  filterType: number
-  value: string
+  filterType?: number;
+  data?: string;
 }
 /** 单个统计项的定义 */
 export interface StatisticItem {
-  uuid: number
+  id?: string
+  uuid: string
   name: string
+  fieldId?: string
+  type?: FieldType;
+  data?: string;
+  bizType?: BooleanEnum;
+  filterType?: number;
   fields:StatisticField[] // 推荐
 }
 

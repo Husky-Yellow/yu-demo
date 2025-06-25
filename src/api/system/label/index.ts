@@ -301,3 +301,15 @@ export const updateQueryConfList = async (data: QueryResItem[]) => {
 export const deleteQueryConfList = async (params: { ids: string[] }) => {
   return await request.delete({ url: '/data/query-conf/delete-list', params })
 }
+
+
+/**
+ * 删除统计配置列表
+ * @param data
+ * @param data.id - 统计配置ID
+ * @returns {Promise<any>} 删除结果
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076058
+ */
+export const deleteCountConfigList = async (params: { id: string }) => {
+  return await request.delete({ url: '/data/count-conf/delete', params })
+}
