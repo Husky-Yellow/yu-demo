@@ -1,4 +1,4 @@
-import type { TextType, DuplicateCheck, DataValidation, NumberType } from './field'
+import type { TextType, DuplicateCheck, DataValidation, NumberType, LableDatePrecision } from './field'
 import type { FieldType } from '@/config/constants/enums/field'
 import { BooleanEnum, OperateType } from '@/config/constants/enums/label'
 
@@ -19,9 +19,6 @@ export const defaultTextFieldForm = {
   prompt: ''
 }
 
-/** 文本字段表单类型 */
-export type TextFieldForm = typeof defaultTextFieldForm
-
 /**
  * 数字字段默认配置
  * @description 数字类型字段的默认配置参数
@@ -34,15 +31,14 @@ export const defaultNumberFieldForm = {
   /** 小数位数 */
   decimalPlaces: 0
 }
-/** 数字字段表单类型 */
-export type NumberFieldForm = typeof defaultNumberFieldForm
 
+/** 日期精度字段默认配置及类型 */
 export const defaultDatePrecisionForm = {
-  datePrecision: 'date',
+  /** 日期精度 */
+  datePrecision: 'date' as LableDatePrecision,
+  /** Code2 */
   code2: ''
 }
-export type DatePrecisionForm = typeof defaultDatePrecisionForm
-
 
 /**
  * 字段扩展配置默认值
@@ -63,7 +59,6 @@ export const defaultFieldConfExt = {
   numberType: 'integer' as NumberType,
   /** 小数位数 */
   decimalPlaces: 0,
-
   /** 日期精度 */
   datePrecision: 'date',
   /** 编码2 */
@@ -76,9 +71,12 @@ export const defaultFieldConfExt = {
   formatSearch: '',
   /** 选中的字典编码 */
   selectedDictCode: '',
-
 }
-
+/** 文本字段表单类型 */
+export type TextFieldForm = typeof defaultTextFieldForm
+/** 数字字段表单类型 */
+export type NumberFieldForm = typeof defaultNumberFieldForm
+export type DatePrecisionForm = typeof defaultDatePrecisionForm
 /** 字段扩展配置类型 */
 export type FieldConfExt = typeof defaultFieldConfExt
 
@@ -199,13 +197,13 @@ export interface OperateConfig {
 /**
  * 操作类型文字映射
  */
-export const OperateTypeText = {
+export const OperateTypeText: Record<OperateType, string> = {
   [OperateType.ADD]: '添加',
   [OperateType.EDIT]: '编辑',
   [OperateType.DELETE]: '删除',
   [OperateType.IMPORT]: '导入',
   [OperateType.EXPORT]: '导出'
-} satisfies Record<OperateType, string>
+}
 
 
 export type LabelDragField = LabelFieldConfig & {
@@ -246,7 +244,7 @@ export type SortItem = {
   id?: string
   uuid: string
   type: 0 | 1 | 2
-  rule: 0 | 1
+  rule: BooleanEnum
   field?: LabelFieldConfig | null
   fieldId?: string
   sort?: number

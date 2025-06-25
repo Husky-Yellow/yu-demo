@@ -46,13 +46,9 @@ const tabsConfig: readonly TabConfig[] = [
   { name: 'detailEdit', label: '详情配置', component: defineAsyncComponent(() => import('../../components/common/FormEdit.vue')), saveMethod: 'submitForm' },
   // 调试完成
   { name: 'operation', label: '操作配置', component: defineAsyncComponent(() => import('../../components/common/Operation.vue')), saveMethod: 'submitForm' },
-  // 需要处理多选以及时间区间组件
   { name: 'query', label: '查询配置', component: defineAsyncComponent(() => import('../../components/query/Query.vue')), saveMethod: 'submitForm' },
-  // 好像差不多了
   { name: 'Data', label: '数据配置', component: defineAsyncComponent(() => import('../../components/filter/Filter.vue')), saveMethod: 'submitForm' },
-  // 接口调整
   { name: 'Sorting', label: '排序配置', component: defineAsyncComponent(() => import('../../components/sort/Sort.vue')), saveMethod: 'submitForm' },
-  // 接口调整 调不好了！！！
   { name: 'Statistical', label: '统计配置', component: defineAsyncComponent(() => import('../../components/statistic/StatisticConfig.vue')), saveMethod: 'submitForm' },
 ]
 

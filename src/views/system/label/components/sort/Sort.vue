@@ -216,8 +216,6 @@ const fetchData = async () => {
   const sortConfList = await LabelApi.getSortConfList({
     manageId: query.labelId as string
   })
-  console.log(sortConfList);
-
   if (sortConfList.length > 0) {
     formModel.value.sortItems = sortConfList.map((item) => {
       return {

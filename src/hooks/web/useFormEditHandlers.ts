@@ -1,4 +1,4 @@
-import { Ref, ComputedRef } from 'vue'
+import { Ref, ComputedRef, markRaw } from 'vue'
 import { ElInput, ElSelect, ElRadio, ElDatePicker } from 'element-plus'
 import { FieldType } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
@@ -146,16 +146,16 @@ export function useFormEditHandlers({
   const getFieldComponent = (type: FieldType) => {
     switch (type) {
       case FieldType.TEXT:
-        return ElInput
+        return markRaw(ElInput)
       case FieldType.RADIO:
-        return ElRadio
+        return markRaw(ElRadio)
       case FieldType.CHECKBOX:
-        return ElSelect
+        return markRaw(ElSelect)
       case FieldType.DATE:
       case FieldType.DATE_RANGE:
-        return ElDatePicker
+        return markRaw(ElDatePicker)
       default:
-        return ElInput
+        return markRaw(ElInput)
     }
   }
   // 对于一些特定的，比如文本域，日期区间，需要特殊处理
