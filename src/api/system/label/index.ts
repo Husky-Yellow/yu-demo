@@ -53,6 +53,16 @@ export const getFieldConfigListByManageId = async (params: { manageId: string })
 }
 
 /**
+ * 删除排序配置列表
+ * @param params
+ * @param params.id - 排序配置ID
+ * @returns {Promise<any>} 删除结果
+ */
+export const deleteSortConfList = async (params: { id: string }) => {
+  return await request.delete({ url: '/data/sort-conf/delete', params })
+}
+
+/**
  * 删除过滤配置列表
  * @param params
  * @param params.ids - 过滤配置ID列表

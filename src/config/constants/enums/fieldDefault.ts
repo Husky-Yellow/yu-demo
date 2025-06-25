@@ -243,10 +243,14 @@ export type QueryTableRow = LabelFieldConfig & QueryResItem
 
 
 export type SortItem = {
-  id: number
-  sortType: 0 | 1 | 2
-  sortRule: 0 | 1
+  id?: string
+  uuid: string
+  type: 0 | 1 | 2
+  rule: 0 | 1
   field?: LabelFieldConfig | null
+  fieldId?: string
+  sort?: number
+  manageId: string
 }
 
 

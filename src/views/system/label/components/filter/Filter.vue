@@ -139,9 +139,7 @@ function onFieldDrop(e: DragEvent, ruleIndex: number) {
 }
 
 const setClickIndex = (rule: FilterRuleConfig) => {
-  console.log('rule', rule, filterRules.value)
   clickIndex.value = filterRules.value.findIndex((item) => item.uuid === rule.uuid)
-  console.log('clickIndex', clickIndex.value)
 }
 
 // 移除字段

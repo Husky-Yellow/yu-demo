@@ -28,19 +28,19 @@
         </div>
       </div>
       <el-form :model="formModel.sortItems" ref="sortFormRef" label-width="100px">
-        <div v-for="(item, index) in formModel.sortItems" :key="item.id" class="sort-item">
+        <div v-for="(item, index) in formModel.sortItems" :key="item.uuid" class="sort-item" @click="setClickIndex(item)">
           <div class="sort-item-header">
             <span>排序顺位{{ index + 1 }}</span>
           </div>
-          <el-form-item label="排序类型" :prop="`sortItems.${index}.sortType`">
-            <el-radio-group v-model="item.sortType">
+          <el-form-item label="排序类型" :prop="`sortItems.${index}.type`">
+            <el-radio-group v-model="item.type">
               <el-radio :value="0">数据添加时间</el-radio>
               <el-radio :value="1">数据修改时间</el-radio>
               <el-radio :value="2">自定义排序</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="item.sortType === 2"
+            v-if="item.type === 2"
             label="排序字段"
             :prop="`sortItems.${index}.field`"
             :rules="[{ validator: validateFieldsNotEmpty(item), trigger: 'submit' }]"
@@ -55,8 +55,8 @@
               <div v-else class="text-[#bbb] text-center py-3 px-0"> 请输入排序字段 </div>
             </div>
           </el-form-item>
-          <el-form-item label="排序规则" :prop="`sortItems.${index}.sortRule`">
-            <el-select v-model="item.sortRule" placeholder="请选择排序规则">
+          <el-form-item label="排序规则" :prop="`sortItems.${index}.rule`">
+            <el-select v-model="item.rule" placeholder="请选择排序规则">
               <el-option label="升序" :value="1" />
               <el-option label="降序" :value="0" />
             </el-select>
@@ -74,6 +74,7 @@ import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import type { LabelFieldConfig, SortItem } from '@/config/constants/enums/fieldDefault'
+import { generateUUID } from '@/utils'
 
 const { query } = useRoute() // 查询参数
 
@@ -83,16 +84,17 @@ const sortFields = ref<LabelFieldConfig[]>([])
 const formModel = ref<{ sortItems: SortItem[] }>({
   sortItems: [
     {
-      id: Date.now(),
-      sortType: 0,
-      sortRule: 1,
-      field: null
+      uuid: generateUUID(),
+      type: 0,
+      rule: 1,
+      field: null,
+      manageId: query.labelId as string
     }
   ]
 })
 
 const sortFormRef = ref<FormInstance>()
-
+const clickIndex = ref<number>(-1)
 // 当前拖拽的字段
 const draggedField = ref<LabelFieldConfig | null>(null)
 
@@ -108,17 +110,40 @@ function cloneField(field: LabelFieldConfig) {
 
 function addSortItem() {
   formModel.value.sortItems.push({
-    id: Date.now(),
-    sortType: 2,
-    sortRule: 1,
-    field: null
+    uuid: generateUUID(),
+    type: 2,
+    rule: 1,
+    field: null,
+    manageId: query.labelId as string
   })
 }
 
 function removeLastSortItem() {
-  if (formModel.value.sortItems.length > 1) {
-    formModel.value.sortItems.pop()
+  const idx = clickIndex.value;
+  const items = formModel.value.sortItems;
+  if (items.length <= 1) return;
+
+  const removeAt = (index: number) => items.splice(index, 1);
+  const removeLast = () => items.pop();
+
+  if (idx !== -1 && items[idx]?.id) {
+    LabelApi.deleteSortConfList({ id: items[idx].id as string })
+      .then(() => {
+        ElMessage.success('删除成功');
+        removeAt(idx);
+      })
+      .catch(() => {
+        ElMessage.error('删除失败');
+      });
+  } else if (idx !== -1) {
+    removeAt(idx);
+  } else {
+    removeLast();
   }
+}
+
+function setClickIndex(item: SortItem) {
+  clickIndex.value = formModel.value.sortItems.findIndex((i) => i.uuid === item.uuid)
 }
 
 // 开始拖拽时保存字段数据
@@ -166,14 +191,15 @@ const submitForm = () => {
   if (!sortFormRef.value) return
   sortFormRef.value.validate((valid) => {
     if (valid) {
-      console.log('submit!')
-      console.log(formModel.value.sortItems)
-      LabelApi.updateSortConfList(formModel.value.sortItems.map((item, index) => ({
-          ...item,
-          sort: index
-        }))).then(() => {
-        ElMessage.success('排序配置更新成功')
-      }).catch(() => {
+      const submitData = formModel.value.sortItems.map((item, index) => ({
+        fieldId: item.field?.id,
+        sort: index,
+        manageId: query.labelId as string,
+        rule: item.rule,
+        type: item.type,
+        id: item?.id || ''
+      })) as SortItem[]
+      LabelApi.updateSortConfList(submitData).catch(() => {
         ElMessage.error('排序配置更新失败')
       })
     } else {
@@ -190,8 +216,15 @@ const fetchData = async () => {
   const sortConfList = await LabelApi.getSortConfList({
     manageId: query.labelId as string
   })
+  console.log(sortConfList);
+
   if (sortConfList.length > 0) {
-    formModel.value.sortItems = sortConfList
+    formModel.value.sortItems = sortConfList.map((item) => {
+      return {
+        ...item,
+        field: sortFields.value.find((f) => f.id === item.fieldId) || null
+      }
+    })
   }
 }
 
