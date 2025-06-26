@@ -1,5 +1,5 @@
 import { Ref, ComputedRef, markRaw } from 'vue'
-import { ElInput, ElSelect, ElDatePicker, ElUpload } from 'element-plus'
+import { ElInput, ElSelect, ElDatePicker, ElUpload, ElInputNumber } from 'element-plus'
 import { FieldType } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import * as LabelApi from '@/api/system/label'
@@ -143,10 +143,12 @@ export function useFormEditHandlers({
   // 单选、多选、标签
   const getFieldComponent = (type: FieldType) => {
     console.log('getFieldComponent', type)
-    // 上传组件，
+    // 上传组件， 数字组件
     switch (type) {
       case FieldType.TEXT:
         return markRaw(ElInput)
+      case FieldType.NUMBER:
+        return markRaw(ElInputNumber)
       case FieldType.RADIO:
       case FieldType.CHECKBOX:
         return markRaw(ElSelect)
