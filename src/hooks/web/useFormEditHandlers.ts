@@ -181,11 +181,6 @@ export function useFormEditHandlers({
           startPlaceholder: '开始日期',
           endPlaceholder: '结束日期'
         }
-      case 'multi':
-        return {
-          type: 'textarea',
-          rows: 4
-        }
       default:
         return null
     }
