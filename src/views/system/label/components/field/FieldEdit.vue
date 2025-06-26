@@ -264,32 +264,28 @@ const validateChildForm = async () => {
 
 // 提交表单
 const handleSubmit = async () => {
-  // 单选多选要额外的处理
   const fieldConfExtDOList = await validateChildForm()
   if (!fieldConfExtDOList) return
+
   const valid = await (fieldForm.value as any).validate?.()
-  if (!valid) {
-    console.log('表单校验不通过')
-    return
-  }
-  const submitData: any = {
-    ...form,
-    fieldConfExtDOList
-  }
-  console.log('提交 submitData', submitData);
+  if (!valid) return
 
-  emits('update:data', omit(submitData, 'fieldConfExt'))
+  const isRadioOrCheckbox = [FieldType.RADIO, FieldType.CHECKBOX].includes(form.fieldType)
+  const submitData = { ...form, fieldConfExtDOList }
 
-  if (form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX) {
+  if (isRadioOrCheckbox) {
     const { code, name } = form
     const newSubmitData = {
       ...submitData,
       parentCode: code as string,
-      code: code + '_parent_code',
-      name: name + '_parent_name'
+      code: `${code}_parent_code`,
+      name: `${name}_parent_name`
     }
     emits('update:data', omit(newSubmitData, ['fieldConfExt', 'fieldConfExtDOList']))
+  } else {
+    emits('update:data', omit(submitData, 'fieldConfExt'))
   }
+
   handleClose()
 }
 
@@ -319,38 +315,23 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
     name: item.name
   }))
   resetForm()
-  if (row?.id) {
-    const detail = await LabelApi.getFieldConfigDetail({ 'id': row.id as string })
-    if(row?.fieldType === FieldType.RADIO || row?.fieldType === FieldType.CHECKBOX) {
-      Object.assign(form, detail, {
-        fieldConfExt: detail?.fieldConfExtDOList
-          ? detail.fieldConfExtDOList
-          : { ...defaultFieldConfExt }
-        })
-    } else {
-      Object.assign(form, detail, {
-        fieldConfExt: detail?.fieldConfExtDOList
-          ? convertArrayToObject(JSON.parse(JSON.stringify(detail.fieldConfExtDOList)))
-          : { ...defaultFieldConfExt }
-        })
-    }
-  } else {
 
-    if(row?.fieldType === FieldType.RADIO || row?.fieldType === FieldType.CHECKBOX) {
-      Object.assign(form, row, {
-        fieldConfExt: row?.fieldConfExtDOList
-          ? row.fieldConfExtDOList
-          : { ...defaultFieldConfExt }
-        })
-    } else {
-      Object.assign(form, row, {
-        fieldConfExt: row?.fieldConfExtDOList
-          ? convertArrayToObject(JSON.parse(JSON.stringify(row.fieldConfExtDOList)))
-          : { ...defaultFieldConfExt }
-        })
-    }
+  // 获取数据源
+  const dataSource = row?.id
+    ? await LabelApi.getFieldConfigDetail({ 'id': row.id as string })
+    : row
 
+  if (dataSource) {
+    const isRadioOrCheckbox = dataSource.fieldType === FieldType.RADIO || dataSource.fieldType === FieldType.CHECKBOX
+    const fieldConfExt = dataSource?.fieldConfExtDOList
+      ? (isRadioOrCheckbox
+          ? dataSource.fieldConfExtDOList
+          : convertArrayToObject(JSON.parse(JSON.stringify(dataSource.fieldConfExtDOList))))
+      : { ...defaultFieldConfExt }
+
+    Object.assign(form, dataSource, { fieldConfExt })
   }
+
   dialogVisible.value = true
 }
 
