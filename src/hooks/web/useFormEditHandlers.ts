@@ -1,5 +1,5 @@
 import { Ref, ComputedRef, markRaw } from 'vue'
-import { ElInput, ElSelect, ElDatePicker } from 'element-plus'
+import { ElInput, ElSelect, ElDatePicker, ElUpload } from 'element-plus'
 import { FieldType } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import * as LabelApi from '@/api/system/label'
@@ -142,6 +142,8 @@ export function useFormEditHandlers({
   }
   // 单选、多选、标签
   const getFieldComponent = (type: FieldType) => {
+    console.log('getFieldComponent', type)
+    // 上传组件，
     switch (type) {
       case FieldType.TEXT:
         return markRaw(ElInput)
@@ -151,13 +153,15 @@ export function useFormEditHandlers({
       case FieldType.DATE:
       case FieldType.DATE_RANGE:
         return markRaw(ElDatePicker)
+      case FieldType.ATTACHMENT:
+        return markRaw(ElUpload)
       default:
         return markRaw(ElInput)
     }
   }
   // 对于一些特定的，比如文本域，日期区间，需要特殊处理
   const getFieldComponentType = (field: LabelDragField) => {
-    // console.log('getFieldComponentType', field)
+    console.log('getFieldComponentType', field)
 
     switch (field.fieldType) {
       case FieldType.TEXT:
