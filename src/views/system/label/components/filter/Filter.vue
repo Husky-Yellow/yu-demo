@@ -166,7 +166,6 @@ function addRule() {
 // 移除最后一个规则
 function removeLastRule() {
   if (filterRules.value.length > 1) {
-    console.log('clickIndex', clickIndex.value)
     if (filterRules.value[clickIndex.value]?.uuid) {
       LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].uuid }).then(() => {
         ElMessage.success('删除成功')
@@ -232,7 +231,6 @@ const fetchData = async () => {
   const filterRes = await LabelApi.getFilterConfList({
     manageId: query.manageId as string
   })
-  console.log('filterRes', filterRes)
   filterFields.value = res
   filterRules.value = filterRes.length ? filterRes.map((item) => {
     return {

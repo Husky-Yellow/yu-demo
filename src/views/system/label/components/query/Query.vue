@@ -234,9 +234,7 @@ const initSortable = () => {
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
 
-        onStart: () => {
-          console.log('开始拖拽')
-        },
+        onStart: () => {},
 
         onEnd: (evt) => {
           const { oldIndex, newIndex } = evt

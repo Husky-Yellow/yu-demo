@@ -33,7 +33,7 @@
 
         <!-- Action Buttons -->
         <el-col :span="8" class="action-buttons">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button type="primary">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
           <el-button v-if="queryFields.length > 2"  @click="toggleExpand">
             {{ isExpanded ? '收起' : '更多搜索' }}
@@ -123,16 +123,10 @@ function getComponentProps(field: any) {
   return props
 }
 
-function handleQuery() {
-  console.log('Querying with:', formModel)
-  // Implement query logic here
-}
-
 function handleReset() {
   props.queryFields.forEach((field) => {
     formModel[field.key] = field.defaultValue || ''
   })
-  console.log('Form reset.')
 }
 </script>
 

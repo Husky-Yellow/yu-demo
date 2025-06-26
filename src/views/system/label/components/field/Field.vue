@@ -145,9 +145,7 @@ const initSortable = () => {
         dragClass: 'sortable-drag',
 
         // 开始拖拽
-        onStart: () => {
-          console.log('开始拖拽')
-        },
+        onStart: () => {},
 
         // 结束拖拽
         onEnd: (evt) => {

@@ -3,8 +3,8 @@
     <el-radio-button :value="1">新增表单</el-radio-button>
     <el-radio-button :value="2">编辑表单</el-radio-button>
   </el-radio-group>
-  <div v-loading="loading" class="flex gap-4 h-[calc(100vh-200px)] bg-gray-100 p-2 mt-2">
-    <div class="w-50 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
+  <div v-loading="loading" class="flex gap-4 h-[calc(100vh-260px)] bg-gray-100 p-2 mt-2">
+    <div class="w-60 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
       <h3 class="text-base font-semibold border-b border-gray-100 pb-[10px]">数据字段</h3>
       <div class="flex flex-col">
         <FieldPoolItem
@@ -24,7 +24,7 @@
     <div class="bg-white rounded shadow-sm p-4 h-full overflow-y-auto flex-grow flex flex-col">
       <div class="mb-4 flex-shrink-0">
         <el-button type="success" link @click="oneClickLayout">一键布局</el-button>
-        <el-button type="primary" link @click="viewLinkage">查看关联关系</el-button>
+        <el-button type="primary" v-show="tab.name === 'formEdit'" link @click="viewLinkage">查看关联关系</el-button>
       </div>
       <div class="flex-grow flex flex-col" @dragover.prevent @drop="handleDropOnCanvas">
         <draggable
@@ -126,7 +126,7 @@
 
     <div
       v-show="tab.name === 'formEdit'"
-      class="w-[280px] flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto"
+      class="w-[320px] flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto"
     >
       <h3 class="text-base font-semibold mb-4 border-b border-gray-100 pb-[10px]">字段配置</h3>
       <div v-if="selectedField">
@@ -326,7 +326,6 @@ const updateField = (field: LabelDragField) => {
 
 const submitForm = async () => {
   const layoutData = getLayoutData()
-  console.log('保存的布局数据:', layoutData)
   ElMessage.success('布局已保存到控制台！')
   loading.value = true
   try {

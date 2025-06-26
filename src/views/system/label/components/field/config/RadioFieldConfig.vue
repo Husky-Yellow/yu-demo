@@ -133,8 +133,6 @@ const handleQuery = () => {
 
 /** 选择变化处理 */
 const handleSelectionChange = (selection: any[]) => {
-  console.log(selection);
-
   selectedItems.value = selection
   selectedCount.value = selection.length
 }
