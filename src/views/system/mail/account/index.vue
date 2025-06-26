@@ -18,7 +18,7 @@
 
   <!-- 列表 -->
   <ContentWrap>
-    <Table
+    <SortTable
       :columns="allSchemas.tableColumns"
       :data="tableObject.tableList"
       :loading="tableObject.loading"

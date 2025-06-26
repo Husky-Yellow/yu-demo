@@ -60,7 +60,6 @@ const promptMap = {
 const props = defineProps<{
   modelValue?: TextFieldForm
 }>()
-const emit = defineEmits(['update:modelValue'])
 
 const form = reactive<TextFieldForm>({
   ...defaultTextFieldForm,
@@ -135,10 +134,6 @@ const convertFormForSubmission = () => {
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])
       ))
   }))
-
-
-
-
 
 }
 

@@ -8,7 +8,7 @@
         <el-radio
           v-for="item in LableDatePrecisionOptions"
           :key="item.value"
-          :label="item.value"
+          :value="item.value"
         >
           {{ item.label }} <span style="color: #888; font-size: 12px;">例：{{ item.example }}</span>
         </el-radio>

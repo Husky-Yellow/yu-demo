@@ -95,3 +95,23 @@ export const LableDatePrecisionOptions = [
   { label: '选至秒', value: 'second', example: 'YYYY/MM/DD HH:mm:ss' }
 ];
 export type LableDatePrecision = typeof LableDatePrecisionOptions[number]['value'];
+
+// 文件上传大小选项
+export const FileSizeOptions = [
+  { label: '小于等于1M', value: 1 },
+  { label: '小于等于5M', value: 5 },
+  { label: '小于等于10M', value: 10 },
+  { label: '小于等于50M', value: 50 },
+  { label: '小于等于100M', value: 100 }
+] as const;
+export type FileSize = typeof FileSizeOptions[number]['value'];
+
+// 文件格式选项
+export const FileFormatOptions = [
+  { label: 'jpeg', value: 'jpeg' },
+  { label: 'bmp', value: 'bmp' },
+  { label: 'jpg', value: 'jpg' },
+  { label: 'png', value: 'png' },
+  { label: 'pdf', value: 'pdf' }
+] as const;
+export type FileFormat = typeof FileFormatOptions[number]['value'];

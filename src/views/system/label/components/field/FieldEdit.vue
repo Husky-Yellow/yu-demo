@@ -115,7 +115,7 @@
           </template>
           <!-- 文件 -->
           <template v-else>
-            <UploadFieldConfig v-model="form.fieldConfExt" :disabled="formDisabled" />
+            <UploadFieldConfig ref="uploadFieldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
         </el-card>
       </el-col>
@@ -178,7 +178,7 @@ const defaultForm = () => ({
   editFlag: BooleanEnum.FALSE, // 是否编辑表单;0-否 1-是
   appViewFlag: BooleanEnum.FALSE, // 是否移动端展示;0-否 1-是
   pcViewFlag: BooleanEnum.FALSE, // 是否PC端展示;0-否 1-是
-  fieldConfExt: defaultFieldConfExt as any
+  fieldConfExt: { ...defaultFieldConfExt }
 })
 const formDisabled = ref(false)
 const codeInputDisabled = ref(false)
@@ -187,6 +187,7 @@ const textFieldConfigRef = ref<FieldConfigRef>()
 const numberFieldConfigRef = ref<FieldConfigRef>()
 const radioFieldConfigRef = ref<FieldConfigRef>()
 const datePrecisionConfigRef = ref<FieldConfigRef>()
+const uploadFieldConfigRef = ref<FieldConfigRef>()
 
 // 响应式表单数据
 const form = reactive(defaultForm())
@@ -239,7 +240,7 @@ const fieldRefMap: Record<FieldType, Ref<FieldConfigRef | undefined>> = {
   [FieldType.ADDRESS]: emptyRef,
   [FieldType.REGION]: emptyRef,
   [FieldType.TAG]: emptyRef,
-  [FieldType.ATTACHMENT]: emptyRef
+  [FieldType.ATTACHMENT]: uploadFieldConfigRef
 }
 
 async function validateAndConvertForm(form: { fieldType: FieldType }) {
@@ -278,13 +279,20 @@ const handleSubmit = async () => {
 
 // 重置表单
 const resetForm = () => {
-  // 先重置所有字段为默认值
+  // 获取新的默认值
   const defaultValues = defaultForm()
-  for (const key in form) {
-    form[key] = defaultValues[key]
-  }
-  // 确保 fieldConfExt 被正确重置
+
+  // 清空所有现有属性
+  Object.keys(form).forEach(key => {
+    delete form[key]
+  })
+
+  // 重新设置所有默认值
+  Object.assign(form, defaultValues)
+
+  // 确保 fieldConfExt 是全新的对象
   form.fieldConfExt = { ...defaultFieldConfExt }
+
   // 重置表单验证状态
   ;(fieldForm.value as any)?.resetFields()
 }

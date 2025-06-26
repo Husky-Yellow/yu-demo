@@ -1,4 +1,4 @@
-import type { TextType, DuplicateCheck, DataValidation, NumberType, LableDatePrecision } from './field'
+import type { FileSize, TextType, DuplicateCheck, DataValidation, NumberType, LableDatePrecision } from './field'
 import type { FieldType } from '@/config/constants/enums/field'
 import { BooleanEnum, OperateType } from '@/config/constants/enums/label'
 
@@ -32,7 +32,10 @@ export const defaultNumberFieldForm = {
   decimalPlaces: 0
 }
 
-/** 日期精度字段默认配置及类型 */
+/**
+ * 日期精度字段默认配置
+ * @description 日期精度字段的默认配置参数
+ */
 export const defaultDatePrecisionForm = {
   /** 日期精度 */
   datePrecision: 'date' as LableDatePrecision,
@@ -41,41 +44,35 @@ export const defaultDatePrecisionForm = {
 }
 
 /**
+ * 附件字段默认配置
+ * @description 附件类型字段的默认配置参数
+ */
+export const defaultUploadFieldForm = {
+  /** 最大尺寸 */
+  sizeLimit: 1 as FileSize,
+  /** 最大数量 */
+  countLimit: 1 as number,
+  /** 允许的文件类型 */
+  allowedTypes: 'jpeg,bmp,jpg,png,pdf' as string,
+}
+
+/**
  * 字段扩展配置默认值
  * @description 用于表单回显的字段扩展配置默认值
  */
 export const defaultFieldConfExt = {
-  /** 文本类型 */
-  textType: 'single' as TextType,
-  /** 重复检查 */
-  duplicateCheck: 'noCheck' as DuplicateCheck,
-  /** 数据验证 */
-  dataValidation: 'none' as DataValidation,
-  /** 正则表达式 */
-  regex: '',
-  /** 提示信息 */
-  prompt: '',
-  /** 数字类型 */
-  numberType: 'integer' as NumberType,
-  /** 小数位数 */
-  decimalPlaces: 0,
-  /** 日期精度 */
-  datePrecision: 'date',
-  /** 编码2 */
-  code2: '',
-  /** 最大尺寸 */
-  maxSize: 0,
-  /** 最大数量 */
-  maxCount: 0,
-  /** 格式化搜索 */
-  formatSearch: '',
-  /** 选中的字典编码 */
-  selectedDictCode: '',
+  ...defaultTextFieldForm,
+  ...defaultNumberFieldForm,
+  ...defaultDatePrecisionForm,
+  ...defaultUploadFieldForm
 }
 /** 文本字段表单类型 */
 export type TextFieldForm = typeof defaultTextFieldForm
 /** 数字字段表单类型 */
 export type NumberFieldForm = typeof defaultNumberFieldForm
+/** 附件字段表单类型 */
+export type UploadFieldForm = typeof defaultUploadFieldForm
+/** 日期精度字段表单类型 */
 export type DatePrecisionForm = typeof defaultDatePrecisionForm
 /** 字段扩展配置类型 */
 export type FieldConfExt = typeof defaultFieldConfExt
