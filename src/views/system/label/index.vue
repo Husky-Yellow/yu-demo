@@ -41,7 +41,7 @@ const getList = async () => {
 
 const openDetail = (row) => {
   const { type, id } = row
-  router.push({ path: '/system/label/custom', query: { type, id } })
+  router.push({ path: '/system/label/custom', query: { type, lableId: id } })
 }
 
 /** 初始化 **/

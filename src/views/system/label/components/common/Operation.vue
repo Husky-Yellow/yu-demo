@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
 import { ElMessage } from 'element-plus'
-import DraggableTable from '@/components/Draggable/table.vue'
+import DraggableTable from '@/components/Draggable/sortTable.vue'
 import { ElInput, ElSwitch } from 'element-plus'
 import type { TableColumn } from '@/components/Draggable/sortTable.vue'
 import type { OperateConfig } from '@/config/constants/enums/fieldDefault'
@@ -95,8 +95,8 @@ const updateRowData = (updatedRow: OperateConfig) => {
 
 // 获取数据
 const getDataFieldConfListByManageId = async () => {
-  const res = await LabelApi.getOperateConfigList({ manageId: query.labelId as string })
-  tableData.value = res.length ? res : generateOperationMock(query.labelId as string)
+  const res = await LabelApi.getOperateConfigList({ manageId: query.manageId as string })
+  tableData.value = res.length ? res : generateOperationMock(query.manageId as string)
 }
 
 // 提交表单

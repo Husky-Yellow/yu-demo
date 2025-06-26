@@ -1,10 +1,8 @@
 import { Ref, ComputedRef, markRaw } from 'vue'
-import { ElInput, ElSelect, ElRadio, ElDatePicker } from 'element-plus'
+import { ElInput, ElSelect, ElDatePicker } from 'element-plus'
 import { FieldType } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import * as LabelApi from '@/api/system/label'
-// todo ts 类型得整合一下
-// --- Types ---
 
 export interface Placeholder {
   id: string
@@ -51,6 +49,7 @@ export function useFormEditHandlers({
     if (!fieldId) return
     const field = availableFields.value.find((f) => f.id === fieldId)
     const detail = await LabelApi.getFieldConfigDetail({ 'id': fieldId as string })
+    // 如果是单选、多选、标签，则需要特殊处理 再调接口
 
     if (field && !isFieldUsed(fieldId)) {
 
@@ -105,7 +104,6 @@ export function useFormEditHandlers({
   }
 
   const selectField = (field: LabelDragField) => {
-    console.log('selectField', field)
     selectedField.value = field
   }
 
@@ -142,13 +140,12 @@ export function useFormEditHandlers({
       }
     }
   }
-
+  // 单选、多选、标签
   const getFieldComponent = (type: FieldType) => {
     switch (type) {
       case FieldType.TEXT:
         return markRaw(ElInput)
       case FieldType.RADIO:
-        return markRaw(ElRadio)
       case FieldType.CHECKBOX:
         return markRaw(ElSelect)
       case FieldType.DATE:

@@ -88,7 +88,7 @@ const formModel = ref<{ sortItems: SortItem[] }>({
       type: 0,
       rule: 1,
       field: null,
-      manageId: query.labelId as string
+      manageId: query.manageId as string
     }
   ]
 })
@@ -114,7 +114,7 @@ function addSortItem() {
     type: 2,
     rule: 1,
     field: null,
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
 }
 
@@ -190,7 +190,7 @@ const submitForm = () => {
       const submitData = formModel.value.sortItems.map((item, index) => ({
         fieldId: item.field?.id,
         sort: index,
-        manageId: query.labelId as string,
+        manageId: query.manageId as string,
         rule: item.rule,
         type: item.type,
         id: item?.id || ''
@@ -210,11 +210,11 @@ const submitForm = () => {
 
 const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   sortFields.value = res
   const sortConfList = await LabelApi.getSortConfList({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   if (sortConfList.length > 0) {
     formModel.value.sortItems = sortConfList.map((item) => {

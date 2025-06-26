@@ -260,7 +260,7 @@ const submitForm = () => {
         const [field] = item.fields;
         return {
           id: item.id ?? undefined,
-          manageId: query.labelId as string,
+          manageId: query.manageId as string,
           fieldId: field?.uuid ?? '',
           name: item.name,
           type: field?.bizType ?? '',
@@ -283,10 +283,10 @@ const submitForm = () => {
 
 const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   const countConfigList = await LabelApi.getCountConfigList({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   statisticConfigFields.value = res.map((item) => {
     item.uuid = item.id

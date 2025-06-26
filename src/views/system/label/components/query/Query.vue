@@ -252,10 +252,10 @@ const initSortable = () => {
 
 const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   const queryConfList = await LabelApi.getQueryConfList({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   allFields.value = res.map(item => {
     item.uuid = item.id
@@ -288,7 +288,7 @@ const submitForm = async () => {
       sort: index,
       defaultValue: row.defaultValue,
       hint: row.hint,
-      manageId: query.labelId as string,
+      manageId: query.manageId as string,
       id: row.id,
     }
   })

@@ -23,8 +23,8 @@
     <!-- Center Panel: Form Canvas -->
     <div class="bg-white rounded shadow-sm p-4 h-full overflow-y-auto flex-grow flex flex-col">
       <div class="mb-4 flex-shrink-0">
-        <el-button type="success" @click="oneClickLayout">一键布局</el-button>
-        <el-button type="primary" @click="viewLinkage">查看关联关系</el-button>
+        <el-button type="success" link @click="oneClickLayout">一键布局</el-button>
+        <el-button type="primary" link @click="viewLinkage">查看关联关系</el-button>
       </div>
       <div class="flex-grow flex flex-col" @dragover.prevent @drop="handleDropOnCanvas">
         <draggable
@@ -331,7 +331,7 @@ const submitForm = async () => {
   loading.value = true
   try {
     const params = {
-      manageId: query.labelId as string,
+      manageId: query.manageId as string,
       formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
       formJson: JSON.stringify(layoutData)
     }
@@ -359,14 +359,22 @@ const fetchFormData = async () => {
 
   loading.value = true
   const res = await LabelApi.getFieldConfigListByManageId({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   const formConfData = await LabelApi.getViewFormConf({
-    manageId: query.labelId as string,
+    manageId: query.manageId as string,
     formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
-    id: query.id as string
+    id: query.lableId as string
   })
-  availableFields.value = res
+  let filteredRes = res
+  if (props.tab.name === 'formEdit') {
+    if (activeMode.value === 1) {
+      filteredRes = res.filter(item => item.addFlag)
+    } else {
+      filteredRes = res.filter(item => item.editFlag)
+    }
+  }
+  availableFields.value = filteredRes as unknown as LabelDragField[]
   formData.value = formConfData
   if (formConfData) {
     setLayoutData(JSON.parse(formConfData.formJson))
@@ -389,7 +397,7 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
 }
 
 .form-row-wrapper {
-  padding: 10px;
+  padding: 6px 8px 2px 8px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   margin-bottom: 10px;
@@ -481,7 +489,7 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
 }
 
 .form-field-wrapper {
-  padding: 12px 12px 0 12px;
+  padding: 12px 8px 0 8px;
   border: 1px solid transparent;
   border-radius: 4px;
   position: relative;

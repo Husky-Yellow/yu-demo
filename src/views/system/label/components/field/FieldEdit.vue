@@ -90,9 +90,7 @@
           <template
             v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX"
           >
-            <RadioFieldConfig
-ref="radioFieldConfigRef" v-model="form.fieldConfExt"
-            :disabled="formDisabled"  />
+            <RadioFieldConfig ref="radioFieldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
           <!-- 日期、日期区间 -->
           <template
@@ -109,11 +107,13 @@ ref="radioFieldConfigRef" v-model="form.fieldConfExt"
           <template
             v-else-if="
               form.fieldType === FieldType.ADDRESS ||
-              form.fieldType === FieldType.REGION ||
-              form.fieldType === FieldType.TAG
+              form.fieldType === FieldType.REGION
             "
           >
-            展示地址、区域、标签的图片
+            展示地址、区域的图片
+          </template>
+          <template v-else-if="form.fieldType === FieldType.TAG">
+            <LabelFidldConfig ref="labelFidldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" />
           </template>
           <!-- 文件 -->
           <template v-else>
@@ -139,6 +139,7 @@ import NumberFieldConfig from './config/NumberFieldConfig.vue'
 import RadioFieldConfig from './config/RadioFieldConfig.vue'
 import DatePrecisionConfig from './config/DatePrecisionConfig.vue'
 import UploadFieldConfig from './config/UploadFieldConfig.vue'
+import LabelFidldConfig from './config/LabelFidldConfig.vue'
 import {
   FieldType,
   FieldTypeLabel,
@@ -167,7 +168,7 @@ const dialogVisible = ref(false)
 
 // 表单初始值
 const defaultForm = () => ({
-  manageId: query.labelId as string,
+  manageId: query.manageId as string,
   code: '', // 字段值
   name: '', // 字段名称
   remark: '', // 字段说明
@@ -191,7 +192,7 @@ const numberFieldConfigRef = ref<FieldConfigRef>()
 const radioFieldConfigRef = ref<FieldConfigRef>()
 const datePrecisionConfigRef = ref<FieldConfigRef>()
 const uploadFieldConfigRef = ref<FieldConfigRef>()
-
+const labelFidldConfigRef = ref<FieldConfigRef>()
 // 响应式表单数据
 const form = reactive(defaultForm())
 
@@ -242,7 +243,7 @@ const fieldRefMap: Record<FieldType, Ref<FieldConfigRef | undefined>> = {
   [FieldType.DATE_RANGE]: datePrecisionConfigRef,
   [FieldType.ADDRESS]: emptyRef,
   [FieldType.REGION]: emptyRef,
-  [FieldType.TAG]: emptyRef,
+  [FieldType.TAG]: labelFidldConfigRef,
   [FieldType.ATTACHMENT]: uploadFieldConfigRef
 }
 
@@ -264,15 +265,20 @@ const validateChildForm = async () => {
 
 // 提交表单
 const handleSubmit = async () => {
-  const fieldConfExtDOList = await validateChildForm()
-  if (!fieldConfExtDOList) return
+  const isRadioOrCheckbox = [FieldType.RADIO, FieldType.CHECKBOX].includes(form.fieldType)
+  const isTag = form.fieldType === FieldType.TAG
+  let fieldConfExtDOList = undefined
+  if (!isTag) {
+    fieldConfExtDOList = await validateChildForm()
+    if (!fieldConfExtDOList) return
+  }
 
   const valid = await (fieldForm.value as any).validate?.()
   if (!valid) return
 
-  const isRadioOrCheckbox = [FieldType.RADIO, FieldType.CHECKBOX].includes(form.fieldType)
-  const submitData = { ...form, fieldConfExtDOList }
 
+  const submitData = { ...form, fieldConfExtDOList }
+  emits('update:data', omit(submitData, 'fieldConfExt'))
   if (isRadioOrCheckbox) {
     const { code, name } = form
     const newSubmitData = {
@@ -282,8 +288,6 @@ const handleSubmit = async () => {
       name: `${name}_parent_name`
     }
     emits('update:data', omit(newSubmitData, ['fieldConfExt', 'fieldConfExtDOList']))
-  } else {
-    emits('update:data', omit(submitData, 'fieldConfExt'))
   }
 
   handleClose()

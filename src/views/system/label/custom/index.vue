@@ -89,7 +89,7 @@ const queryParams = reactive({
   pageSize: 100,
   name: undefined,
   status: undefined,
-  labelId: query.id
+  labelId: query.labelId
 })
 const queryFormRef = ref() // 搜索的表单
 const refreshTable = ref(true) // 重新渲染表格状态
@@ -150,7 +150,7 @@ const handleUpdateName = (type: string, row?: any) => {
 
 /** 添加/修改操作 */
 const openDetail = (id?: number) => {
-  push(`/system/label/customDetail?id=${query.id}&type=${query.type}&labelId=${id}`)
+  push(`/system/label/customDetail?lableId=${query.lableId}&type=${query.type}&manageId=${id}`)
 }
 
 /** 初始化 **/

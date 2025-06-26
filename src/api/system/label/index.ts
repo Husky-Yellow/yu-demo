@@ -12,6 +12,17 @@ export const getLabelManagePage = async (params: PageParam) => {
 }
 
 /**
+ * 获取标签管理树形数据
+ * @param {Object} params - 查询参数
+ * @param {string} params.manageId - 管理ID
+ * @returns {Promise<any>} 标签管理树形数据
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076048
+ */
+export const getLabelManageTree = async (params: { labelId: string }) => {
+  return await request.get({ url: '/data/label-manage/tree', params })
+}
+
+/**
  * 更新标签管理信息
  * @param {any} data - 标签管理更新数据
  * @returns {Promise<any>} 更新结果

@@ -549,7 +549,6 @@ interface ArrayItem {
   optionsJson: readonly [{ readonly label: "单行文本"; readonly value: "single" }, { readonly label: "多行文本"; readonly value: "multi" }] | readonly [{ readonly label: "校验"; readonly value: "check" }, { readonly label: "不校验"; readonly value: "noCheck" }] | readonly [{ readonly label: "不校验"; readonly value: "none" }, { readonly label: "自定义正则代码"; readonly value: "custom" }, { readonly label: "身份证校验"; readonly value: "idCard" }, { readonly label: "统一社会信用代码校验"; readonly value: "creditCode" }, { readonly label: "手机号校验"; readonly value: "mobile" }, { readonly label: "电话号码校验"; readonly value: "phone" }]
   name: string;
   value: string | number | boolean | string[];
-  type?: 'string' | 'number' | 'boolean' | 'array';
 }
 
 /**
@@ -559,12 +558,12 @@ interface ArrayItem {
  * @param {boolean} [options.convertEmptyString] - 是否将空字符串转换为空数组（默认 true）
  * @param {string[]} [options.specialFields] - 需要特殊处理的字段列表
  * @returns {ArrayItem[]} 转换后的数组
- * 
+ *
  * @example
  * // 基本转换
  * const result = convertObjectToArray({ key: 'value' });
  * // 输出: [{ name: 'key', value: 'value' }]
- * 
+ *
  * @example
  * // 处理 selectedDictCode 字段
  * const result = convertObjectToArray({ selectedDictCode: '' });
@@ -577,31 +576,23 @@ export const convertObjectToArray = (
     specialFields?: string[];
   } = {}
 ): ArrayItem[] => {
-  const { 
+  const {
     convertEmptyString = true,
-    specialFields = ['selectedDictCode'] 
+    specialFields = ['selectedDictCode']
   } = options;
 
   return Object.entries(obj).map(([key, value]) => {
     // 处理特殊字段（如 selectedDictCode 空字符串转空数组）
     if (convertEmptyString && specialFields.includes(key) && value === '') {
-      return { 
-        name: key, 
+      return {
+        name: key,
         value: [],
         type: 'array'
       };
     }
-
-    // 自动推断类型（可选）
-    const inferredType: ArrayItem['type'] = 
-      typeof value === 'number' ? 'number' :
-      typeof value === 'boolean' ? 'boolean' :
-      Array.isArray(value) ? 'array' : 'string';
-
-    return { 
-      name: key, 
+    return {
+      name: key,
       value,
-      type: inferredType // 可根据需要移除或保留类型推断
     };
   });
 }
@@ -610,7 +601,7 @@ export const convertObjectToArray = (
  * 将键值对数组转换回对象
  * @param {Array<{ name: string; value: any }>} arr - 待转换的数组
  * @returns {Record<string, any>} 转换后的对象
- * 
+ *
  * @example
  * // 转换示例
  * const arr = [{ name: 'key', value: 'value' }, { name: 'num', value: 123 }];

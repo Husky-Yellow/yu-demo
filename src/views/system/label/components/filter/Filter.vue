@@ -224,10 +224,10 @@ function toggleLogic(index: number) {
 
 const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   const filterRes = await LabelApi.getFilterConfList({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   console.log('filterRes', filterRes)
   filterFields.value = res
@@ -247,7 +247,7 @@ const submitForm = () => {
         return {
           ...item,
           fieldCode: filterFields.value.find((f) => f.id === item.fieldId)?.code,
-          manageId: query.labelId as string,
+          manageId: query.manageId as string,
         }
       })
       LabelApi.updateFilterConfList(submitData).then(() => {

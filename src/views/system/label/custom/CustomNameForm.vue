@@ -44,7 +44,7 @@ const formData = ref({
   name: undefined,
   type: BooleanEnum.FALSE,
   parentId: 0,
-  labelId: query.id
+  labelId: query.lableId
 })
 const formRules = reactive<FormRules>({
   name: [{ required: true, message: '部门名称不能为空', trigger: 'blur' }],
@@ -84,7 +84,7 @@ const open = async (type: string, row: any) => {
           name: undefined,
           parentId: 0,
           type: BooleanEnum.FALSE,
-          labelId: query.id
+          labelId: query.lableId
         };
         break;
       default:
@@ -161,7 +161,7 @@ const resetForm = () => {
     name: undefined,
     type: BooleanEnum.FALSE,
     parentId: 0,
-    labelId: query.id
+    labelId: query.lableId
   }
   formRef.value?.resetFields()
 }

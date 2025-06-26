@@ -171,7 +171,7 @@ const handleRowClick = (row: LabelFieldConfig) => {
 
 const getDataFieldConfListByManageId = async () => {
   const res = await LabelApi.getFieldConfigList({
-    manageId: query.labelId as string
+    manageId: query.manageId as string
   })
   tableData.value = res.map(item => {
     return {
