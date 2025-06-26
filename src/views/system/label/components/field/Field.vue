@@ -22,10 +22,11 @@
     </el-row>
     <el-table
       ref="tableRef"
-      :data="tableData.filter(item => !item.parentCode)"
+      :data="tableData.filter(item => item.parentCode === '0')"
       stripe
       class="field-sortable-table-container"
       row-key="uuid"
+       height="640"
       @selection-change="handleSelectionChange"
        :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
@@ -64,12 +65,12 @@
       </el-table-column>
       <el-table-column prop="addFlag" label="新增表单" align="center">
         <template #default="scope">
-          <el-checkbox v-model="scope.row.addFlag" true-value="1" false-value="0" label="" />
+          <el-checkbox v-model="scope.row.addFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="editFlag" label="编辑表单" align="center">
         <template #default="scope">
-          <el-checkbox v-model="scope.row.editFlag" true-value="1" false-value="0" label="" />
+          <el-checkbox v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="appViewFlag" label="移动端列表" align="center">
@@ -110,6 +111,7 @@ import {
   BooleanEnum,
 } from '@/config/constants/enums/label'
 import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import { omit } from 'lodash-es'
 
 const props = defineProps({
   data: {
@@ -251,13 +253,10 @@ const handleViewFlag = (row: LabelFieldConfig, flag: string) => {
 }
 
 const saveTableData = async () => {
-  const data = tableData.value.map((item, index) => {
-    delete item.uuid
-    return {
-      ...item,
-      sort: index + 1
-    }
-  })
+  const data = tableData.value.map((item, index) => omit({
+    ...item,
+    sort: index + 1
+  }, ['uuid']))
   handleSelectionChange([])
   await LabelApi.updateFieldConfigList(data).then(() => {
     message.success('保存成功')
@@ -269,7 +268,8 @@ const saveTableData = async () => {
 /** 添加/修改操作 */
 const formRef = ref()
 const openForm = () => {
-  formRef.value.open('add', null, tableData.value)
+  multipleSelection.value = []
+  formRef.value.open('add', undefined, tableData.value)
 }
 defineExpose({ saveTableData })
 </script>

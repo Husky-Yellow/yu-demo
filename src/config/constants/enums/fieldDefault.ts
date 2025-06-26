@@ -157,7 +157,7 @@ export interface LabelFieldConfig {
    * 父级字段编码
    * @description 当单选、多选时、额外的对象是有这个值
    */
-  parentCode: string | undefined
+  parentCode: string
 }
 
 /**

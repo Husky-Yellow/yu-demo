@@ -91,14 +91,17 @@ const filterFields = ref<LabelFieldConfig[]>([])
 const filterFormRef = ref<FormInstance>()
 const clickIndex = ref<number>(-1)
 
-// 右侧规则列表
-const filterRules = ref<FilterRuleConfig[]>([
-  {
+const defaultItem =  {
     uuid: generateUUID(),
     fieldId: null,
     filterType: BooleanEnum.TRUE,
     data: undefined,
     connectType: BooleanEnum.TRUE
+  }
+// 右侧规则列表
+const filterRules = ref<FilterRuleConfig[]>([
+  {
+    ...defaultItem
   }
 ])
 
@@ -164,8 +167,8 @@ function addRule() {
 function removeLastRule() {
   if (filterRules.value.length > 1) {
     console.log('clickIndex', clickIndex.value)
-    if (filterRules.value[clickIndex.value]?.id) {
-      LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].id }).then(() => {
+    if (filterRules.value[clickIndex.value]?.uuid) {
+      LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].uuid }).then(() => {
         ElMessage.success('删除成功')
         if (clickIndex.value !== -1) {
           filterRules.value.splice(clickIndex.value, 1)
@@ -231,12 +234,12 @@ const fetchData = async () => {
   })
   console.log('filterRes', filterRes)
   filterFields.value = res
-  filterRules.value = filterRes.map((item) => {
+  filterRules.value = filterRes.length ? filterRes.map((item) => {
     return {
       ...item,
       uuid: generateUUID()
     }
-  })
+  }) : [defaultItem]
 }
 
 const submitForm = () => {

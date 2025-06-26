@@ -181,7 +181,7 @@ const defaultForm = () => ({
   editFlag: BooleanEnum.FALSE, // 是否编辑表单;0-否 1-是
   appViewFlag: BooleanEnum.FALSE, // 是否移动端展示;0-否 1-是
   pcViewFlag: BooleanEnum.FALSE, // 是否PC端展示;0-否 1-是
-  parentCode: undefined, // 父级字段编码 当单选、多选时、额外的对象是有这个值
+  parentCode: "0", // 父级字段编码 当单选、多选时、额外的对象是有这个值
   fieldConfExt: { ...defaultFieldConfExt }
 })
 const formDisabled = ref(false)
