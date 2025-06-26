@@ -181,6 +181,16 @@ export function useFormEditHandlers({
           startPlaceholder: '开始日期',
           endPlaceholder: '结束日期'
         }
+      case FieldType.ATTACHMENT:
+        return {
+          'list-type': 'picture-card',
+          accept: 'image/*',
+          limit: 1,
+          multiple: false,
+          disabled: true,
+          drag: true,
+          showFileList: false,
+        }
       default:
         return null
     }

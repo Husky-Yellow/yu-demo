@@ -86,12 +86,34 @@
                           </el-icon>
                         </div>
                         <el-form-item :label="field.name" :required="field.required">
-                          <component
-                            :is="getFieldComponent(field.fieldType)"
-                            v-bind="getFieldComponentType(field)"
-                            :placeholder="field.placeholder"
-                            style="width: 100%"
-                          />
+                          <!-- 上传组件 -->
+                          <template v-if="field.fieldType === FieldType.ATTACHMENT">
+                            <el-upload
+                              v-bind="getFieldComponentType(field)"
+                              v-model:file-list="field.fileList"
+                              :action="'/mock-upload'"
+                              :limit="1"
+                              :accept="'image/*,application/pdf'"
+                              :show-file-list="true"
+                              style="width: 100%"
+                            >
+                              <el-icon><Plus /></el-icon>
+                              <template #tip>
+                                <div class="el-upload__tip">
+                                  (请上传不超过5M文件，最多上传1个文件，支持上传jpeg、bmp、jpg、png、pdf等格式文件)
+                                </div>
+                              </template>
+                            </el-upload>
+                          </template>
+                          <!-- 其他组件 -->
+                          <template v-else>
+                            <component
+                              :is="getFieldComponent(field.fieldType)"
+                              v-bind="getFieldComponentType(field)"
+                              :placeholder="field.placeholder"
+                              style="width: 100%"
+                            />
+                          </template>
                         </el-form-item>
                       </div>
                     </div>
@@ -151,13 +173,14 @@
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
 import draggable from 'vuedraggable'
-import { ElFormItem, ElIcon, ElButton, ElMessageBox, ElMessage } from 'element-plus'
+import { ElIcon, ElButton, ElMessageBox, ElMessage } from 'element-plus'
 import { Rank, Delete, Plus } from '@element-plus/icons-vue'
 import { useFormEditHandlers, FormRow } from '@/hooks/web/useFormEditHandlers'
 import type { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import FieldPropertyForm from './FieldPropertyForm.vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import LinkageRelationDialog from './LinkageRelationDialog.vue'
+import { FieldType } from '@/config/constants/enums/field'
 
 const props = defineProps({
   tab: {
@@ -375,7 +398,7 @@ const fetchFormData = async () => {
   }
   availableFields.value = filteredRes as unknown as LabelDragField[]
   formData.value = formConfData
-  if (formConfData) {
+  if (formConfData.formJson) {
     setLayoutData(JSON.parse(formConfData.formJson))
   }
   loading.value = false
@@ -523,5 +546,9 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
 }
 .delete-icon:hover {
   color: #f78989;
+}
+
+.fade-list-item {
+  transition: all 0.3s cubic-bezier(.55,0,.1,1);
 }
 </style>

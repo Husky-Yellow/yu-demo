@@ -1,7 +1,7 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="添加基础字段" width="60%" @close="handleClose">
+  <el-dialog v-model="dialogVisible" title="添加基础字段" width="70%" @close="handleClose">
     <el-row :gutter="4">
-      <el-col :span="8">
+      <el-col :span="10">
         <el-card>
           <template #header>表单配置</template>
           <el-form
@@ -67,7 +67,7 @@
           </el-form>
         </el-card>
       </el-col>
-      <el-col :span="16">
+      <el-col :span="14">
         <el-card>
           <template #header>字段配置</template>
           <!-- 文本 -->

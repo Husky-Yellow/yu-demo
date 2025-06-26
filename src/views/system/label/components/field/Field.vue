@@ -173,7 +173,7 @@ const getDataFieldConfListByManageId = async () => {
   const res = await LabelApi.getFieldConfigList({
     manageId: query.manageId as string
   })
-  tableData.value = res.map(item => {
+  tableData.value = (res || []).map(item => {
     return {
       ...item,
       uuid: item.id ? item.id : generateUUID()
