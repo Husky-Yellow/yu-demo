@@ -39,7 +39,7 @@ import {
 import { defaultNumberFieldForm, NumberFieldForm } from '@/config/constants/enums/fieldDefault'
 import type { FormInstance, FormRules } from 'element-plus'
 import { convertObjectToArray } from '@/utils'
-
+defineOptions({ name: 'NumberFieldConfig' })
 
 const props = defineProps<{
   modelValue?: NumberFieldForm;

@@ -47,7 +47,7 @@ import {
 } from '@/config/constants/enums/field'
 import { defaultTextFieldForm, TextFieldForm } from '@/config/constants/enums/fieldDefault'
 import { convertObjectToArray } from '@/utils'
-
+defineOptions({ name: 'TextFieldConfig' })
 const promptMap = {
   'none': '请输入正确的手机号',
   'mobile': '请输入正确的手机号',

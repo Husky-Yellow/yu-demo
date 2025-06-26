@@ -11,17 +11,18 @@
       </el-col>
       <el-col :span="6" :offset="8">
         <el-button @click="openForm">添加基础字段</el-button>
-        <el-button :disabled="multipleSelection.length === 0" type="primary" @click="handleEdit"
+        <el-button :disabled="multipleSelection.length !== 1" type="primary" @click="handleEdit"
           >编辑</el-button
         >
-        <el-button :disabled="!(multipleSelection.length > 0 && multipleSelection.every(item => !item.id))" type="success" @click="handleDelete"
+        <!-- 长度为1 且 id 为空 才可以删除 -->
+        <el-button :disabled="!(multipleSelection.length === 1 && !multipleSelection[0].id)" type="success" @click="handleDelete"
           >删除</el-button
         >
       </el-col>
     </el-row>
     <el-table
       ref="tableRef"
-      :data="tableData"
+      :data="tableData.filter(item => !item.parentCode)"
       stripe
       class="field-sortable-table-container"
       row-key="uuid"
@@ -104,7 +105,7 @@ import type { TableInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
 import { generateUUID } from '@/utils'
 import FieldEdit from './FieldEdit.vue'
-import { FieldTypeLabel } from '@/config/constants/enums/field'
+import { FieldTypeLabel, FieldType } from '@/config/constants/enums/field'
 import {
   BooleanEnum,
 } from '@/config/constants/enums/label'
@@ -209,13 +210,23 @@ watch(
 
 // 事件处理
 const handleEdit = () => {
+  // 多选、单选先删掉附属属性
+  const {code, fieldType} = multipleSelection.value[0]
+  if (fieldType === FieldType.RADIO || fieldType === FieldType.CHECKBOX) {
+    tableData.value = tableData.value.filter(item => item.parentCode !== code+ '_parent_code')
+  }
   formRef.value.open('edit', multipleSelection.value[0], tableData.value)
 }
 
 // 事件处理
 const handleDelete = () => {
-  const { id, uuid } = multipleSelection.value[0]
-  tableData.value = tableData.value.filter((item) => item?.id !== id && item.uuid !== uuid)
+  const { id, uuid, code } = multipleSelection.value[0]
+  // 多选、单选删掉附属属性, 并删除掉当前项
+  tableData.value = tableData.value.filter((item) =>
+    item?.id !== id &&
+    item.uuid !== uuid &&
+    item.parentCode !== code + '_parent_code'
+  )
 }
 
 const updateData = (data) => {

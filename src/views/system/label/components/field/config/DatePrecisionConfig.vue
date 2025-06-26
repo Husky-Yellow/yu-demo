@@ -22,7 +22,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { FieldType, LableDatePrecisionOptions } from '@/config/constants/enums/field';
 import { defaultDatePrecisionForm, DatePrecisionForm } from '@/config/constants/enums/fieldDefault';
 import { convertObjectToArray } from '@/utils'
-
+defineOptions({ name: 'DatePrecisionConfig' })
 const props = defineProps<{
   modelValue?: DatePrecisionForm;
   type: FieldType;

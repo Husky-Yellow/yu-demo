@@ -24,7 +24,7 @@
 import { FileSizeOptions, FileFormatOptions } from '@/config/constants/enums/field'
 import type { FormInstance, FormRules } from 'element-plus'
 import { defaultUploadFieldForm, UploadFieldForm } from '@/config/constants/enums/fieldDefault'
-
+defineOptions({ name: 'UploadFieldConfig' })
 const props = defineProps<{
   modelValue?: UploadFieldForm & { allowedTypes: string | string[] }
 }>();

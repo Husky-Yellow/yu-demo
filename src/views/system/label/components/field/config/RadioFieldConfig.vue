@@ -7,6 +7,7 @@
       :model="queryParams"
       class="-mb-15px"
       label-width="68px"
+      :disabled="disabled"
     >
       <el-form-item label="字典名称" prop="name">
         <el-input
@@ -15,41 +16,6 @@
           clearable
           placeholder="请输入字典名称"
           @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="字典类型" prop="type">
-        <el-input
-          v-model="queryParams.type"
-          class="!w-240px"
-          clearable
-          placeholder="请输入字典类型"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          class="!w-240px"
-          clearable
-          placeholder="请选择字典状态"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-          end-placeholder="结束日期"
-          start-placeholder="开始日期"
-          type="daterange"
-          value-format="YYYY-MM-DD HH:mm:ss"
         />
       </el-form-item>
       <el-form-item>
@@ -63,41 +29,31 @@
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table v-loading="loading" :data="list">
-      <el-table-column align="center" label="字典编号" prop="id" />
+    <el-table
+      v-loading="loading"
+      :data="list"
+      @selection-change="handleSelectionChange"
+      ref="tableRef"
+      row-key="id"
+    >
+      <el-table-column type="selection" width="55" />
       <el-table-column align="center" label="字典名称" prop="name" show-overflow-tooltip />
       <el-table-column align="center" label="字典类型" prop="type" width="300" />
-      <el-table-column align="center" label="状态" prop="status">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark" />
-      <el-table-column
-        :formatter="dateFormatter"
-        align="center"
-        label="创建时间"
-        prop="createTime"
-        width="180"
-      />
-      <el-table-column align="center" label="操作">
-        <template #default="scope">
-          <router-link :to="'/dict/type/data/' + scope.row.type">
-            <el-button link type="primary">数据</el-button>
-          </router-link>
-          <el-button
-            v-hasPermi="['system:dict:delete']"
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
+      <el-table-column align="center" label="备注" prop="remark" show-overflow-tooltip />
     </el-table>
+
+    <!-- 空数据提示 -->
+    <el-empty
+      v-if="!loading && list.length === 0"
+      description="暂无字典类型数据"
+      :image-size="120"
+    >
+      <el-button type="primary" @click="handleQuery">重新搜索</el-button>
+    </el-empty>
+
     <!-- 分页 -->
     <Pagination
+      v-if="list.length > 0"
       v-model:limit="queryParams.pageSize"
       v-model:page="queryParams.pageNo"
       :total="total"
@@ -107,39 +63,65 @@
 </template>
 
 <script setup lang="ts">
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { dateFormatter } from '@/utils/formatTime'
 import * as DictTypeApi from '@/api/system/dict/dict.type'
-import download from '@/utils/download'
 
-defineOptions({ name: 'SystemDictType' })
+defineOptions({ name: 'RadioFieldConfig' })
 
-const message = useMessage() // 消息弹窗
-const { t } = useI18n() // 国际化
+const props = defineProps<{
+  modelValue?: any,
+  disabled?: boolean
+}>()
 
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
 const list = ref([]) // 字典表格数据
+const selectedItems = ref<any[]>([]) // 选中的项目
+const selectedCount = ref(0) // 选中数量
+const tableRef = ref() // 表格引用
+
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  name: '',
-  type: '',
-  status: undefined,
-  createTime: []
+  name: props.modelValue?.name,
+  status: 0,
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
 
 /** 查询字典类型列表 */
 const getList = async () => {
   loading.value = true
   try {
-    const data = await DictTypeApi.getDictTypePage(queryParams)
+    const data = await DictTypeApi.getDictTypePage( queryParams)
     list.value = data.list
     total.value = data.total
+
+    // 数据加载完成后，设置选中状态
+    nextTick(() => {
+      setInitialSelection()
+    })
   } finally {
     loading.value = false
+  }
+}
+
+/** 设置初始选中状态 */
+const setInitialSelection = () => {
+  if (!props.modelValue?.optionsJson || !tableRef.value) return
+
+  try {
+    // 解析传入的值
+    const fieldConfExtDOList = JSON.parse(props.modelValue?.optionsJson) || []
+    if (Array.isArray(fieldConfExtDOList) && fieldConfExtDOList.length > 0) {
+      const { type } = fieldConfExtDOList?.[0]
+      // 根据传入的数据设置选中状态
+      const row = list.value.find((listItem: any) => listItem.type === type)
+      if (row) {
+        tableRef.value.toggleRowSelection(row, true)
+        handleSelectionChange(fieldConfExtDOList)
+      }
+    }
+  } catch (error) {
+    console.error('解析modelValue失败:', error)
   }
 }
 
@@ -149,39 +131,58 @@ const handleQuery = () => {
   getList()
 }
 
-/** 重置按钮操作 */
-const resetQuery = () => {
-  queryFormRef.value.resetFields()
-  handleQuery()
+/** 选择变化处理 */
+const handleSelectionChange = (selection: any[]) => {
+  console.log(selection);
+
+  selectedItems.value = selection
+  selectedCount.value = selection.length
 }
 
-/** 删除按钮操作 */
-const handleDelete = async (id: number) => {
-  try {
-    // 删除的二次确认
-    await message.delConfirm()
-    // 发起删除
-    await DictTypeApi.deleteDictType(id)
-    message.success(t('common.delSuccess'))
-    // 刷新列表
-    await getList()
-  } catch {}
-}
-
-/** 导出按钮操作 */
-const handleExport = async () => {
-  try {
-    // 导出的二次确认
-    await message.exportConfirm()
-    // 发起导出
-    exportLoading.value = true
-    const data = await DictTypeApi.exportDictType(queryParams)
-    download.excel(data, '字典类型.xls')
-  } catch {
-  } finally {
-    exportLoading.value = false
+/** 校验选择 */
+const validate = () => {
+  if (selectedItems.value.length === 0) {
+    ElMessage.warning('请至少选择一个字典类型')
+    return false
   }
+  if (selectedItems.value.length > 1) {
+    ElMessage.warning('最多选择1个字典类型')
+    return false
+  }
+  return true
 }
+
+/** 清空选择 */
+const convertFormForSubmission = () => {
+  return {
+    value: selectedItems.value[0].type,
+    name: selectedItems.value[0].name,
+    optionsJson: JSON.stringify(selectedItems.value.map((item) => ({
+      type: item.type,
+      name: item.name
+    })))
+  }
+
+
+
+}
+
+/** 暴露方法给父组件 */
+defineExpose({
+  convertFormForSubmission,
+  validate,
+})
+
+/** 监听modelValue变化 */
+watch(
+  () => props.modelValue,
+  () => {
+    if (list.value.length > 0) {
+      setInitialSelection()
+    }
+  },
+  { deep: true }
+)
 
 /** 初始化 **/
 onMounted(() => {

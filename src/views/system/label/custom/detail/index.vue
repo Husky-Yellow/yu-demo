@@ -85,3 +85,14 @@ const save = () => {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+:deep(.el-tabs) {
+  height: 100%;
+
+  .el-tabs__content {
+    height: calc(100% - 40px);
+    overflow-y: auto;
+  }
+}
+</style>

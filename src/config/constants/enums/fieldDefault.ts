@@ -153,6 +153,11 @@ export interface LabelFieldConfig {
    * @description 字段的扩展配置信息
    */
   fieldConfExtDOList: FieldConfExt & { optionsJson: any[], value: never, name: string }[]
+  /**
+   * 父级字段编码
+   * @description 当单选、多选时、额外的对象是有这个值
+   */
+  parentCode: string | undefined
 }
 
 /**

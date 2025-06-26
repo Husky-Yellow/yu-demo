@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="dialogVisible" title="添加基础字段" width="60%" @close="handleClose">
-    <el-row :gutter="10">
-      <el-col :span="12">
+    <el-row :gutter="4">
+      <el-col :span="8">
         <el-card>
           <template #header>表单配置</template>
           <el-form
@@ -67,7 +67,7 @@
           </el-form>
         </el-card>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="16">
         <el-card>
           <template #header>字段配置</template>
           <!-- 文本 -->
@@ -90,7 +90,9 @@
           <template
             v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX"
           >
-            <RadioFieldConfig ref="radioFieldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" />
+            <RadioFieldConfig
+ref="radioFieldConfigRef" v-model="form.fieldConfExt"
+            :disabled="formDisabled"  />
           </template>
           <!-- 日期、日期区间 -->
           <template
@@ -124,7 +126,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleClose()">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit">确 认</el-button>
+        <el-button v-show="!formDisabled" type="primary" @click="handleSubmit">确 认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -178,6 +180,7 @@ const defaultForm = () => ({
   editFlag: BooleanEnum.FALSE, // 是否编辑表单;0-否 1-是
   appViewFlag: BooleanEnum.FALSE, // 是否移动端展示;0-否 1-是
   pcViewFlag: BooleanEnum.FALSE, // 是否PC端展示;0-否 1-是
+  parentCode: undefined, // 父级字段编码 当单选、多选时、额外的对象是有这个值
   fieldConfExt: { ...defaultFieldConfExt }
 })
 const formDisabled = ref(false)
@@ -233,10 +236,10 @@ const emptyRef = ref<FieldConfigRef>()
 const fieldRefMap: Record<FieldType, Ref<FieldConfigRef | undefined>> = {
   [FieldType.TEXT]: textFieldConfigRef,
   [FieldType.NUMBER]: numberFieldConfigRef,
-  [FieldType.RADIO]: emptyRef,
-  [FieldType.CHECKBOX]: emptyRef,
-  [FieldType.DATE]: emptyRef,
-  [FieldType.DATE_RANGE]: emptyRef,
+  [FieldType.RADIO]: radioFieldConfigRef,
+  [FieldType.CHECKBOX]: radioFieldConfigRef,
+  [FieldType.DATE]: datePrecisionConfigRef,
+  [FieldType.DATE_RANGE]: datePrecisionConfigRef,
   [FieldType.ADDRESS]: emptyRef,
   [FieldType.REGION]: emptyRef,
   [FieldType.TAG]: emptyRef,
@@ -261,6 +264,7 @@ const validateChildForm = async () => {
 
 // 提交表单
 const handleSubmit = async () => {
+  // 单选多选要额外的处理
   const fieldConfExtDOList = await validateChildForm()
   if (!fieldConfExtDOList) return
   const valid = await (fieldForm.value as any).validate?.()
@@ -268,32 +272,35 @@ const handleSubmit = async () => {
     console.log('表单校验不通过')
     return
   }
-  const submitData = {
+  const submitData: any = {
     ...form,
     fieldConfExtDOList
   }
+  console.log('提交 submitData', submitData);
 
   emits('update:data', omit(submitData, 'fieldConfExt'))
+
+  if (form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX) {
+    const { code, name } = form
+    const newSubmitData = {
+      ...submitData,
+      parentCode: code as string,
+      code: code + '_parent_code',
+      name: name + '_parent_name'
+    }
+    emits('update:data', omit(newSubmitData, ['fieldConfExt', 'fieldConfExtDOList']))
+  }
   handleClose()
 }
 
 // 重置表单
 const resetForm = () => {
-  // 获取新的默认值
   const defaultValues = defaultForm()
-
-  // 清空所有现有属性
   Object.keys(form).forEach(key => {
     delete form[key]
   })
-
-  // 重新设置所有默认值
   Object.assign(form, defaultValues)
-
-  // 确保 fieldConfExt 是全新的对象
   form.fieldConfExt = { ...defaultFieldConfExt }
-
-  // 重置表单验证状态
   ;(fieldForm.value as any)?.resetFields()
 }
 
@@ -311,15 +318,38 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
     code: item.code,
     name: item.name
   }))
-  if (row) {
+  resetForm()
+  if (row?.id) {
     const detail = await LabelApi.getFieldConfigDetail({ 'id': row.id as string })
-    Object.assign(form, detail, {
-      fieldConfExtDOList: detail.fieldConfExtDOList
-        ? convertArrayToObject(JSON.parse(JSON.stringify(detail.fieldConfExtDOList)))
-        : { ...defaultFieldConfExt }
-    })
+    if(row?.fieldType === FieldType.RADIO || row?.fieldType === FieldType.CHECKBOX) {
+      Object.assign(form, detail, {
+        fieldConfExt: detail?.fieldConfExtDOList
+          ? detail.fieldConfExtDOList
+          : { ...defaultFieldConfExt }
+        })
+    } else {
+      Object.assign(form, detail, {
+        fieldConfExt: detail?.fieldConfExtDOList
+          ? convertArrayToObject(JSON.parse(JSON.stringify(detail.fieldConfExtDOList)))
+          : { ...defaultFieldConfExt }
+        })
+    }
   } else {
-    resetForm()
+
+    if(row?.fieldType === FieldType.RADIO || row?.fieldType === FieldType.CHECKBOX) {
+      Object.assign(form, row, {
+        fieldConfExt: row?.fieldConfExtDOList
+          ? row.fieldConfExtDOList
+          : { ...defaultFieldConfExt }
+        })
+    } else {
+      Object.assign(form, row, {
+        fieldConfExt: row?.fieldConfExtDOList
+          ? convertArrayToObject(JSON.parse(JSON.stringify(row.fieldConfExtDOList)))
+          : { ...defaultFieldConfExt }
+        })
+    }
+
   }
   dialogVisible.value = true
 }
