@@ -124,7 +124,6 @@ const handleCheckChange = (
   checked: boolean,
   indeterminate: boolean
 ) => {
-  console.log(data, checked, indeterminate)
   formData.value.postIds.push(data as unknown as never)
   // formData.value.postIds = []
   // data.forEach((key) => {

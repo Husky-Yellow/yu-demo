@@ -211,7 +211,6 @@ function addFields(ids: string[]) {
       selectedOptions: options,
     })
   })
-  console.log(tableData.value);
 
 }
 
@@ -317,7 +316,6 @@ const fetchData = async () => {
     field,
   }
   }) as QueryTableRow[]
-  console.log(tableData.value);
 
 }
 
@@ -365,7 +363,6 @@ const getEnumOptions = async (row) => {
       pageSize: 10,
       dictType: val,
     })
-    console.log(data.list);
 
     return data.list
   }

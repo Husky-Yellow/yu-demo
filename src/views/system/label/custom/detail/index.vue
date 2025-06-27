@@ -46,7 +46,6 @@ const tabsConfig: readonly TabConfig[] = [
   { name: 'query', label: '查询配置', component: defineAsyncComponent(() => import('../../components/query/Query.vue')), saveMethod: 'submitForm' },
   { name: 'Data', label: '数据配置', component: defineAsyncComponent(() => import('../../components/filter/Filter.vue')), saveMethod: 'submitForm' },
   { name: 'Sorting', label: '排序配置', component: defineAsyncComponent(() => import('../../components/sort/Sort.vue')), saveMethod: 'submitForm' },
-  // 标签的树选择，值和控件的处理
   { name: 'Statistical', label: '统计配置', component: defineAsyncComponent(() => import('../../components/statistic/StatisticConfig.vue')), saveMethod: 'submitForm' },
 ]
 

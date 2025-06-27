@@ -199,7 +199,6 @@ const getEnumOptions = async (row) => {
       pageSize: 10,
       dictType: val,
     })
-    console.log(data.list);
 
     return data.list
   }

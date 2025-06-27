@@ -374,7 +374,6 @@ const fetchData = async () => {
       })
     ) as StatisticItem[]
   }
-  console.log('statistics.value', statistics.value);
 
 }
 
