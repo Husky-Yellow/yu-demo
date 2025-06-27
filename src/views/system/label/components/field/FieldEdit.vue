@@ -324,10 +324,9 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
   const dataSource = row?.id
     ? await LabelApi.getFieldConfigDetail({ 'id': row.id as string })
     : row
-
   if (dataSource) {
     const isRadioOrCheckbox = dataSource.fieldType === FieldType.RADIO || dataSource.fieldType === FieldType.CHECKBOX
-    const fieldConfExt = dataSource?.fieldConfExtDOList
+    const fieldConfExt = dataSource?.fieldConfExtDOList?.length
       ? (isRadioOrCheckbox
           ? dataSource.fieldConfExtDOList[0]
           : convertArrayToObject(JSON.parse(JSON.stringify(dataSource.fieldConfExtDOList))))

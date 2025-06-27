@@ -54,32 +54,42 @@
           <!-- 搜索：输入框 -->
           <el-input v-if="row.queryType === 0" v-model="row.defaultValue" class="w-full" size="small" placeholder="请输入默认值" />
           <!-- todo @zhaokun 多选、单选、日期 控件  默认值-->
-          <!-- 单选/多选：下拉框 -->
-          <el-select
-            v-else-if="row.queryType === 1 || row.queryType === 2"
-            v-model="row.defaultValue"
-            size="small"
-            :multiple="row.queryType === 2"
-            placeholder="请选择"
-            class="w-full"
-          >
-            <el-option
-              v-for="opt in getEnumOptions(row.key)"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-select>
-          <!-- 标签为树形多选 -->
-          <!-- <el-tree-select
-            v-model="row.defaultValue"
-            :data="data"
-            check-strictly
-            :render-after-expand="false"
-            show-checkbox
-            check-on-click-node
-            class="!w-240px"
-          /> -->
+          <!-- 多选、单选、区域、标签 -->
+           <template v-if="row.fieldType === FieldType.RADIO || row.fieldType === FieldType.CHECKBOX || row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG">
+            <template v-if="row.fieldType === FieldType.RADIO || row.fieldType === FieldType.CHECKBOX ">
+              <el-select
+                 v-if="row.queryType === 1 || row.queryType === 2"
+                 v-model="row.defaultValue"
+                 size="small"
+                 :multiple="row.queryType === 2"
+                 placeholder="请选择"
+                 class="w-full"
+               >
+                 <el-option
+                   v-for="opt in row.selectedOptions"
+                   :key="opt.dictType"
+                   :label="opt.label"
+                   :value="opt.value"
+                 /></el-select>
+            </template>
+            <template v-else>
+              <!-- 区域为树形单选 -->
+              <el-tree-select
+                v-model="row.defaultValue"
+                :data="deptList"
+                :multiple="row.queryType === 2"
+                check-strictly
+                :render-after-expand="false"
+                check-on-click-node
+                class="!w-240px"
+                :props="{
+                  ...defaultProps,
+                  children: 'childList',
+                  label: 'name'
+                }"
+              />
+            </template>
+           </template>
           <!-- 时间/时间区间：时间选择器 -->
           <el-date-picker
             v-else-if="row.queryType === 3"
@@ -104,7 +114,7 @@
       </el-table-column>
       <el-table-column label="操作" width="180" align="center">
         <template #default="{ row }">
-          <el-button link type="primary" v-if="row.queryType === 0" @click="openSubFieldDialog(row)">
+          <el-button link type="primary" :disabled="row.queryType !== 0" @click="openSubFieldDialog(row)">
             添加字段
           </el-button>
         </template>
@@ -139,14 +149,18 @@
 </template>
 
 <script setup lang="ts">
+import Sortable from 'sortablejs'
 import type { ElTable } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
+import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldSelectDialog from '../common/FieldSelectDialog.vue'
 import SubFieldSelectDialog from './SubFieldSelectDialog.vue'
 import QueryPreview from './QueryPreview.vue'
-import Sortable from 'sortablejs'
+import { defaultProps } from '@/utils/tree'
 import type { LabelFieldConfig, QueryTableRow, QueryResItem } from '@/config/constants/enums/fieldDefault'
 import { FieldType } from '@/config/constants/enums/field'
+import { handleTree2 } from '@/utils/tree'
+import { isArray } from '@/utils/is'
 
 // 单选、多选、区域、标签为单选或者多选  日期和日期区间为日期或者日期区间  文本和数字可以多个字段合并查询
 const fieldTypeLabelMap = {
@@ -163,11 +177,11 @@ const fieldTypeLabelMap = {
 }
 
 const { query } = useRoute() // 查询参数
-const message = useMessage()
 // 所有字段
 const allFields = shallowRef<LabelFieldConfig[]>([])
 // 表格数据
 const tableData = ref<QueryTableRow[]>([])
+const deptList = ref<Tree[]>([])
 const showDialog = ref<boolean>(false)
 const showSubFieldDialog = ref<boolean>(false)
 const showPreviewDialog = ref<boolean>(false)
@@ -185,16 +199,23 @@ const subFieldExcludedKeys = computed(() => {
 function addFields(ids: string[]) {
   const existKeysSet = new Set(tableData.value.map((i) => i.uuid))
   const toAdd = allFields.value.filter((f) => f.uuid && ids.includes(f.uuid) && !existKeysSet.has(f.uuid))
-  toAdd.forEach(f => {
-    tableData.value.push({
+  toAdd.forEach(async f => {
+    const newField = {
       ...f,
       field: [{...f}],
       queryType: fieldTypeLabelMap[f.fieldType],
       defaultValue: '',
       hint: '',
       sort: 0,
+    }
+    const options = await getEnumOptions(newField)
+    tableData.value.push({
+      ...newField,
+      selectedOptions: options,
     })
   })
+  console.log(tableData.value);
+
 }
 
 
@@ -261,15 +282,20 @@ const initSortable = () => {
 
 const tableRowClassName = ({
   row,
-  rowIndex,
 }: {
   row: any
-  rowIndex: number
 }) => {
   if (row.queryType === 0) {
     return 'warning-row'
   }
   return ''
+}
+/** 获得部门树 */
+const getTree = async () => {
+  const res = await LabelApi.getLabelManageTree({
+    labelId: query.lableId as string
+  })
+  deptList.value = handleTree2(res)
 }
 
 const fetchData = async () => {
@@ -290,15 +316,19 @@ const fetchData = async () => {
     return {
     ...item,
     fieldType: field[0]?.fieldType,
+    // defaultValue: item.queryType === 1 || item.queryType === 2 ? item.defaultValue.split(',') : item.defaultValue,
     field,
   }
   }) as QueryTableRow[]
+  console.log(tableData.value);
+
 }
 
 // 生命周期钩子
 onMounted(() => {
   initSortable()
   fetchData()
+  getTree()
 })
 
 const submitForm = async () => {
@@ -308,7 +338,7 @@ const submitForm = async () => {
       fieldCodes: row.field?.map(f => f.code).join(',') || '',
       queryType: row.queryType,
       sort: index,
-      defaultValue: row.defaultValue,
+      defaultValue:  row.defaultValue,
       hint: row.hint,
       manageId: query.manageId as string,
       id: row.id,
@@ -325,26 +355,28 @@ defineExpose({ submitForm })
 
 
 // todo @zhaokun 要处理
-function getEnumOptions(key) {
-  const map = {
-    idType: [
-      { label: '身份证', value: 'idcard' },
-      { label: '护照', value: 'passport' }
-    ],
-    level: [
-      { label: '一级', value: '1' },
-      { label: '二级', value: '2' }
-    ],
-    gender: [
-      { label: '男', value: 'male' },
-      { label: '女', value: 'female' }
-    ],
-    status: [
-      { label: '启用', value: 'enable' },
-      { label: '禁用', value: 'disable' }
-    ]
+const getEnumOptions = async (row) => {
+  console.log(row.fieldType);
+  // 标签和区域
+  if(row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG){
+    console.log(deptList.value);
+
+    return deptList.value
   }
-  return map[key] || []
+  // 单选、多选需要获取字典
+  const res = await LabelApi.getFieldConfigDetail({ 'id': row.uuid as string })
+  const val = res.fieldConfExtDOList?.[0]?.value
+  if(val){
+    const data = await DictDataApi.getDictDataPage({
+      pageNo: 1,
+      pageSize: 10,
+      dictType: val,
+    })
+    console.log(data.list);
+
+    return data.list
+  }
+  return []
 }
 </script>
 

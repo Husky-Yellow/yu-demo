@@ -107,18 +107,16 @@ const getList = async () => {
 
 /** 设置初始选中状态 */
 const setInitialSelection = () => {
-  if (!props.modelValue?.[0]?.optionsJson || !tableRef.value) return
+  if (!props.modelValue?.value || !tableRef.value) return
 
   try {
     // 解析传入的值
-    const fieldConfExtDOList = JSON.parse(props.modelValue?.optionsJson) || []
-    if (Array.isArray(fieldConfExtDOList) && fieldConfExtDOList.length > 0) {
-      const { type } = fieldConfExtDOList?.[0]
-      // 根据传入的数据设置选中状态
-      const row = list.value.find((listItem: any) => listItem.type === type)
+    const value = props.modelValue?.value
+    if (value) {
+      const row = list.value.find((listItem: any) => listItem.type === value)
       if (row) {
         tableRef.value.toggleRowSelection(row, true)
-        handleSelectionChange(fieldConfExtDOList)
+        handleSelectionChange([row])
       }
     }
   } catch (error) {
