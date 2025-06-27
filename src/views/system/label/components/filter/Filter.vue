@@ -6,14 +6,14 @@
       <VueDraggable
         :list="filterFields"
         :group="{ name: 'fields', pull: cloneField, put: false }"
-        :item-key="'key'"
+        :item-key="'uuid'"
         :clone="cloneField"
         :sort="false"
         class="min-h-[100px]"
         @start="onDragStart"
       >
         <template #item="{ element }">
-          <FieldPoolItem :hasKeyString="'id'" :element="element" :isFieldUsed="isFieldUsed" />
+          <FieldPoolItem :hasKeyString="'uuid'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
@@ -47,7 +47,7 @@
               </div>
             </el-form-item>
             <el-form-item :prop="`filterRules.${index}.filterType`">
-              <el-select class="!w-[200px] mt-18px" v-model="rule.filterType" placeholder="选择操作符">
+              <el-select class="!w-[160px] mt-18px" v-model="rule.filterType" placeholder="选择操作符">
                 <el-option
                   v-for="operatorItem in OperatorOptions"
                   :key="operatorItem.value"
@@ -57,17 +57,34 @@
               </el-select>
             </el-form-item>
             <el-form-item :prop="`filterRules.${index}.data`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
-              <!-- 、todo @zhaokun 多选的话，需要选择框，然后提交的时候，需要把选择框的值转换为字符串 -->
-              <el-input v-model="rule.data" placeholder="请输入值"  class="!w-[200px] mt-18px"/>
-                 <!-- <el-tree-select
-            v-model="row.defaultValue"
-            :data="data"
-            check-strictly
-            :render-after-expand="false"
-            show-checkbox
-            check-on-click-node
-            class="!w-240px"
-          /> -->
+              <!-- 单选、多选、组织、标签 -->
+          <el-select
+                 v-if="getFieldType(rule.fieldId) === FieldType.RADIO || getFieldType(rule.fieldId) === FieldType.CHECKBOX"
+                 v-model="rule.data"
+                 :multiple="getFieldType(rule.fieldId) === FieldType.CHECKBOX"
+                 placeholder="请选择"
+                 class="!w-240px mt-18px"
+               >
+                 <el-option
+                   v-for="opt in rule.selectedOptions"
+                   :key="opt.dictType"
+                   :label="opt.label"
+                   :value="opt.value"
+                 /></el-select>
+                 <el-tree-select
+                 v-else
+                v-model="rule.data"
+                :data="deptList"
+                check-strictly
+                :render-after-expand="false"
+                check-on-click-node
+                class="!w-240px mt-18px"
+                :props="{
+                  ...defaultProps,
+                  children: 'childList',
+                  label: 'name'
+                }"
+              />
             </el-form-item>
           </div>
           <!-- 且/或按钮 -->
@@ -84,29 +101,30 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
-import * as LabelApi from '@/api/system/label'
-import { OperatorOptions } from '@/config/constants/enums/label'
 import type { FormInstance } from 'element-plus'
+import { ElButton, ElSelect, ElOption } from 'element-plus'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
-import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
+import * as LabelApi from '@/api/system/label'
+import * as DictDataApi from '@/api/system/dict/dict.data'
+import { OperatorOptions, BooleanEnum } from '@/config/constants/enums/label'
 import { FieldType } from '@/config/constants/enums/field'
 import type { LabelFieldConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
-import { BooleanEnum } from '@/config/constants/enums/label'
 import { generateUUID } from '@/utils'
-
+import { handleTree2, defaultProps } from '@/utils/tree'
 const { query } = useRoute() // 查询参数
 
 // 左侧可选字段
 const filterFields = ref<LabelFieldConfig[]>([])
 const filterFormRef = ref<FormInstance>()
 const clickIndex = ref<number>(-1)
-
+const deptList = ref<Tree[]>([])
 const defaultItem =  {
     uuid: generateUUID(),
     fieldId: null,
     filterType: BooleanEnum.TRUE,
     data: undefined,
-    connectType: BooleanEnum.TRUE
+    connectType: BooleanEnum.TRUE,
+    selectedOptions: []
   }
 // 右侧规则列表
 const filterRules = ref<FilterRuleConfig[]>([
@@ -126,13 +144,17 @@ const isFieldUsed = (fieldKey: string) => {
 
 // 获取字段显示标签
 const getFieldLabel = (fieldKey: string) => {
-  return filterFields.value.find((f) => f.id === fieldKey)?.name || fieldKey
+  return filterFields.value.find((f) => f.uuid === fieldKey)?.name || fieldKey
+}
+
+const getFieldType = (fieldKey: string | null) => {
+  return filterFields.value.find((f) => f.uuid === fieldKey)?.fieldType
 }
 
 // 开始拖拽时保存字段数据
 function onDragStart(evt: any) {
   const field = filterFields.value[evt.oldIndex]
-  if (field && !isFieldUsed(field.id as string)) {
+  if (field && !isFieldUsed(field.uuid as string)) {
     draggedField.value = field
   }
 }
@@ -143,12 +165,45 @@ function cloneField(field: LabelFieldConfig) {
 }
 
 // 字段放置处理
-function onFieldDrop(e: DragEvent, ruleIndex: number) {
+async function onFieldDrop(e: DragEvent, ruleIndex: number) {
   e.preventDefault()
-  if (draggedField.value && !isFieldUsed(draggedField.value.id as string)) {
-    filterRules.value[ruleIndex].fieldId = draggedField.value.id as string
+  if (draggedField.value && !isFieldUsed(draggedField.value.uuid as string)) {
+    filterRules.value[ruleIndex].fieldId = draggedField.value.uuid as string
+    const filed = filterFields.value.find((f) => f.uuid === draggedField.value?.uuid)
+
+    if(filed){
+      filterRules.value[ruleIndex].selectedOptions = await getEnumOptions(filed)
+    }
     draggedField.value = null
   }
+}
+
+const getEnumOptions = async (row) => {
+  if(row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG){
+    return deptList.value
+  }
+  // 单选、多选需要获取字典
+  const res = await LabelApi.getFieldConfigDetail({ 'id': row.uuid as string })
+  filterFields.value.forEach((item) => {
+    if(item.uuid === row.uuid){
+      item = {
+        ...item,
+        ...res
+      }
+    }
+  })
+  const val = res.fieldConfExtDOList?.[0]?.value
+  if(val){
+    const data = await DictDataApi.getDictDataPage({
+      pageNo: 1,
+      pageSize: 10,
+      dictType: val,
+    })
+    console.log(data.list);
+
+    return data.list
+  }
+  return []
 }
 
 const setClickIndex = (rule: FilterRuleConfig) => {
@@ -162,6 +217,14 @@ function removeField(ruleIndex: number) {
   }
 }
 
+/** 获得部门树 */
+const getTree = async () => {
+  const res = await LabelApi.getLabelManageTree({
+    labelId: query.lableId as string
+  })
+  deptList.value = handleTree2(res)
+}
+
 // 添加新规则
 function addRule() {
   filterRules.value.push({
@@ -169,7 +232,8 @@ function addRule() {
     fieldId: null,
     filterType: BooleanEnum.TRUE,
     data: undefined,
-    connectType: BooleanEnum.TRUE
+    connectType: BooleanEnum.TRUE,
+    selectedOptions: []
   })
 }
 
@@ -242,13 +306,22 @@ const fetchData = async () => {
   const filterRes = await LabelApi.getFilterConfList({
     manageId: query.manageId as string
   })
-  filterFields.value = res.filter((item) => item.fieldType === FieldType.RADIO || item.fieldType === FieldType.CHECKBOX || item.fieldType === FieldType.TAG || item.fieldType === FieldType.REGION)
-  filterRules.value = filterRes.length ? filterRes.map((item) => {
-    return {
-      ...item,
-      uuid: generateUUID()
-    }
-  }) : [defaultItem]
+  filterFields.value = res.filter((item) => item.fieldType === FieldType.RADIO || item.fieldType === FieldType.CHECKBOX || item.fieldType === FieldType.TAG || item.fieldType === FieldType.REGION).map(item => {
+    item.uuid = item.id
+    delete item.id
+    return item
+  })
+  filterRules.value = filterRes.length
+  ? await Promise.all(
+      filterRes.map(async (item) => {
+        const field = filterFields.value.find((f) => f.uuid === item.fieldId)
+        if (field) {
+          item.selectedOptions = await getEnumOptions(field) ?? []
+        }
+        return item
+      })
+    )
+  : [defaultItem]
 }
 
 const submitForm = () => {
@@ -275,6 +348,7 @@ const submitForm = () => {
 // 生命周期钩子
 onMounted(() => {
   fetchData()
+  getTree()
 })
 
 defineExpose({

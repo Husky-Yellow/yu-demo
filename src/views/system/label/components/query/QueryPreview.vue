@@ -56,8 +56,6 @@ import {
   ElInput,
   ElSelect,
   ElDatePicker,
-  ElRadioGroup,
-  ElCheckboxGroup,
   ElButton,
   ElRow,
   ElCol,
@@ -67,7 +65,6 @@ import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   queryFields: any[]
-  enumOptions: (key: string) => Array<{ label: string; value: any }>
 }>()
 
 const isExpanded = ref(false)
@@ -120,9 +117,9 @@ function getComponentProps(field: any) {
     props.startPlaceholder = '开始日期'
     props.endPlaceholder = '结束日期'
   }
-  if (field.queryType === 'radio' || field.queryType === 'checkbox') {
-    props.options = props.enumOptions(field.key)
-  }
+  // if (field.queryType === 'radio' || field.queryType === 'checkbox') {
+  //   props.options = props.enumOptions(field.key)
+  // }
   return props
 }
 

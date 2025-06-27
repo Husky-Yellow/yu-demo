@@ -53,7 +53,6 @@
         <template #default="{ row }">
           <!-- 搜索：输入框 -->
           <el-input v-if="row.queryType === 0" v-model="row.defaultValue" class="w-full" size="small" placeholder="请输入默认值" />
-          <!-- todo @zhaokun 多选、单选、日期 控件  默认值-->
           <!-- 多选、单选、区域、标签 -->
            <template v-if="row.fieldType === FieldType.RADIO || row.fieldType === FieldType.CHECKBOX || row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG">
             <template v-if="row.fieldType === FieldType.RADIO || row.fieldType === FieldType.CHECKBOX ">
@@ -143,7 +142,7 @@
     />
     <!-- 预览弹窗 -->
     <el-dialog v-model="showPreviewDialog" title="预览" width="80%">
-      <QueryPreview :query-fields="tableData" :enum-options="getEnumOptions" />
+      <QueryPreview :query-fields="tableData" />
     </el-dialog>
   </div>
 </template>
@@ -156,11 +155,9 @@ import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldSelectDialog from '../common/FieldSelectDialog.vue'
 import SubFieldSelectDialog from './SubFieldSelectDialog.vue'
 import QueryPreview from './QueryPreview.vue'
-import { defaultProps } from '@/utils/tree'
 import type { LabelFieldConfig, QueryTableRow, QueryResItem } from '@/config/constants/enums/fieldDefault'
 import { FieldType } from '@/config/constants/enums/field'
-import { handleTree2 } from '@/utils/tree'
-import { isArray } from '@/utils/is'
+import { handleTree2, defaultProps } from '@/utils/tree'
 
 // 单选、多选、区域、标签为单选或者多选  日期和日期区间为日期或者日期区间  文本和数字可以多个字段合并查询
 const fieldTypeLabelMap = {
@@ -354,13 +351,9 @@ const submitForm = async () => {
 defineExpose({ submitForm })
 
 
-// todo @zhaokun 要处理
 const getEnumOptions = async (row) => {
-  console.log(row.fieldType);
   // 标签和区域
   if(row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG){
-    console.log(deptList.value);
-
     return deptList.value
   }
   // 单选、多选需要获取字典

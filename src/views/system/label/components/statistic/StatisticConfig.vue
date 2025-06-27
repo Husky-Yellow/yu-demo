@@ -90,17 +90,34 @@
                         :prop="`${idx}.fields.${index}.data`"
                         :rules="{ required: true, message: '请输入值' }"
                       >
-                      {{ element.fieldType }}
-                        <el-input v-if="element.fieldType === FieldType.RADIO || element.fieldType === FieldType.CHECKBOX" v-model="element.data" class="!w-[200px] mt-18px mr-6px" />
-                           <!-- <el-tree-select
-                              v-model="row.defaultValue"
-                              :data="data"
-                              check-strictly
-                              :render-after-expand="false"
-                              show-checkbox
-                              check-on-click-node
-                              class="!w-240px"
-                            /> -->
+                            <el-select
+                              v-if="element.fieldType === FieldType.RADIO || element.fieldType === FieldType.CHECKBOX"
+                              v-model="element.data"
+                              :multiple="element.fieldType === FieldType.CHECKBOX"
+                              placeholder="请选择"
+                              class="!w-220px mt-18px "
+                            >
+                              <el-option
+                                v-for="opt in element.selectedOptions"
+                                :key="opt.dictType"
+                                :label="opt.label"
+                                :value="opt.value"
+                              /></el-select>
+
+                              <el-tree-select
+                                v-else
+                                v-model="element.data"
+                                :data="deptList"
+                                check-strictly
+                                :render-after-expand="false"
+                                check-on-click-node
+                                class="!w-220px mt-18px "
+                                :props="{
+                                  ...defaultProps,
+                                  children: 'childList',
+                                  label: 'name'
+                                }"
+                              />
                       </el-form-item>
                     </template>
                     <el-button @click="removeField(idx, index)">删除</el-button>
@@ -125,16 +142,19 @@ import VueDraggable from 'vuedraggable'
 import { ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
+import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
 import { FieldType } from '@/config/constants/enums/field'
 import type { LabelFieldConfig, StatisticItem, StatisticField } from '@/config/constants/enums/fieldDefault'
 import { generateUUID } from '@/utils'
+import { handleTree2, defaultProps } from '@/utils/tree'
 
 const { query } = useRoute() // 查询参数
 // 示例字段
 const statisticConfigFields = ref<LabelFieldConfig[]>([])
 const slectIndex = ref<number>(-1)
+const deptList = ref<Tree[]>([])
 /** 统计项列表：用户配置的统计规则 */
 const statistics = ref<StatisticItem[]>([{
   uuid: generateUUID(),
@@ -223,14 +243,15 @@ function removeField(statIdx: number, fieldIdx: number) {
  * @param statIdx - 目标统计项的索引
  * @param evt - 拖放事件对象，包含添加的元素信息
  */
- function onFieldDrop(statIdx: number, evt: any) {
-  const field = statistics.value[statIdx].fields[evt.newIndex]
+ async function onFieldDrop(statIdx: number, evt: any) {
+  const fields = statistics.value[statIdx].fields
+  const field = fields[0]
   if (field) {
-    if (field.filterType === undefined) field.filterType = 1
-    if (field.data === undefined) field.data = ''
+      field.selectedOptions = await getEnumOptions(field)
+      if (field.filterType === undefined) field.filterType = 1
+      if (field.data === undefined) field.data = ''
+    }
   }
-}
-
 /**
  * 自定义表单校验规则：验证统计名称是否唯一
  * @param rule - 校验规则
@@ -257,6 +278,33 @@ const validateFieldsNotEmpty = (idx: number) => {
     }
     callback()
   }
+}
+
+/** 获得部门树 */
+const getTree = async () => {
+  const res = await LabelApi.getLabelManageTree({
+    labelId: query.lableId as string
+  })
+  deptList.value = handleTree2(res)
+}
+
+const getEnumOptions = async (row) => {
+  // 标签和区域
+  if(row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG){
+    return deptList.value
+  }
+  // 单选、多选需要获取字典
+  const res = await LabelApi.getFieldConfigDetail({ 'id': row.uuid as string })
+  const val = res.fieldConfExtDOList?.[0]?.value
+  if(val){
+    const data = await DictDataApi.getDictDataPage({
+      pageNo: 1,
+      pageSize: 10,
+      dictType: val,
+    })
+    return data.list
+  }
+  return []
 }
 
 /**
@@ -307,26 +355,34 @@ const fetchData = async () => {
 
 
   if (countConfigList.length > 0) {
-    statistics.value = countConfigList.map((item) => {
-      const field = res.find((f) => f.uuid === item.fieldId)
-      return {
-        ...item,
-        fields: field ? [{
-            ...(field as StatisticField),
-            filterType: item.filterType,
-            data: item.data,
-            bizType: item.type
-          }]
-        : []
-      }
-    }) as unknown as StatisticItem[]
+    statistics.value = await Promise.all(
+    countConfigList.map(async (item) => {
+      const field = res.find((f) => String(f.uuid) === String(item.fieldId))
+      const selectedOptions = await getEnumOptions(field) ?? []
+        return {
+          ...item,
+          fields: field
+            ? [{
+                ...(field as StatisticField),
+                filterType: item.filterType,
+                data: item.data,
+                bizType: item.type,
+                selectedOptions
+              }]
+            : []
+        }
+      })
+    ) as StatisticItem[]
   }
+  console.log('statistics.value', statistics.value);
+
 }
 
 
 // 生命周期钩子
 onMounted(() => {
   fetchData()
+  getTree()
 })
 
 /** 向父组件暴露 submitForm 方法 */

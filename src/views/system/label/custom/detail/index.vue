@@ -40,13 +40,10 @@ interface TabConfig {
 
 const tabsConfig: readonly TabConfig[] = [
   { name: 'field', label: '字段配置', component: defineAsyncComponent(() => import('../../components/field/Field.vue')), saveMethod: 'saveTableData' },
-  // 单选多选 需要获取通过接口枚举值
   { name: 'formEdit', label: '表单配置', component: defineAsyncComponent(() => import('../../components/common/FormEdit.vue')), saveMethod: 'submitForm' },
   { name: 'detailEdit', label: '详情配置', component: defineAsyncComponent(() => import('../../components/common/FormEdit.vue')), saveMethod: 'submitForm' },
   { name: 'operation', label: '操作配置', component: defineAsyncComponent(() => import('../../components/common/Operation.vue')), saveMethod: 'submitForm' },
-  // 标签的树选择，值和控件的处理
   { name: 'query', label: '查询配置', component: defineAsyncComponent(() => import('../../components/query/Query.vue')), saveMethod: 'submitForm' },
-  // 标签的树选择，值和控件的处理
   { name: 'Data', label: '数据配置', component: defineAsyncComponent(() => import('../../components/filter/Filter.vue')), saveMethod: 'submitForm' },
   { name: 'Sorting', label: '排序配置', component: defineAsyncComponent(() => import('../../components/sort/Sort.vue')), saveMethod: 'submitForm' },
   // 标签的树选择，值和控件的处理
