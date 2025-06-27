@@ -282,6 +282,7 @@ const submitForm = () => {
 }
 
 const fetchData = async () => {
+  // todo @zhaokun 单选、多选、组织、标签 需要过滤
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })

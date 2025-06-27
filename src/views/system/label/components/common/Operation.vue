@@ -1,14 +1,12 @@
 <template>
-  <ContentWrap>
-    <DraggableTable
-      :table-data="tableData"
-      :columns="columns"
-      drag-handle-class="drag-handle"
-      table-class="operation-table"
-      @sort-end="handleSortEnd"
-      drag-position="last"
-    />
-  </ContentWrap>
+  <DraggableTable
+    :table-data="tableData"
+    :columns="columns"
+    drag-handle-class="drag-handle"
+    table-class="operation-table"
+    @sort-end="handleSortEnd"
+    drag-position="last"
+  />
 </template>
 
 <script setup lang="ts">

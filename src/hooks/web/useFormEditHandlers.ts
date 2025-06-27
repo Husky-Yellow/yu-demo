@@ -142,8 +142,6 @@ export function useFormEditHandlers({
   }
   // 单选、多选、标签
   const getFieldComponent = (type: FieldType) => {
-    console.log('getFieldComponent', type)
-    // 上传组件， 数字组件
     switch (type) {
       case FieldType.TEXT:
         return markRaw(ElInput)
@@ -192,7 +190,9 @@ export function useFormEditHandlers({
           showFileList: false,
         }
       default:
-        return null
+        return {
+          disabled: true,
+        }
     }
   }
 

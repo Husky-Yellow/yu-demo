@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, markRaw } from 'vue'
+import { FieldType } from '@/config/constants/enums/field'
 import {
   ElForm,
   ElFormItem,
@@ -87,22 +87,25 @@ function toggleExpand() {
 
 function getPlaceholder(field: any) {
   if (field.queryType === 'search' && field.subFields?.length) {
-    const subLabels = field.subFields.map((f: any) => f.label).join('/')
-    return `请输入${field.label}/${subLabels}`
+    const subLabels = field.subFields.map((f: any) => f.name).join('/')
+    return `请输入${field.name}/${subLabels}`
   }
-  return field.placeholder || `请输入${field.label}`
+  return field.placeholder || `请输入${field.name}`
 }
 
-function getComponent(queryType: string) {
+function getComponent(queryType: FieldType) {
+  console.log('getComponent queryType', queryType)
   switch (queryType) {
-    case 'search':
+    case FieldType.TEXT:
+    case FieldType.NUMBER:
       return markRaw(ElInput)
-    case 'radio':
-      return markRaw(ElRadioGroup)
-    case 'checkbox':
-      return markRaw(ElCheckboxGroup)
-    case 'date':
-    case 'daterange':
+    case FieldType.RADIO:
+    case FieldType.CHECKBOX:
+    case FieldType.REGION:
+    case FieldType.TAG:
+      return markRaw(ElSelect)
+    case FieldType.DATE:
+    case FieldType.DATE_RANGE:
       return markRaw(ElDatePicker)
     default:
       return markRaw(ElInput)

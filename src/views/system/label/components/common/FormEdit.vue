@@ -3,7 +3,7 @@
     <el-radio-button :value="1">新增表单</el-radio-button>
     <el-radio-button :value="2">编辑表单</el-radio-button>
   </el-radio-group>
-  <div v-loading="loading" class="flex gap-4 h-[calc(100vh-260px)] bg-gray-100 p-2 mt-2">
+  <div v-loading="loading" class="flex gap-2 h-[calc(100vh-260px)] bg-gray-100 p-2 mt-2">
     <div class="w-60 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
       <h3 class="text-base font-semibold border-b border-gray-100 pb-[10px]">数据字段</h3>
       <div class="flex flex-col">
@@ -148,7 +148,7 @@
 
     <div
       v-show="tab.name === 'formEdit'"
-      class="w-[320px] flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto"
+      class="w-[320px] flex-shrink-0 bg-white rounded shadow-sm p-4  h-full overflow-y-auto"
     >
       <h3 class="text-base font-semibold mb-4 border-b border-gray-100 pb-[10px]">字段配置</h3>
       <div v-if="selectedField">
@@ -159,7 +159,7 @@
           @update:field="updateField"
         />
       </div>
-      <div v-else class="flex justify-center items-center h-full text-gray-400 text-center">
+      <div v-else class="flex justify-center items-center h-[calc(100vh-372px)] text-gray-400 text-center">
         <p>请选择一个字段进行配置</p>
       </div>
     </div>
@@ -397,9 +397,11 @@ const fetchFormData = async () => {
     }
   }
   availableFields.value = filteredRes as unknown as LabelDragField[]
-  formData.value = formConfData
-  if (formConfData.formJson) {
-    setLayoutData(JSON.parse(formConfData.formJson))
+  if (formConfData) {
+    formData.value = formConfData
+    if (formConfData.formJson) {
+      setLayoutData(JSON.parse(formConfData.formJson))
+    }
   }
   loading.value = false
 }
@@ -419,7 +421,7 @@ defineExpose({ getLayoutData, setLayoutData, submitForm })
 }
 
 .form-row-wrapper {
-  padding: 6px 8px 2px 8px;
+  padding: 4px 8px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   margin-bottom: 10px;

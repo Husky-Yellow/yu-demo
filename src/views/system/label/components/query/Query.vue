@@ -14,6 +14,7 @@
       :data="tableData"
       border
       style="width: 100%"
+      height="640"
       @selection-change="onSelectionChange"
       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
@@ -25,33 +26,32 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="提示文字" prop="fieldType">
+      <el-table-column label="提示文字" prop="fieldType"  width="260">
         <template #default="{ row }">
-          <el-input v-if="row.fieldType === FieldType.TEXT || row.fieldType === FieldType.NUMBER" v-model="row.hint" size="small" placeholder="请输入提示文字" />
-          <!-- todo @zhaokun 多选、单选、日期 控件-->
+          <el-input  v-model="row.hint" size="small" placeholder="请输入提示文字" />
         </template>
       </el-table-column>
-      <el-table-column label="查询类型" prop="queryType">
+      <el-table-column label="查询类型" prop="queryType" width="270">
         <template #default="{ row }">
           <el-radio-group v-model="row.queryType">
             <el-radio v-if="row.fieldType === FieldType.TEXT || row.fieldType === FieldType.NUMBER" :value="0"
               >搜索</el-radio
             >
-            <template v-else-if="row.fieldType === 'enum'">
+            <template v-else-if="row.fieldType === FieldType.RADIO || row.fieldType === FieldType.CHECKBOX || row.fieldType === FieldType.REGION || row.fieldType === FieldType.TAG">
               <el-radio :value="1">单选</el-radio>
               <el-radio :value="2">多选</el-radio>
             </template>
-            <template v-else-if="row.fieldType === 'date'">
+            <template v-else-if="row.fieldType === FieldType.DATE || row.fieldType === FieldType.DATE_RANGE">
               <el-radio :value="3">时间</el-radio>
               <el-radio :value="4">时间区间</el-radio>
             </template>
           </el-radio-group>
         </template>
       </el-table-column>
-      <el-table-column label="默认值" prop="defaultValue">
+      <el-table-column label="默认值" prop="defaultValue" width="280">
         <template #default="{ row }">
           <!-- 搜索：输入框 -->
-          <el-input v-if="row.queryType === 0" v-model="row.defaultValue" size="small" placeholder="请输入默认值" />
+          <el-input v-if="row.queryType === 0" v-model="row.defaultValue" class="w-full" size="small" placeholder="请输入默认值" />
           <!-- todo @zhaokun 多选、单选、日期 控件  默认值-->
           <!-- 单选/多选：下拉框 -->
           <el-select
@@ -60,7 +60,7 @@
             size="small"
             :multiple="row.queryType === 2"
             placeholder="请选择"
-            style="width: 120px"
+            class="w-full"
           >
             <el-option
               v-for="opt in getEnumOptions(row.key)"
@@ -71,36 +71,36 @@
           </el-select>
           <!-- 时间/时间区间：时间选择器 -->
           <el-date-picker
-            v-else-if="row.queryType === 3 || row.queryType === 4"
+            v-else-if="row.queryType === 3"
             v-model="row.defaultValue"
             type="date"
             placeholder="请选择日期"
             size="small"
-            style="width: 140px"
+             class="w-full"
           />
           <el-date-picker
-            v-else-if="row.queryType === 5"
+            v-else-if="row.queryType === 4"
             v-model="row.defaultValue"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             size="small"
-            style="width: 220px"
+            class="w-full"
           />
           <div v-else></div>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="100">
+      <el-table-column label="操作" width="180" align="center">
         <template #default="{ row }">
           <el-button link type="primary" v-if="row.queryType === 0" @click="openSubFieldDialog(row)">
             添加字段
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="排序" width="60">
+      <el-table-column label="排序" width="120" align="center">
         <template #default="">
-          <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
+          <Icon icon="ep:rank" class="text-red-500 cursor-pointer" />
         </template>
       </el-table-column>
     </el-table>
@@ -142,12 +142,12 @@ const fieldTypeLabelMap = {
   [FieldType.TEXT]: 0,
   [FieldType.NUMBER]: 0,
   [FieldType.RADIO]: 1,
-  [FieldType.CHECKBOX]: 2,
+  [FieldType.CHECKBOX]: 1,
   [FieldType.DATE]: 3,
   [FieldType.DATE_RANGE]: 4,
   [FieldType.ADDRESS]: 0,
-  [FieldType.REGION]: 0,
-  [FieldType.TAG]: 0,
+  [FieldType.REGION]: 1,
+  [FieldType.TAG]: 1,
   [FieldType.ATTACHMENT]: 0,
 }
 

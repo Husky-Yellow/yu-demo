@@ -27,42 +27,44 @@
           <el-button type="danger" @click="removeLastSortItem">删除</el-button>
         </div>
       </div>
-      <el-form :model="formModel.sortItems" ref="sortFormRef" label-width="100px">
-        <div v-for="(item, index) in formModel.sortItems" :key="item.uuid" class="sort-item" @click="setClickIndex(item)">
-          <div class="sort-item-header">
-            <span>排序顺位{{ index + 1 }}</span>
-          </div>
-          <el-form-item label="排序类型" :prop="`sortItems.${index}.type`">
-            <el-radio-group v-model="item.type">
-              <el-radio :value="0">数据添加时间</el-radio>
-              <el-radio :value="1">数据修改时间</el-radio>
-              <el-radio :value="2">自定义排序</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            v-if="item.type === 2"
-            label="排序字段"
-            :prop="`sortItems.${index}.field`"
-            :rules="[{ validator: validateFieldsNotEmpty(item), trigger: 'submit' }]"
-          >
-            <div class="min-h-[20px] bg-gray-100 border border-dashed border-gray-300 rounded px-2 py-2 w-full" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
-              <div v-if="item.field" class="sort-field-item">
-                <span>{{ item.field.name }}</span>
-                <el-button type="danger" size="small" circle @click="removeField(index)">
-                  <Icon icon="ep:close" />
-                </el-button>
-              </div>
-              <div v-else class="text-[#bbb] text-center py-3 px-0"> 请输入排序字段 </div>
+      <div class="overflow-y-auto h-[calc(100vh-340px)]">
+        <el-form :model="formModel.sortItems" ref="sortFormRef" label-width="100px">
+          <div v-for="(item, index) in formModel.sortItems" :key="item.uuid" class="sort-item" @click="setClickIndex(item)">
+            <div class="sort-item-header">
+              <span>排序顺位{{ index + 1 }}</span>
             </div>
-          </el-form-item>
-          <el-form-item label="排序规则" :prop="`sortItems.${index}.rule`">
-            <el-select v-model="item.rule" placeholder="请选择排序规则">
-              <el-option label="升序" :value="1" />
-              <el-option label="降序" :value="0" />
-            </el-select>
-          </el-form-item>
-        </div>
-      </el-form>
+            <el-form-item label="排序类型" :prop="`sortItems.${index}.type`">
+              <el-radio-group v-model="item.type">
+                <el-radio :value="0">数据添加时间</el-radio>
+                <el-radio :value="1">数据修改时间</el-radio>
+                <el-radio :value="2">自定义排序</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              v-if="item.type === 2"
+              label="排序字段"
+              :prop="`sortItems.${index}.field`"
+              :rules="[{ validator: validateFieldsNotEmpty(item), trigger: 'submit' }]"
+            >
+              <div class="min-h-[20px] bg-gray-100 border border-dashed border-gray-300 rounded px-2 py-2 w-full" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
+                <div v-if="item.field" class="sort-field-item">
+                  <span>{{ item.field.name }}</span>
+                  <el-button type="danger" size="small" circle @click="removeField(index)">
+                    <Icon icon="ep:close" />
+                  </el-button>
+                </div>
+                <div v-else class="text-[#bbb] text-center py-2 px-0"> 请输入排序字段 </div>
+              </div>
+            </el-form-item>
+            <el-form-item label="排序规则" :prop="`sortItems.${index}.rule`">
+              <el-select v-model="item.rule" placeholder="请选择排序规则">
+                <el-option label="升序" :value="1" />
+                <el-option label="降序" :value="0" />
+              </el-select>
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
     </div>
   </div>
 </template>
@@ -273,10 +275,10 @@ defineExpose({ submitForm })
 }
 
 .sort-item {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 12px;
+  padding: 12px 12px 0;
   background: #fafbfc;
 }
 
