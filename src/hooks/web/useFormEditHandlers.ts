@@ -3,6 +3,7 @@ import { ElInput, ElSelect, ElDatePicker, ElUpload, ElInputNumber } from 'elemen
 import { FieldType } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import * as LabelApi from '@/api/system/label'
+import * as DictTypeApi from '@/api/system/dict/dict.type'
 
 export interface Placeholder {
   id: string
@@ -25,6 +26,14 @@ interface UseFormEditHandlersOptions {
   usedFieldIds: ComputedRef<Set<string>>
 }
 
+/**
+ * 表单编辑处理
+ * @param isDraggingNewField 是否拖拽新字段
+ * @param availableFields 可用字段
+ * @param formRows 表单行
+ * @param selectedField 选中的字段
+ * @param usedFieldIds 已使用的字段ID
+ */
 export function useFormEditHandlers({
   isDraggingNewField,
   availableFields,
@@ -32,6 +41,11 @@ export function useFormEditHandlers({
   selectedField,
   usedFieldIds,
 }: UseFormEditHandlersOptions) {
+  /**
+   * 拖拽开始
+   * @param event 事件
+   * @param field 字段
+   */
   const handleDragStart = (event: DragEvent, field: LabelDragField) => {
     if (event.dataTransfer) {
       event.dataTransfer.setData('field-id', field.id)
@@ -39,17 +53,34 @@ export function useFormEditHandlers({
     }
   }
 
+  /**
+   * 拖拽结束
+   */
   const handleDragEnd = () => {
     isDraggingNewField.value = false
   }
 
+  /**
+   * 拖拽到画布
+   * @param event 事件
+   */
   const handleDropOnCanvas = async (event: DragEvent) => {
     if (!isDraggingNewField.value) return
     const fieldId = event.dataTransfer?.getData('field-id')
     if (!fieldId) return
     const field = availableFields.value.find((f) => f.id === fieldId)
+    // 获取字段详情
     const detail = await LabelApi.getFieldConfigDetail({ 'id': fieldId as string })
-    // 如果是单选、多选、标签，则需要特殊处理 再调接口
+    // 如果是单选、多选、则需要特殊处理 再调词典查询接口
+    if (detail.fieldType === FieldType.RADIO || detail.fieldType === FieldType.CHECKBOX) {
+      // const data = await DictTypeApi.getDictDataPage({
+      //   pageNo: 1,
+      //   pageSize: 10,
+      //   dictType: detail.name,
+      // })
+      // console.log('res', data)
+    }
+    console.log('field detail',field,  detail)
 
     if (field && !isFieldUsed(fieldId)) {
 
@@ -71,6 +102,11 @@ export function useFormEditHandlers({
     }
   }
 
+  /**
+   * 拖拽到占位符
+   * @param row 行
+   * @param event 事件
+   */
   const handleDropOnPlaceholder = (row: FormRow, event: DragEvent) => {
     event.stopPropagation()
     const fieldId = event.dataTransfer?.getData('field-id')
@@ -83,6 +119,11 @@ export function useFormEditHandlers({
     }
   }
 
+  /**
+   * 克隆字段
+   * @param field 字段
+   * @returns 克隆后的字段
+   */
   const cloneField = (field: LabelDragField) => {
     return {
       ...field,
@@ -99,24 +140,47 @@ export function useFormEditHandlers({
     }
   }
 
+  /**
+   * 判断字段是否被使用
+   * @param fieldId 字段ID
+   * @returns 是否被使用
+   */
   const isFieldUsed = (fieldId: string): boolean => {
     return usedFieldIds.value.has(fieldId)
   }
 
+  /**
+   * 选择字段
+   * @param field 字段
+   */
   const selectField = (field: LabelDragField) => {
     selectedField.value = field
   }
 
+
+  /**
+   * 判断行是否被选中
+   * @param row 行
+   * @returns 是否被选中
+   */
   const isRowSelected = (row: FormRow): boolean => {
     return !!(selectedField.value && row.fields.some((f) => (f as LabelDragField).id === selectedField.value!.id))
   }
 
+  /**
+   * 添加列
+   * @param row 行
+   */
   const addColumn = (row: FormRow) => {
     if (row.fields.length < 2) {
       row.showPlaceholder = true
     }
   }
 
+  /**
+   * 删除行
+   * @param rowIndex 行索引
+   */
   const deleteRow = (rowIndex: number) => {
     const deletedRow = formRows.value[rowIndex]
     if (selectedField.value && isRowSelected(deletedRow)) {
@@ -125,6 +189,11 @@ export function useFormEditHandlers({
     formRows.value.splice(rowIndex, 1)
   }
 
+  /**
+   * 删除字段
+   * @param row 行
+   * @param field 字段
+   */
   const deleteField = (row: FormRow, field: RowItem) => {
     const fieldIndex = row.fields.findIndex((f) => (f as LabelDragField).id === (field as LabelDragField).id)
     if (fieldIndex === -1) return
@@ -140,7 +209,12 @@ export function useFormEditHandlers({
       }
     }
   }
-  // 单选、多选、标签
+
+  /**
+   * 获取字段组件
+   * @param type 字段类型
+   * @returns 字段组件
+   */
   const getFieldComponent = (type: FieldType) => {
     switch (type) {
       case FieldType.TEXT:
@@ -159,16 +233,22 @@ export function useFormEditHandlers({
         return markRaw(ElInput)
     }
   }
-  // 对于一些特定的，比如文本域，日期区间，需要特殊处理
+
+  /**
+   * 获取字段组件类型
+   * @param field 字段
+   * @returns 字段组件类型
+   */
   const getFieldComponentType = (field: LabelDragField) => {
-    console.log('getFieldComponentType', field)
+    // console.log('getFieldComponentType', field)
 
     switch (field.fieldType) {
       case FieldType.TEXT:
         if (field.fieldConfExtObj?.value === 'multi') {
           return {
             type: 'textarea',
-            rows: 2
+            rows: 2,
+            disabled: true,
           }
         }
         return null
@@ -177,7 +257,8 @@ export function useFormEditHandlers({
           type: 'daterange',
           rangeSeparator: '至',
           startPlaceholder: '开始日期',
-          endPlaceholder: '结束日期'
+          endPlaceholder: '结束日期',
+          disabled: true,
         }
       case FieldType.ATTACHMENT:
         return {
@@ -188,6 +269,8 @@ export function useFormEditHandlers({
           disabled: true,
           drag: true,
           showFileList: false,
+          action: '/mock-upload',
+          style: 'width: 100%',
         }
       default:
         return {

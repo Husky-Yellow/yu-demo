@@ -91,11 +91,6 @@
                             <el-upload
                               v-bind="getFieldComponentType(field)"
                               v-model:file-list="field.fileList"
-                              :action="'/mock-upload'"
-                              :limit="1"
-                              :accept="'image/*,application/pdf'"
-                              :show-file-list="true"
-                              style="width: 100%"
                             >
                               <el-icon><Plus /></el-icon>
                               <template #tip>

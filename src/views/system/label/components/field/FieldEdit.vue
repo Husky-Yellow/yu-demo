@@ -90,7 +90,7 @@
           <template
             v-else-if="form.fieldType === FieldType.RADIO || form.fieldType === FieldType.CHECKBOX"
           >
-            <RadioFieldConfig ref="radioFieldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" />
+            <RadioFieldConfig ref="radioFieldConfigRef" v-model="form.fieldConfExt" :disabled="formDisabled" :fieldType="form.fieldType" />
           </template>
           <!-- 日期、日期区间 -->
           <template
@@ -329,7 +329,7 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
     const isRadioOrCheckbox = dataSource.fieldType === FieldType.RADIO || dataSource.fieldType === FieldType.CHECKBOX
     const fieldConfExt = dataSource?.fieldConfExtDOList
       ? (isRadioOrCheckbox
-          ? dataSource.fieldConfExtDOList
+          ? dataSource.fieldConfExtDOList[0]
           : convertArrayToObject(JSON.parse(JSON.stringify(dataSource.fieldConfExtDOList))))
       : { ...defaultFieldConfExt }
 

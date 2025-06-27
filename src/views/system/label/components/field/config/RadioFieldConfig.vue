@@ -64,12 +64,13 @@
 
 <script setup lang="ts">
 import * as DictTypeApi from '@/api/system/dict/dict.type'
-
+import { FieldType } from '@/config/constants/enums/field';
 defineOptions({ name: 'RadioFieldConfig' })
 
 const props = defineProps<{
   modelValue?: any,
   disabled?: boolean
+  fieldType: FieldType
 }>()
 
 const loading = ref(true) // 列表的加载中
@@ -91,7 +92,7 @@ const queryFormRef = ref() // 搜索的表单
 const getList = async () => {
   loading.value = true
   try {
-    const data = await DictTypeApi.getDictTypePage( queryParams)
+    const data = await DictTypeApi.getDictTypePage(queryParams)
     list.value = data.list
     total.value = data.total
 
@@ -106,7 +107,7 @@ const getList = async () => {
 
 /** 设置初始选中状态 */
 const setInitialSelection = () => {
-  if (!props.modelValue?.optionsJson || !tableRef.value) return
+  if (!props.modelValue?.[0]?.optionsJson || !tableRef.value) return
 
   try {
     // 解析传入的值
@@ -152,17 +153,15 @@ const validate = () => {
 
 /** 清空选择 */
 const convertFormForSubmission = () => {
-  return {
+  return [{
     value: selectedItems.value[0].type,
     name: selectedItems.value[0].name,
+    fieldType: props?.fieldType,
     optionsJson: JSON.stringify(selectedItems.value.map((item) => ({
       type: item.type,
       name: item.name
     })))
-  }
-
-
-
+  }]
 }
 
 /** 暴露方法给父组件 */

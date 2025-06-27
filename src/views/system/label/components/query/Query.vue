@@ -16,6 +16,7 @@
       style="width: 100%"
       height="640"
       @selection-change="onSelectionChange"
+      :row-class-name="tableRowClassName"
       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
       <el-table-column type="selection" width="40" />
@@ -248,6 +249,19 @@ const initSortable = () => {
   })
 }
 
+const tableRowClassName = ({
+  row,
+  rowIndex,
+}: {
+  row: any
+  rowIndex: number
+}) => {
+  if (row.queryType === 0) {
+    return 'warning-row'
+  }
+  return ''
+}
+
 const fetchData = async () => {
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
@@ -323,3 +337,10 @@ function getEnumOptions(key) {
   return map[key] || []
 }
 </script>
+
+<style>
+.el-table .warning-row {
+  --el-table-tr-bg-color: var(--el-table-tr-bg-color);
+}
+</style>
+

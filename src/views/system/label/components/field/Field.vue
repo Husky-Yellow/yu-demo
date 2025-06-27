@@ -73,7 +73,7 @@
           <el-checkbox v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
-      <el-table-column prop="appViewFlag" label="移动端列表" align="center">
+      <el-table-column prop="appViewFlag" label="移动端列表" align="center" width="100">
         <template #default="scope">
           <div class="cursor-pointer" @click="handleViewFlag(scope.row, 'appViewFlag')">
             <el-icon v-if="scope.row.appViewFlag"><View /></el-icon>
@@ -81,7 +81,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="pcViewFlag" label="管理端列表" align="center">
+      <el-table-column prop="pcViewFlag" label="管理端列表" align="center"  width="100">
         <template #default="scope">
           <div class="cursor-pointer" @click="handleViewFlag(scope.row, 'pcViewFlag')">
             <el-icon v-if="scope.row.pcViewFlag"><View /></el-icon>
@@ -258,6 +258,7 @@ const saveTableData = async () => {
   handleSelectionChange([])
   await LabelApi.updateFieldConfigList(data).then(() => {
     message.success('保存成功')
+    getDataFieldConfListByManageId()
   }).catch(() => {
     message.error('保存失败，请稍后重试')
   })
