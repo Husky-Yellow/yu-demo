@@ -70,6 +70,16 @@
               :value="opt.value"
             />
           </el-select>
+          <!-- 标签为树形多选 -->
+          <!-- <el-tree-select
+            v-model="row.defaultValue"
+            :data="data"
+            check-strictly
+            :render-after-expand="false"
+            show-checkbox
+            check-on-click-node
+            class="!w-240px"
+          /> -->
           <!-- 时间/时间区间：时间选择器 -->
           <el-date-picker
             v-else-if="row.queryType === 3"

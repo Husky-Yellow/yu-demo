@@ -90,7 +90,17 @@
                         :prop="`${idx}.fields.${index}.data`"
                         :rules="{ required: true, message: '请输入值' }"
                       >
-                        <el-input v-model="element.data" class="!w-[200px] mt-18px mr-6px" />
+                      {{ element.fieldType }}
+                        <el-input v-if="element.fieldType === FieldType.RADIO || element.fieldType === FieldType.CHECKBOX" v-model="element.data" class="!w-[200px] mt-18px mr-6px" />
+                           <!-- <el-tree-select
+                              v-model="row.defaultValue"
+                              :data="data"
+                              check-strictly
+                              :render-after-expand="false"
+                              show-checkbox
+                              check-on-click-node
+                              class="!w-240px"
+                            /> -->
                       </el-form-item>
                     </template>
                     <el-button @click="removeField(idx, index)">删除</el-button>
@@ -117,6 +127,7 @@ import type { FormInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
+import { FieldType } from '@/config/constants/enums/field'
 import type { LabelFieldConfig, StatisticItem, StatisticField } from '@/config/constants/enums/fieldDefault'
 import { generateUUID } from '@/utils'
 
@@ -282,14 +293,13 @@ const submitForm = () => {
 }
 
 const fetchData = async () => {
-  // todo @zhaokun 单选、多选、组织、标签 需要过滤
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
   const countConfigList = await LabelApi.getCountConfigList({
     manageId: query.manageId as string
   })
-  statisticConfigFields.value = res.map((item) => {
+  statisticConfigFields.value = res.filter((item) => item.fieldType === FieldType.RADIO || item.fieldType === FieldType.CHECKBOX || item.fieldType === FieldType.TAG || item.fieldType === FieldType.REGION).map((item) => {
     item.uuid = item.id
     delete item.id
     return item

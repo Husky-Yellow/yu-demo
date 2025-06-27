@@ -71,6 +71,7 @@ const handleJobChange = async (jobId: number) => {
     }
     await nextTick()
     if (menuPermissionRef.value) {
+      //  todo @zhaokun 有报错
       const menuIds = await menuPermissionRef.value.getMenuPermissions()
       initialPermissions.menuIds = [...menuIds]
     }

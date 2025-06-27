@@ -1,5 +1,5 @@
 <template>
-  <!-- 搜索工作栏 -->
+  <!-- 搜索工作栏 准备弃用-->
   <ContentWrap>
     <el-form
       ref="queryFormRef"

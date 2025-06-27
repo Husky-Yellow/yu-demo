@@ -59,6 +59,15 @@
             <el-form-item :prop="`filterRules.${index}.data`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
               <!-- 、todo @zhaokun 多选的话，需要选择框，然后提交的时候，需要把选择框的值转换为字符串 -->
               <el-input v-model="rule.data" placeholder="请输入值"  class="!w-[200px] mt-18px"/>
+                 <!-- <el-tree-select
+            v-model="row.defaultValue"
+            :data="data"
+            check-strictly
+            :render-after-expand="false"
+            show-checkbox
+            check-on-click-node
+            class="!w-240px"
+          /> -->
             </el-form-item>
           </div>
           <!-- 且/或按钮 -->
@@ -80,6 +89,7 @@ import { OperatorOptions } from '@/config/constants/enums/label'
 import type { FormInstance } from 'element-plus'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
+import { FieldType } from '@/config/constants/enums/field'
 import type { LabelFieldConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
 import { BooleanEnum } from '@/config/constants/enums/label'
 import { generateUUID } from '@/utils'
@@ -232,7 +242,7 @@ const fetchData = async () => {
   const filterRes = await LabelApi.getFilterConfList({
     manageId: query.manageId as string
   })
-  filterFields.value = res
+  filterFields.value = res.filter((item) => item.fieldType === FieldType.RADIO || item.fieldType === FieldType.CHECKBOX || item.fieldType === FieldType.TAG || item.fieldType === FieldType.REGION)
   filterRules.value = filterRes.length ? filterRes.map((item) => {
     return {
       ...item,
