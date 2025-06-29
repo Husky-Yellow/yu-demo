@@ -10245,6 +10245,23 @@ export default [
               "createTime": 1609837428000
           },
           {
+              "id": 106,
+              "name": "字典管理1",
+              "permission": "",
+              "type": 2,
+              "sort": 6,
+              "parentId": 1,
+              "path": "exhibition",
+              "icon": "ep:collection",
+              "component": "exhibition/index",
+              "componentName": "ExhibitionList",
+              "status": 0,
+              "visible": true,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1609837428000
+          },
+          {
               "id": 1006,
               "name": "用户导入",
               "permission": "system:user:import",

@@ -302,6 +302,19 @@ export default [
                             "keepAlive": true,
                             "alwaysShow": true,
                             "children": null
+                        },
+                        {
+                            "id": 106,
+                            "parentId": 1,
+                            "name": "字典管理1",
+                            "path": "exhibition",
+                            "component": "exhibition/index",
+                            "componentName": "ExhibitionList",
+                            "icon": "ep:collection",
+                            "visible": true,
+                            "keepAlive": true,
+                            "alwaysShow": true,
+                            "children": null
                         }
                     ]
                 },
