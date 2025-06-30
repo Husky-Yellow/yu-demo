@@ -6,7 +6,7 @@
   "editor.fontFamily": "'JetBrains Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace",
   "editor.fontLigatures": true,
   "editor.minimap.enabled": true,
-  "editor.minimap.size": "fill",
+  // "editor.minimap.size": "fill",
   "editor.fontSize": 12,
   "prettier.printWidth": 100, // 超过最大值换行
   "editor.defaultFormatter": "esbenp.prettier-vscode",

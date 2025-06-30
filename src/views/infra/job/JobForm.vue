@@ -104,7 +104,7 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as JobApi.JobVO
+    const data = formData.value as unknown as JobApi.JobDetailData
     if (formType.value === 'create') {
       await JobApi.createJob(data)
       message.success(t('common.createSuccess'))

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="添加基础字段" width="70%" @close="handleClose">
+  <Dialog v-model="dialogVisible" title="添加基础字段" width="70%" @close="handleClose">
     <el-row :gutter="4">
       <el-col :span="10">
         <el-card>
@@ -129,7 +129,7 @@
         <el-button v-show="!formDisabled" type="primary" @click="handleSubmit">确 认</el-button>
       </span>
     </template>
-  </el-dialog>
+  </Dialog>
 </template>
 
 <script setup lang="ts">

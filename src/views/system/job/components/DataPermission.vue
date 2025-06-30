@@ -21,9 +21,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
-import { SystemDataScopeEnum } from '@/utils/constants'
 import { defaultProps, handleTree } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
+import * as JobApi from '@/api/system/job'
+
+const message = useMessage()
+const emit = defineEmits(['success'])
 
 const props = defineProps<{
   job: {
@@ -36,24 +39,8 @@ const loading = ref(false)
 const deptOptions = ref<any[]>([])
 const treeRef = ref()
 
-watch(
-  () => props.job,
-  (job) => {
-    if (job) {
-      nextTick(() => {
-        treeRef.value?.setCheckedKeys(job.dataScopeDeptIds || [])
-      })
-    }
-  },
-  {
-    immediate: true,
-    deep: true
-  }
-)
-
 const getSelectedData = () => {
   return {
-    dataScope: SystemDataScopeEnum.DEPT_CUSTOM,
     dataScopeDeptIds: treeRef.value.getCheckedKeys(false)
   }
 }
@@ -64,11 +51,27 @@ const setData = (_scope?: number, deptIds?: number[]) => {
   })
 }
 
-defineExpose({ getSelectedData, setData })
+const saveForm = () => {
+  console.log('saveForm')
+  const data = getSelectedData()
+  console.log('data',data);
+  JobApi.updatePost({
+    ...props.job,
+    dataScopeDeptIds: data.dataScopeDeptIds,
+  }).then(() => {
+    message.success('保存成功')
+    emit('success')
+  }).catch(() => {
+    message.error('保存失败')
+  })
+}
+
+defineExpose({ saveForm })
 
 onMounted(async () => {
   loading.value = true
-  deptOptions.value = handleTree(await DeptApi.getSimpleDeptList())
+  deptOptions.value = handleTree(await DeptApi.getAllSimpleDeptList())
   loading.value = false
+  setData(props.job.dataScope, props.job.dataScopeDeptIds)
 })
 </script>

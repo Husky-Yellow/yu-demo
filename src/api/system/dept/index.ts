@@ -62,3 +62,13 @@ export const getDept = async (id: number) => {
   return await request.get({ url: '/system/dept/get?id=' + id })
 }
 
+
+
+// 查询部门列表（精简)
+export const getAllSimpleDeptList = async (): Promise<DeptFormData[]> => {
+  return await request.get({ url: '/system/dept/list-all-simple' })
+}
+
+
+
+

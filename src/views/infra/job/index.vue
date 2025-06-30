@@ -265,7 +265,7 @@ const handleCommand = (command, row) => {
 }
 
 /** 执行一次 */
-const handleRun = async (row: JobApi.JobVO) => {
+const handleRun = async (row: JobApi.JobDetailData) => {
   try {
     // 二次确认
     await message.confirm('确认要立即执行一次' + row.name + '?', t('common.reminder'))

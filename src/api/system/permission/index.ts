@@ -1,5 +1,26 @@
 import request from '@/config/axios'
 
+/**
+ * PermissionAssignPostDataScopeReqVO
+ */
+export interface Request {
+  /**
+   * 数据范围，参见 DataScopeEnum 枚举类
+   */
+  dataScope: number;
+  /**
+   * 兜底
+   * 部门编号列表，只有范围类型为 DEPT_CUSTOM 时，该字段才需要
+   */
+  dataScopeDeptIds?: number[];
+  /**
+   * 岗位编号
+   */
+  postId: number;
+  [property: string]: any;
+}
+
+
 export interface PermissionAssignUserRoleReqVO {
   userId: number
   roleIds: number[]
@@ -40,3 +61,13 @@ export const getUserRoleList = async (userId: number) => {
 export const assignUserRole = async (data: PermissionAssignUserRoleReqVO) => {
   return await request.post({ url: '/system/permission/assign-user-role', data })
 }
+
+
+
+// 赋予岗位数据权限
+export const assignPostDataScope = async (data: PermissionAssignPostDataScopeReqVO) => {
+  return await request.post({ url: '/system/permission/assign-post-data-scope', data })
+}
+
+
+

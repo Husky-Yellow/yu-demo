@@ -1,5 +1,56 @@
 import request from '@/config/axios'
 
+
+/**
+ * cn.governance.pangu.module.system.controller.admin.permission.vo.role.RoleRespVO
+ *
+ * RoleRespVO
+ */
+export interface RoleRespData {
+  /**
+   * 角色标志
+   */
+  code: string;
+  /**
+   * 创建时间
+   */
+  createTime?: string;
+  /**
+   * 数据范围，参见 DataScopeEnum 枚举类
+   */
+  dataScope?: number;
+  /**
+   * 数据范围(指定部门数组)
+   */
+  dataScopeDeptIds?: number[];
+  /**
+   * 角色编号
+   */
+  id?: number;
+  /**
+   * 角色名称
+   */
+  name?: string;
+  /**
+   * 备注
+   */
+  remark?: string;
+  /**
+   * 显示顺序
+   */
+  sort?: number;
+  /**
+   * 状态，参见 CommonStatusEnum 枚举类
+   */
+  status?: number;
+  /**
+   * 角色类型，参见 RoleTypeEnum 枚举类
+   */
+  type?: number;
+  [property: string]: any;
+}
+
+
 export interface RoleVO {
   id: number
   name: string
@@ -59,3 +110,15 @@ export const exportRole = (params) => {
     params
   })
 }
+
+
+/**
+ * 查询角色列表（精简)
+ * 用于岗位权限配置
+ * @see https://app.apifox.com/link/project/6505154/apis/api-303966362
+ * @returns
+ */
+export const getAllSimpleRoleList = async (): Promise<RoleRespData[]> => {
+  return await request.get({ url: '/system/role/list-all-simple' })
+}
+

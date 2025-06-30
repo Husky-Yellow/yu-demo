@@ -17,6 +17,76 @@ export interface UserVO {
   createTime: Date
 }
 
+
+/**
+ * cn.governance.pangu.module.system.controller.admin.user.vo.user.UserRespVO
+ *
+ * UserRespVO
+ */
+export interface UserResp {
+  /**
+   * 用户头像
+   */
+  avatar?: string;
+  /**
+   * 创建时间
+   */
+  createTime?: string;
+  /**
+   * 部门ID
+   */
+  deptId?: number;
+  /**
+   * 部门名称
+   */
+  deptName?: string;
+  /**
+   * 用户邮箱
+   */
+  email?: string;
+  /**
+   * 用户编号
+   */
+  id?: number;
+  /**
+   * 最后登录时间
+   */
+  loginDate?: string;
+  /**
+   * 最后登录 IP
+   */
+  loginIp?: string;
+  /**
+   * 手机号码
+   */
+  mobile?: string;
+  /**
+   * 用户昵称
+   */
+  nickname?: string;
+  /**
+   * 岗位编号数组
+   */
+  postIds?: number[];
+  /**
+   * 备注
+   */
+  remark?: string;
+  /**
+   * 用户性别，参见 SexEnum 枚举类
+   */
+  sex?: number;
+  /**
+   * 状态，参见 CommonStatusEnum 枚举类
+   */
+  status?: number;
+  /**
+   * 用户账号
+   */
+  username?: string;
+  [property: string]: any;
+}
+
 // 查询用户管理列表
 export const getUserPage = (params: PageParam) => {
   return request.get({ url: '/system/user/page', params })
@@ -77,4 +147,16 @@ export const updateUserBatchStatus = (data) => {
 // 获取用户精简信息列表
 export const getSimpleUserList = (): Promise<UserVO[]> => {
   return request.get({ url: '/system/user/simple-list' })
+}
+
+
+
+/**
+ * 根据岗位ID查询用户信息
+ * @see https://app.apifox.com/link/project/6505154/apis/api-315338772
+ * @param {number} postId 岗位ID
+ * @returns {Promise<UserVO[]>} 用户信息列表
+ */
+export const getUserListByPostId = (postId: number): Promise<UserResp[]> => {
+  return request.get({ url: '/system/user/list-by-post-id?postId=' + postId })
 }
