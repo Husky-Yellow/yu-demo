@@ -25,7 +25,6 @@ import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
 import TableActions from './components/TableActions.vue'
-import { ref } from 'vue'
 
 defineOptions({ name: 'ExhibitionList' })
 
