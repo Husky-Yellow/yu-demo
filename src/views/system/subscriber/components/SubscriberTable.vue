@@ -4,18 +4,23 @@
     style="width: 100%"
     :row-key="row => row.id"
     @selection-change="handleSelectionChange"
+    v-loading="loading"
   >
     <el-table-column type="selection" width="55" />
     <el-table-column label="序号" type="index" width="55" />
     <el-table-column prop="mobile" label="账号" />
     <el-table-column prop="nickname" label="姓名" />
-    <el-table-column prop="deptName" label="所属组织" />
+    <el-table-column prop="deptName" label="所属组织" >
+      <template #default="scope">
+        <span>{{ deptTree.get(scope.row.deptId) }}</span>
+      </template>
+    </el-table-column>
     <el-table-column prop="status" label="账号状态">
       <template #default="scope">
         <el-switch
           v-model="scope.row.status"
-          :active-value="1"
-          :inactive-value="0"
+             :active-value="CommonStatusEnum.ENABLE"
+          :inactive-value="CommonStatusEnum.DISABLE"
           @change="handleStatusChange(scope.row)"
         />
       </template>
@@ -44,12 +49,21 @@
 <script setup lang="ts">
 defineOptions({ name: 'SystemSubscriberSubscriberTable' })
 import { dateFormatter } from '@/utils/formatTime'
+import { CommonStatusEnum } from '@/utils/constants'
 
 defineProps({
   tableData: {
     type: Array,
     required: true,
   },
+  deptTree: {
+    type: Map<number, string>,
+    required: true
+  },
+  loading: {
+    type: Boolean,
+    required: true
+  }
 });
 
 const emits = defineEmits(['edit', 'delete', 'select-change','status-change']);

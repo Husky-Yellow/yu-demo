@@ -10,12 +10,12 @@
       <el-form-item label="角色名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入角色名称" />
       </el-form-item>
-      <el-form-item label="角色标识" prop="code">
-        <el-input v-model="formData.code" placeholder="请输入角色标识" />
+      <el-form-item label="角色编码" prop="code">
+        <el-input v-model="formData.code" placeholder="请输入角色编码" :disabled="formType === 'update'" />
       </el-form-item>
-      <el-form-item label="显示顺序" prop="sort">
+      <!-- <el-form-item label="显示顺序" prop="sort">
         <el-input v-model="formData.sort" placeholder="请输入显示顺序" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="状态" prop="status">
         <el-select v-model="formData.status" clearable placeholder="请选择状态">
           <el-option
@@ -26,9 +26,9 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
+      <!-- <el-form-item label="备注" prop="remark">
         <el-input v-model="formData.remark" placeholder="请输备注" type="textarea" />
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <template #footer>
       <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
@@ -43,7 +43,6 @@ import * as RoleApi from '@/api/system/role'
 
 defineOptions({ name: 'SystemPersonaForm' })
 
-const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
 const dialogVisible = ref(false) // 弹窗的是否展示
@@ -54,23 +53,23 @@ const formData = ref({
   id: undefined,
   name: '',
   code: '',
-  sort: undefined,
+  // sort: undefined,
   status: CommonStatusEnum.ENABLE,
-  remark: ''
+  // remark: ''
 })
 const formRules = reactive({
   name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '角色标识不能为空', trigger: 'change' }],
-  sort: [{ required: true, message: '显示顺序不能为空', trigger: 'change' }],
+  code: [{ required: true, message: '角色编码不能为空', trigger: 'change' }],
+  // sort: [{ required: true, message: '显示顺序不能为空', trigger: 'change' }],
   status: [{ required: true, message: '状态不能为空', trigger: 'change' }],
-  remark: [{ required: false, message: '备注不能为空', trigger: 'blur' }]
+  // remark: [{ required: false, message: '备注不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
-  dialogTitle.value = t('action.' + type)
+  dialogTitle.value = type === 'create' ? '新增角色' : '修改角色'
   formType.value = type
   resetForm()
   // 修改时，设置数据
@@ -90,9 +89,9 @@ const resetForm = () => {
     id: undefined,
     name: '',
     code: '',
-    sort: undefined,
+    // sort: undefined,
     status: CommonStatusEnum.ENABLE,
-    remark: ''
+    // remark: ''
   }
   formRef.value?.resetFields()
 }
@@ -108,13 +107,13 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as RoleApi.RoleVO
+    const data = formData.value as unknown as RoleApi.RoleSaveRequest
     if (formType.value === 'create') {
       await RoleApi.createRole(data)
-      message.success(t('common.createSuccess'))
+      message.success('新增成功')
     } else {
       await RoleApi.updateRole(data)
-      message.success(t('common.updateSuccess'))
+      message.success('修改成功')
     }
     dialogVisible.value = false
     // 发送操作成功的事件

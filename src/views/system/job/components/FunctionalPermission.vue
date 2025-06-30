@@ -55,7 +55,7 @@ const loading = ref(false)
 const menuOptions = ref<any[]>([])
 const treeRef = ref()
 const menuExpand = ref(false)
-const roleList = ref<RoleApi.RoleRespData[]>([])
+const roleList = ref<RoleApi.RoleBase[]>([])
 const selectedRoleId = ref<number>()
 let initialMenuIds: number[] = []
 

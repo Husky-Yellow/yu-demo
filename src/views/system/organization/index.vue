@@ -51,8 +51,8 @@
         <template #default="scope">
           <el-switch
             v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
+                   :active-value="CommonStatusEnum.ENABLE"
+          :inactive-value="CommonStatusEnum.DISABLE"
             @update:model-value="handleStatusChange(scope.row)"
           />
         </template>
@@ -93,6 +93,7 @@ import { handleTree } from '@/utils/tree'
 import { debounce } from "lodash-es";
 import * as DeptApi from '@/api/system/dept'
 import DeptForm from './DeptForm.vue'
+import { CommonStatusEnum } from '@/utils/constants'
 
 defineOptions({ name: 'SystemorGanization' })
 

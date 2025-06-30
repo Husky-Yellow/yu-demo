@@ -43,7 +43,6 @@ const getJobDetail = async () => {
   loading.value = true
   const data = await JobApi.getPost(query?.id as string)
   selectedJob = data
-  console.log('JobApi.getPost(Number(query?.id))',data);
 
 }
 

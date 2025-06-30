@@ -70,7 +70,7 @@ const treeRef = ref() // 菜单树组件 Ref
 const treeNodeAll = ref(false) // 全选/全不选
 
 /** 打开弹窗 */
-const open = async (row: RoleApi.RoleVO) => {
+const open = async (row: RoleApi.Role) => {
   dialogVisible.value = true
   resetForm()
   // 加载 Menu 列表。注意，必须放在前面，不然下面 setChecked 没数据节点

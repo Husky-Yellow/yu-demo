@@ -117,8 +117,8 @@
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
-                :active-value="0"
-                :inactive-value="1"
+                   :active-value="CommonStatusEnum.ENABLE"
+          :inactive-value="CommonStatusEnum.DISABLE"
                 @change="handleStatusChange(scope.row)"
                 :disabled="!checkPermi(['system:user:update'])"
               />
@@ -206,6 +206,7 @@ import UserForm from './UserForm.vue'
 import UserImportForm from './UserImportForm.vue'
 import UserAssignRoleForm from './UserAssignRoleForm.vue'
 import DeptTree from './DeptTree.vue'
+import { CommonStatusEnum } from '@/utils/constants'
 
 defineOptions({ name: 'SystemUser' })
 

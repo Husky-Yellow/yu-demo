@@ -42,7 +42,6 @@
           重置
         </el-button>
         <el-button
-          v-hasPermi="['system:menu:create']"
           plain
           type="primary"
           @click="openForm('create')"

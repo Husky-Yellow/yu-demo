@@ -67,6 +67,8 @@
         <!-- 用户表格 -->
         <SubscriberTable
           :table-data="userTableData"
+          :loading="loading"
+          :dept-tree="deptTree"
           @edit="handleEdit"
           @delete="handleDelete"
           @status-change="handleStatusChange"
@@ -83,6 +85,7 @@
     </el-col>
   </el-row>
   <!-- 添加或修改用户对话框 -->
+   <!-- todo: 弹窗内岗位的处理 -->
   <SubForm ref="formRef" @success="getUsers" />
 </template>
 <script lang="ts" setup>
@@ -116,6 +119,7 @@ const selectedOrgId = ref('') // 当前选中的组织 ID
 // 获取用户列表
 const getUsers = async () => {
   loading.value = true
+  userTableData.value = []
   try {
     const res = await UserApi.getUserPage(searchForm)
     userTableData.value = res.list;
@@ -127,9 +131,12 @@ const getUsers = async () => {
   }
 }
 
+const deptTree = ref<Map<number, string>>(new Map())
+
 // 生命周期钩子
 onMounted(() => {
   getUsers()
+  getDeptTree()
 })
 
 // 事件处理
@@ -248,5 +255,11 @@ const loadRoleData = async () => {
   }
 };
 
+const getDeptTree = async () => {
+  const res = await DeptApi.getAllSimpleDeptList()
+  res.forEach((item: any) => {
+    deptTree.value.set(item.id, item.name)
+  })
+}
 
 </script>

@@ -17,8 +17,8 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" class="!w-240px" clearable placeholder="请选择状态">
+      <el-form-item label="角色状态" prop="status">
+        <el-select v-model="queryParams.status" class="!w-240px" clearable placeholder="请选择角色状态">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
@@ -36,38 +36,15 @@
           <Icon class="mr-5px" icon="ep:refresh" />
           重置
         </el-button>
-        <el-button
-          plain
-          type="primary"
-          @click="openForm('create')"
-        >
+        <el-button plain type="primary" @click="openForm('create')">
           <Icon class="mr-5px" icon="ep:plus" />
           新增
         </el-button>
-        <el-button
-          :loading="exportLoading"
-          plain
-          type="success"
-          @click="handleExport"
-        >
-          <Icon class="mr-5px" icon="ep:download" />
-          删除
-        </el-button>
-        <el-button
-          :loading="exportLoading"
-          plain
-          type="success"
-          @click="handleExport"
-        >
+        <el-button plain :disabled="selectedRows.length === 0" type="success" @click="handleEnable(CommonStatusEnum.ENABLE)">
           <Icon class="mr-5px" icon="ep:download" />
           启用
         </el-button>
-        <el-button
-          :loading="exportLoading"
-          plain
-          type="success"
-          @click="handleExport"
-        >
+        <el-button plain :disabled="selectedRows.length === 0" type="success" @click="handleEnable(CommonStatusEnum.DISABLE)">
           <Icon class="mr-5px" icon="ep:download" />
           禁用
         </el-button>
@@ -78,8 +55,11 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table
-v-loading="loading" :data="list" :row-key="row => row.id"
-      @selection-change="handleSelectionChange">
+      v-loading="loading"
+      :data="list"
+      :row-key="(row) => row.id"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
       <el-table-column align="center" label="角色编号" prop="id" />
       <el-table-column align="center" label="角色名称" prop="name" />
@@ -87,20 +67,25 @@ v-loading="loading" :data="list" :row-key="row => row.id"
         <template #default="scope">
           <el-switch
             v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
+            :active-value="CommonStatusEnum.ENABLE"
+            :inactive-value="CommonStatusEnum.DISABLE"
             @change="handleStatusChange(scope.row)"
           />
-      </template>
+        </template>
       </el-table-column>
-      <el-table-column  align="center" label="操作">
+      <el-table-column align="center" label="操作">
         <template #default="scope">
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">
+            编辑
+          </el-button>
           <el-button
             link
+            preIcon="ep:delete"
+            title="删除"
             type="primary"
-            @click="openForm('update', scope.row.id)"
+            @click="handleDelete(scope.row.id)"
           >
-            编辑
+            删除
           </el-button>
           <el-button
             link
@@ -124,29 +109,27 @@ v-loading="loading" :data="list" :row-key="row => row.id"
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
-  <RoleForm ref="formRef" @success="getList" />
+  <PersonaForm ref="formRef" @success="getList" />
   <!-- 表单弹窗：菜单权限 -->
-  <RoleAssignMenuForm ref="assignMenuFormRef" @success="getList" />
-  <!-- 表单弹窗：数据权限 -->
-  <RoleDataPermissionForm ref="dataPermissionFormRef" @success="getList" />
+  <PersonaAssignMenuForm ref="assignMenuFormRef" @success="getList" />
 </template>
 <script lang="ts" setup>
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { dateFormatter } from '@/utils/formatTime'
+import { CommonStatusEnum } from '@/utils/constants'
 import download from '@/utils/download'
 import * as RoleApi from '@/api/system/role'
-import RoleForm from './RoleForm.vue'
-import RoleAssignMenuForm from './RoleAssignMenuForm.vue'
-import RoleDataPermissionForm from './RoleDataPermissionForm.vue'
+import PersonaForm from './PersonaForm.vue'
+import PersonaAssignMenuForm from './PersonaAssignMenuForm.vue'
+import type { FormInstance } from 'element-plus'
 
 defineOptions({ name: 'SystemPersona' })
 
 const message = useMessage() // 消息弹窗
-const { t } = useI18n() // 国际化
 
+const selectedRows = ref<RoleApi.RoleBase[]>([])
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数据
+const list = ref<RoleApi.RoleBase[]>([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -155,7 +138,7 @@ const queryParams = reactive({
   status: undefined,
   createTime: []
 })
-const queryFormRef = ref() // 搜索的表单
+const queryFormRef = ref<FormInstance>() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
 
 /** 查询角色列表 */
@@ -163,6 +146,7 @@ const getList = async () => {
   loading.value = true
   try {
     const data = await RoleApi.getRolePage(queryParams)
+    console.log(data)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -178,34 +162,26 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields()
+  (queryFormRef.value as FormInstance).resetFields()
   handleQuery()
 }
 
-const selectedRows = ref()
-const handleSelectionChange = (val: never[]) => {
-  selectedRows.value = val
-};
 
-/** 添加/修改操作 */
-const formRef = ref()
-const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id)
+const handleSelectionChange = (val: RoleApi.RoleBase[]) => {
+  selectedRows.value = val
 }
 
-/** 数据权限操作 */
-const dataPermissionFormRef = ref()
-const openDataPermissionForm = async (row: RoleApi.RoleVO) => {
-  dataPermissionFormRef.value.open(row)
+/** 添加/修改操作 */
+const formRef = ref<InstanceType<typeof PersonaForm>>()
+const openForm = (type: string, id?: number) => {
+  formRef.value?.open(type, id)
 }
 
 /** 菜单权限操作 */
-const assignMenuFormRef = ref()
-const openAssignMenuForm = async (row: RoleApi.RoleVO) => {
-  assignMenuFormRef.value.open(row)
+const assignMenuFormRef = ref<InstanceType<typeof PersonaAssignMenuForm>>()
+const openAssignMenuForm = async (row: RoleApi.Role) => {
+  assignMenuFormRef.value?.open(row)
 }
-
-const handleStatusChange = (row: any) => console.log(row)
 
 /** 删除按钮操作 */
 const handleDelete = async (id: number) => {
@@ -214,26 +190,36 @@ const handleDelete = async (id: number) => {
     await message.delConfirm()
     // 发起删除
     await RoleApi.deleteRole(id)
-    message.success(t('common.delSuccess'))
+    message.success('删除成功')
     // 刷新列表
     await getList()
   } catch {}
 }
 
-/** 导出按钮操作 */
-const handleExport = async () => {
-  try {
-    // 导出的二次确认
-    await message.exportConfirm()
-    // 发起导出
-    exportLoading.value = true
-    const data = await RoleApi.exportRole(queryParams)
-    download.excel(data, '角色列表.xls')
-  } catch {
-  } finally {
-    exportLoading.value = false
+
+// 通用状态变更处理
+const handleStatusUpdate = async (params: { id?: number; ids?: number[]; status: number }) => {
+  await message.confirm('确定要启用/禁用吗？')
+  if (params.id) {
+    await RoleApi.updateRoleStatus({ id: params.id, status: params.status })
+  } else if (params.ids) {
+    await RoleApi.batchUpdateRoleStatus({ ids: params.ids, status: params.status })
   }
+  message.success('更新成功')
+  await getList()
 }
+
+// 单个
+const handleStatusChange = async (row: any) => {
+  await handleStatusUpdate({ id: row.id, status: row.status })
+}
+
+// 批量
+const handleEnable = async (status: number) => {
+  const ids = selectedRows.value.map((row: any) => row.id)
+  await handleStatusUpdate({ ids, status })
+}
+
 
 /** 初始化 **/
 onMounted(() => {

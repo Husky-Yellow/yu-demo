@@ -1,4 +1,5 @@
 <template>
+   <!-- todo: 暂时用不到，上线前可以删除 -->
   <Dialog v-model="dialogVisible" title="数据权限" width="800">
     <el-form ref="formRef" v-loading="formLoading" :model="formData" label-width="80px">
       <el-form-item label="角色名称">
@@ -92,7 +93,7 @@ const treeNodeAll = ref(false) // 全选/全不选
 const checkStrictly = ref(true) // 是否严格模式，即父子不关联
 
 /** 打开弹窗 */
-const open = async (row: RoleApi.RoleVO) => {
+const open = async (row: RoleApi.Role) => {
   dialogVisible.value = true
   resetForm()
   // 加载 Dept 列表。注意，必须放在前面，不然下面 setChecked 没数据节点
