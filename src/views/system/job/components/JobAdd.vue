@@ -128,10 +128,10 @@ const submitForm = async () => {
   try {
     if (formType.value === 'create') {
       await JobApi.createJob(formData.value)
-      message.success(t('common.createSuccess'))
+      message.success('新增成功')
     } else {
       await JobApi.updatePost(formData.value)
-      message.success(t('common.updateSuccess'))
+      message.success('修改成功')
     }
 
     dialogVisible.value = false
