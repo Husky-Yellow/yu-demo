@@ -303,5 +303,188 @@ export default [
         }
       }
     }
+  },
+  {
+    url: '/data/query-conf/list',
+    type: 'get',
+    response: {
+      code: 0,
+      data: [
+        {
+          id: '1939964280471855106',
+          manageId: '1935524876651073537',
+          fieldIds: '1935951343050633217',
+          fieldCodes: 'name',
+          hint: '1',
+          queryType: 0,
+          defaultValue: '1',
+          sort: 0,
+          createTime: 1751358502000
+        }
+      ],
+      msg: ''
+    }
+  },
+  {
+    url: '/data/business-data/page',
+    type: 'get',
+    response: {
+      code: 0,
+      data: []
+    }
+  },
+  {
+    url: '/data/operate-conf/list',
+    type: 'get',
+    response: {
+      code: 0,
+      data: [
+        {
+          id: '1932726818544558081',
+          manageId: '1935524876651073537',
+          operateName: '添加',
+          operateType: 0,
+          showFlag: 0,
+          sort: 0,
+          createTime: 1749632957000
+        },
+        {
+          id: '1932726880922247170',
+          manageId: '1935524876651073537',
+          operateName: '编辑',
+          operateType: 1,
+          showFlag: 0,
+          sort: 1,
+          createTime: 1749632971000
+        },
+        {
+          id: '1932726927856508929',
+          manageId: '1935524876651073537',
+          operateName: '删除',
+          operateType: 2,
+          showFlag: 0,
+          sort: 2,
+          createTime: 1749632983000
+        },
+        {
+          id: '1932726958261018625',
+          manageId: '1935524876651073537',
+          operateName: '导入',
+          operateType: 3,
+          showFlag: 0,
+          sort: 3,
+          createTime: 1749632990000
+        },
+        {
+          id: '1932726998052380673',
+          manageId: '1935524876651073537',
+          operateName: '导出',
+          operateType: 4,
+          showFlag: 0,
+          sort: 4,
+          createTime: 1749632999000
+        }
+      ],
+      msg: ''
+    }
+  },
+  {
+    url: '/data/label-manage/tree',
+    type: 'get',
+    response: {
+      code: 0,
+      data: [
+        {
+          id: '1935524876651073537',
+          parentId: 0,
+          name: '实有人口',
+          childList: [
+            {
+              id: '1938148648965181441',
+              parentId: '1935524876651073537',
+              name: '李四',
+              childList: null
+            },
+            {
+              id: '1938148823779577857',
+              parentId: '1935524876651073537',
+              name: 'qweqwe',
+              childList: null
+            },
+            {
+              id: '1938148839818596353',
+              parentId: '1935524876651073537',
+              name: 'qweqwe',
+              childList: null
+            }
+          ]
+        }
+      ],
+      msg: ''
+    }
+  },
+  {
+    url: '/data/conf/list',
+    type: 'get',
+    response: {
+      "code": 0,
+      "data": [
+          {
+              "id": "1937786492331507715",
+              "manageId": "1935524876651073537",
+              "formId": null,
+              "fieldId": "1935951343205822465",
+              "fieldCode": null,
+              "type": 2,
+              "rule": 1,
+              "customJson": null,
+              "createTime": 1750839277000
+          },
+          {
+              "id": "1938149476572663810",
+              "manageId": "1935524876651073537",
+              "formId": null,
+              "fieldId": "1937390336233467906",
+              "fieldCode": null,
+              "type": 2,
+              "rule": 1,
+              "customJson": null,
+              "createTime": 1750925819000
+          }
+      ],
+      "msg": ""
+  }
+  },
+  {
+    url: '/data/sort-conf/list',
+    type: 'get',
+    response: {
+      "code": 0,
+      "data": [
+          {
+              "id": "1937786492331507715",
+              "manageId": "1935524876651073537",
+              "formId": null,
+              "fieldId": "1935951343205822465",
+              "fieldCode": null,
+              "type": 2,
+              "rule": 1,
+              "customJson": null,
+              "createTime": 1750839277000
+          },
+          {
+              "id": "1938149476572663810",
+              "manageId": "1935524876651073537",
+              "formId": null,
+              "fieldId": "1937390336233467906",
+              "fieldCode": null,
+              "type": 2,
+              "rule": 1,
+              "customJson": null,
+              "createTime": 1750925819000
+          }
+      ],
+      "msg": ""
+  }
   }
 ]

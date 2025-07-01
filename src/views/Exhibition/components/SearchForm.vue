@@ -1,119 +1,95 @@
 <template>
-    <el-form :model="formModel" label-width="0px" class="query-form">
+    <el-form :model="form" label-width="0px" class="query-form">
       <el-row :gutter="16">
-        <!-- Always visible fields -->
-        <el-col v-for="field in fields" :key="field.key" :span="8">
-          <el-form-item>
+        <el-col v-for="field in fields" :key="field.id || field.fieldCodes" :span="8">
+          <el-form-item :label="field.hint">
             <component
               :is="getComponent(field.queryType)"
-              v-model="formModel[field.key]"
-              :placeholder="getPlaceholder(field)"
+              v-model="form[field.fieldCodes || field.id || field.hint]"
+              :placeholder="field.hint"
               v-bind="getComponentProps(field)"
               style="width: 100%"
             />
           </el-form-item>
         </el-col>
-
-        <!-- Expandable fields -->
-        <!-- <template v-if="isExpanded">
-          <el-col v-for="field in hiddenFields" :key="field.key" :span="8">
-            <el-form-item>
-              <component
-                :is="getComponent(field.queryType)"
-                v-model="formModel[field.key]"
-                :placeholder="getPlaceholder(field)"
-                v-bind="getComponentProps(field)"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-        </template> -->
-
-        <!-- Action Buttons -->
-        <!-- <el-col :span="8" class="action-buttons">
-          <el-button type="primary">查询</el-button>
+        <el-col :span="24" style="text-align:right; margin-top: 12px;">
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
-          <el-button v-if="queryFields.length > 2"  @click="toggleExpand">
-            {{ isExpanded ? '收起' : '更多搜索' }}
-            <el-icon>
-              <ArrowUp v-if="isExpanded" />
-              <ArrowDown v-else />
-            </el-icon>
-          </el-button>
-        </el-col> -->
+        </el-col>
       </el-row>
     </el-form>
 </template>
 
 <script setup lang="ts">
-import { FieldType } from '@/config/constants/enums/field'
-import {
-  ElForm,
-  ElFormItem,
-  ElInput,
-  ElSelect,
-  ElDatePicker,
-  ElButton,
-  ElRow,
-  ElCol,
-  ElIcon
-} from 'element-plus'
-import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
+import { reactive, watch } from 'vue'
+import { ElInput, ElSelect, ElDatePicker, ElButton } from 'element-plus'
 
-interface FieldOption {
-  label: string
-  value: string | number
-}
-interface FieldConfig {
-  type: 'input' | 'select'
-  label: string
-  prop: string
-  placeholder?: string
-  options?: FieldOption[]
+interface SearchField {
+  id?: string
+  manageId: string
+  field?: any[]
+  fieldCodes?: string
+  fieldIds?: string
+  queryType: number // 0-搜索 1-单选 2-多选 3-日期区间 4-日期
+  defaultValue: any
+  hint: string
+  sort: number
+  options?: { label: string; value: string | number }[]
 }
 
-const props = defineProps<{ fields: FieldConfig[] }>()
-const emit = defineEmits(['search'])
-
+const props = defineProps<{ fields: SearchField[] }>()
 const form = reactive<Record<string, any>>({})
-props.fields.forEach(f => {
-  form[f.prop] = ''
-})
+
+function getKey(field: SearchField) {
+  return field.fieldCodes || field.id || field.hint
+}
+
+function initForm() {
+  props.fields.forEach(f => {
+    form[getKey(f)] = f.defaultValue ?? (f.queryType === 2 ? [] : '')
+  })
+}
+
+initForm()
+watch(() => props.fields, initForm, { deep: true })
+
+function getComponent(queryType: number) {
+  switch (queryType) {
+    case 0: return ElInput
+    case 1: return ElSelect
+    case 2: return ElSelect
+    case 3: return ElDatePicker
+    case 4: return ElDatePicker
+    default: return ElInput
+  }
+}
+
+function getComponentProps(field: SearchField) {
+  if (field.queryType === 1) {
+    return { options: field.options }
+  }
+  if (field.queryType === 2) {
+    return { options: field.options, multiple: true }
+  }
+  if (field.queryType === 3) {
+    return { type: 'daterange', rangeSeparator: '至', startPlaceholder: '开始日期', endPlaceholder: '结束日期' }
+  }
+  if (field.queryType === 4) {
+    return { type: 'date' }
+  }
+  return {}
+}
 
 function handleSearch() {
-  emit('search', { ...form })
+  // 实际项目中可 emit('search', { ...form })
+  console.log('搜索参数', { ...form })
 }
+
 function handleReset() {
   props.fields.forEach(f => {
-    form[f.prop] = ''
+    form[getKey(f)] = f.defaultValue ?? (f.queryType === 2 ? [] : '')
   })
-  emit('search', { ...form })
-}
-
-function getComponent(queryType: FieldType) {
-  console.log('getComponent queryType', queryType)
-  switch (queryType) {
-    case FieldType.TEXT:
-    case FieldType.NUMBER:
-      return markRaw(ElInput)
-    case FieldType.RADIO:
-    case FieldType.CHECKBOX:
-    case FieldType.REGION:
-    case FieldType.TAG:
-      return markRaw(ElSelect)
-    case FieldType.DATE:
-    case FieldType.DATE_RANGE:
-      return markRaw(ElDatePicker)
-    default:
-      return markRaw(ElInput)
-  }
-}
-
-function getPlaceholder(field: any) {
-  if (field.queryType === 'search' && field.subFields?.length) {
-    const subLabels = field.subFields.map((f: any) => f.name).join('/')
-    return `请输入${field.name}/${subLabels}`
-  }
-  return field.placeholder || `请输入${field.name}`
+  // 实际项目中可 emit('search', { ...form })
+  console.log('重置参数', { ...form })
 }
 </script>

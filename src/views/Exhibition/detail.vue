@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-
+defineOptions({ name: 'ExhibitionDetail' })
 const tabConfigs = [
   {
     label: '户籍人口',

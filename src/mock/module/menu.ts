@@ -5414,7 +5414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617246435000
+              "createTime": 1617246435000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1118,
@@ -5431,7 +5434,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1632099063000
+              "createTime": 1632099063000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1237,
@@ -5448,7 +5454,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647326128000
+              "createTime": 1647326128000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1263,
@@ -5465,7 +5474,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1652171193000
+              "createTime": 1652171193000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2131,
@@ -5482,7 +5494,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674610428000
+              "createTime": 1674610428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2136,
@@ -5499,7 +5514,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674619531000
+              "createTime": 1674619531000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2141,
@@ -5516,7 +5534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674670610000
+              "createTime": 1674670610000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2145,
@@ -5533,7 +5554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674844002000
+              "createTime": 1674844002000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2151,
@@ -5550,7 +5574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674851302000
+              "createTime": 1674851302000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2516,
@@ -5567,24 +5594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285611000
-          },
-          {
-              "id": 2701,
-              "name": "待办事项",
-              "permission": "",
-              "type": 2,
-              "sort": 0,
-              "parentId": 2397,
-              "path": "backlog",
-              "icon": "fa-solid:tasks",
-              "component": "crm/backlog/index",
-              "componentName": "CrmBacklog",
-              "status": 0,
-              "visible": true,
-              "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1708161431000
+              "createTime": 1700285611000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2712,
@@ -5601,7 +5614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709973836000
+              "createTime": 1709973836000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2720,
@@ -5618,7 +5634,30 @@ export default [
               "visible": true,
               "keepAlive": false,
               "alwaysShow": true,
-              "createTime": 1710848765000
+              "createTime": 1710848765000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
+          },
+          {
+              "id": 1,
+              "name": "系统管理",
+              "permission": "",
+              "type": 1,
+              "sort": 1,
+              "parentId": 0,
+              "path": "/system",
+              "icon": "ep:tools",
+              "component": null,
+              "componentName": null,
+              "status": 0,
+              "visible": true,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 111,
@@ -5635,7 +5674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 115,
@@ -5652,7 +5694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 500,
@@ -5669,7 +5714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1001,
@@ -5686,7 +5734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1008,
@@ -5703,7 +5754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1013,
@@ -5720,7 +5774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1017,
@@ -5737,7 +5794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1021,
@@ -5754,7 +5814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1026,
@@ -5771,7 +5834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1031,
@@ -5788,7 +5854,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1036,
@@ -5805,7 +5874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1040,
@@ -5822,7 +5894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1043,
@@ -5839,7 +5914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1046,
@@ -5856,7 +5934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1066,
@@ -5873,7 +5954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1611594151000
+              "createTime": 1611594151000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1070,
@@ -5890,7 +5974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1612586569000
+              "createTime": 1612586569000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1078,
@@ -5907,7 +5994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1614274379000
+              "createTime": 1614274379000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1087,
@@ -5924,7 +6014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1615310779000
+              "createTime": 1615310779000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1088,
@@ -5941,7 +6034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1615310884000
+              "createTime": 1615310884000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1089,
@@ -5958,7 +6054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1615310949000
+              "createTime": 1615310949000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1091,
@@ -5975,7 +6074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1615551380000
+              "createTime": 1615551380000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1093,
@@ -5992,7 +6094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617556216000
+              "createTime": 1617556216000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1095,
@@ -6009,7 +6114,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617246435000
+              "createTime": 1617246435000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1100,
@@ -6026,7 +6134,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617269717000
+              "createTime": 1617269717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1101,
@@ -6043,7 +6154,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617269717000
+              "createTime": 1617269717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1108,
@@ -6060,7 +6174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1618101425000
+              "createTime": 1618101425000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1119,
@@ -6077,7 +6194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1632099063000
+              "createTime": 1632099063000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1188,
@@ -6094,7 +6214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640839102000
+              "createTime": 1640839102000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1193,
@@ -6111,7 +6234,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640964298000
+              "createTime": 1640964298000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1194,
@@ -6128,7 +6254,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641207670000
+              "createTime": 1641207670000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1201,
@@ -6145,7 +6274,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641542024000
+              "createTime": 1641542024000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1202,
@@ -6162,7 +6294,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641542024000
+              "createTime": 1641542024000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1210,
@@ -6179,7 +6314,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642097660000
+              "createTime": 1642097660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1221,
@@ -6196,7 +6334,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642869532000
+              "createTime": 1642869532000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1238,
@@ -6213,7 +6354,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647326128000
+              "createTime": 1647326128000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1255,
@@ -6230,7 +6374,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1651041452000
+              "createTime": 1651041452000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1256,
@@ -6247,7 +6394,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1651041452000
+              "createTime": 1651041452000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1264,
@@ -6264,7 +6414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1652171193000
+              "createTime": 1652171193000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2132,
@@ -6281,7 +6434,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674610428000
+              "createTime": 1674610428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2137,
@@ -6298,7 +6454,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674619531000
+              "createTime": 1674619531000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2142,
@@ -6315,7 +6474,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674670610000
+              "createTime": 1674670610000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2146,
@@ -6332,7 +6494,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674844002000
+              "createTime": 1674844002000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2152,
@@ -6349,7 +6514,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674851302000
+              "createTime": 1674851302000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2392,
@@ -6366,7 +6534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698541461000
+              "createTime": 1698541461000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2399,
@@ -6383,7 +6554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698547841000
+              "createTime": 1698547841000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2405,
@@ -6400,7 +6574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698548789000
+              "createTime": 1698548789000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2411,
@@ -6417,7 +6594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549155000
+              "createTime": 1698549155000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2417,
@@ -6434,7 +6614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549296000
+              "createTime": 1698549296000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2423,
@@ -6451,7 +6634,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2429,
@@ -6468,7 +6654,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2478,
@@ -6485,7 +6674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700030550000
+              "createTime": 1700030550000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2479,
@@ -6502,7 +6694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700030550000
+              "createTime": 1700030550000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2485,
@@ -6519,7 +6714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700108307000
+              "createTime": 1700108307000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2491,
@@ -6536,7 +6734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700110417000
+              "createTime": 1700110417000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2517,
@@ -6553,7 +6754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285611000
+              "createTime": 1700285611000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2518,
@@ -6570,7 +6774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285633000
+              "createTime": 1700285633000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2519,
@@ -6587,7 +6794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285633000
+              "createTime": 1700285633000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2527,
@@ -6604,7 +6814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701787636000
+              "createTime": 1701787636000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2533,
@@ -6621,7 +6834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701838403000
+              "createTime": 1701838403000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2561,
@@ -6638,7 +6854,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1706280729000
+              "createTime": 1706280729000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2704,
@@ -6655,7 +6874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708518936000
+              "createTime": 1708518936000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2710,
@@ -6672,7 +6894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708764356000
+              "createTime": 1708764356000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2715,
@@ -6689,7 +6914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709834451000
+              "createTime": 1709834451000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2722,
@@ -6706,7 +6934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1711066707000
+              "createTime": 1711066707000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2725,
@@ -6723,7 +6954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1711068229000
+              "createTime": 1711068229000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2727,
@@ -6740,7 +6974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709971534000
+              "createTime": 1709971534000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2732,
@@ -6757,7 +6994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709994908000
+              "createTime": 1709994908000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2741,
@@ -6774,41 +7014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1713959265000
-          },
-          {
-              "id": "1930876052676800514",
-              "name": "lixh测试菜单",
-              "permission": "",
-              "type": 2,
-              "sort": 1,
-              "parentId": "1930876052676800513",
-              "path": "tcwy",
-              "icon": "ep:add-location",
-              "component": "/tcwy/lixh/index",
-              "componentName": "TcwyLixh",
-              "status": 0,
-              "visible": true,
-              "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1749191976000
-          },
-          {
-              "id": "1930877489578242050",
-              "name": "yangh测试菜单",
-              "permission": "",
-              "type": 2,
-              "sort": 1,
-              "parentId": "1930876052676800513",
-              "path": "tcwy",
-              "icon": "ep:add-location",
-              "component": "/tcwy/yangh/index",
-              "componentName": "TcwyYangh",
-              "status": 0,
-              "visible": true,
-              "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1749192042000
+              "createTime": 1713959265000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242052",
@@ -6825,7 +7034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749458889000
+              "createTime": 1749458889000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242053",
@@ -6842,7 +7054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749458921000
+              "createTime": 1749458921000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242057",
@@ -6859,7 +7074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459409000
+              "createTime": 1749459409000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242060",
@@ -6876,7 +7094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459509000
+              "createTime": 1749459509000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1932732686457724930",
@@ -6893,7 +7114,50 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749634356000
+              "createTime": 1749634356000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
+          },
+          {
+              "id": "1939892075393290241",
+              "name": "人口管理",
+              "permission": "",
+              "type": 1,
+              "sort": 1,
+              "parentId": "1939891937186779137",
+              "path": "people",
+              "icon": "ep:add-location",
+              "component": "",
+              "componentName": "",
+              "status": 0,
+              "visible": true,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1751341287000,
+              "manageId": "1932725509586165761",
+              "manageName": null,
+              "routeType": 1
+          },
+          {
+              "id": "1939892414574071809",
+              "name": "实有人口",
+              "permission": "",
+              "type": 2,
+              "sort": 1,
+              "parentId": "1939892075393290241",
+              "path": "label",
+              "icon": "ep:add-location",
+              "component": "Exhibition/index",
+              "componentName": "ExhibitionList",
+              "status": 0,
+              "visible": true,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1751341368000,
+              "manageId": "1932725509586165761",
+              "manageName": null,
+              "routeType": 1
           },
           {
               "id": 109,
@@ -6910,7 +7174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 113,
@@ -6927,7 +7194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 114,
@@ -6944,7 +7214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 501,
@@ -6961,7 +7234,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1002,
@@ -6978,7 +7254,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1009,
@@ -6995,7 +7274,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1014,
@@ -7012,7 +7294,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1018,
@@ -7029,7 +7314,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1022,
@@ -7046,7 +7334,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1027,
@@ -7063,7 +7354,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1032,
@@ -7080,7 +7374,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1037,
@@ -7097,7 +7394,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1042,
@@ -7114,7 +7414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1048,
@@ -7131,7 +7434,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1050,
@@ -7148,7 +7454,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1056,
@@ -7165,7 +7474,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1058,
@@ -7182,7 +7494,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1067,
@@ -7199,7 +7514,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1611594172000
+              "createTime": 1611594172000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1082,
@@ -7216,7 +7534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1614274379000
+              "createTime": 1614274379000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1084,
@@ -7233,7 +7554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1614297200000
+              "createTime": 1614297200000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1085,
@@ -7250,7 +7574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1614297200000
+              "createTime": 1614297200000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1096,
@@ -7267,7 +7594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617246435000
+              "createTime": 1617246435000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1102,
@@ -7284,7 +7614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617269717000
+              "createTime": 1617269717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1107,
@@ -7301,7 +7634,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1618101425000
+              "createTime": 1618101425000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1120,
@@ -7318,7 +7654,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1632099063000
+              "createTime": 1632099063000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1187,
@@ -7335,7 +7674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640839102000
+              "createTime": 1640839102000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1189,
@@ -7352,7 +7694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640839102000
+              "createTime": 1640839102000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1195,
@@ -7369,7 +7714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641207684000
+              "createTime": 1641207684000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1211,
@@ -7386,7 +7734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642097660000
+              "createTime": 1642097660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1219,
@@ -7403,7 +7754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642869375000
+              "createTime": 1642869375000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1222,
@@ -7420,7 +7774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642869564000
+              "createTime": 1642869564000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1239,
@@ -7437,7 +7794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647326128000
+              "createTime": 1647326128000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1257,
@@ -7454,7 +7814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1651041452000
+              "createTime": 1651041452000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1265,
@@ -7471,7 +7834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1652171193000
+              "createTime": 1652171193000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2130,
@@ -7488,7 +7854,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674638864000
+              "createTime": 1674638864000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2133,
@@ -7505,7 +7874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674610428000
+              "createTime": 1674610428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2138,
@@ -7522,7 +7894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674619531000
+              "createTime": 1674619531000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2147,
@@ -7539,7 +7914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674844002000
+              "createTime": 1674844002000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2393,
@@ -7556,7 +7934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698541461000
+              "createTime": 1698541461000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2400,
@@ -7573,7 +7954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698547841000
+              "createTime": 1698547841000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2406,
@@ -7590,7 +7974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698548789000
+              "createTime": 1698548789000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2412,
@@ -7607,7 +7994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549155000
+              "createTime": 1698549155000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2418,
@@ -7624,7 +8014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549296000
+              "createTime": 1698549296000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2424,
@@ -7641,7 +8034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2430,
@@ -7658,7 +8054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2480,
@@ -7675,7 +8074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700030550000
+              "createTime": 1700030550000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2484,
@@ -7692,7 +8094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700108307000
+              "createTime": 1700108307000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2486,
@@ -7709,7 +8114,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700108307000
+              "createTime": 1700108307000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2492,
@@ -7726,7 +8134,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700110417000
+              "createTime": 1700110417000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2520,
@@ -7743,7 +8154,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285633000
+              "createTime": 1700285633000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2528,
@@ -7760,7 +8174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701787661000
+              "createTime": 1701787661000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2534,
@@ -7777,7 +8194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701838421000
+              "createTime": 1701838421000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2705,
@@ -7794,7 +8214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708518957000
+              "createTime": 1708518957000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2709,
@@ -7811,7 +8234,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708764319000
+              "createTime": 1708764319000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2711,
@@ -7828,7 +8254,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708764376000
+              "createTime": 1708764376000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2716,
@@ -7845,7 +8274,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709834451000
+              "createTime": 1709834451000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2723,
@@ -7862,7 +8294,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1711066765000
+              "createTime": 1711066765000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2728,
@@ -7879,7 +8314,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709971534000
+              "createTime": 1709971534000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2733,
@@ -7896,7 +8334,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709994908000
+              "createTime": 1709994908000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2742,
@@ -7913,13 +8354,16 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1713959285000
+              "createTime": 1713959285000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242054",
               "name": "岗位管理",
-              "permission": "",
-              "type": 2,
+              "permission": " system:user:list",
+              "type": 1,
               "sort": 2,
               "parentId": "1930877489578242052",
               "path": "job",
@@ -7929,8 +8373,11 @@ export default [
               "status": 0,
               "visible": true,
               "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1749458942000
+              "alwaysShow": false,
+              "createTime": 1749458942000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242056",
@@ -7947,7 +8394,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459254000
+              "createTime": 1749459254000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242058",
@@ -7964,7 +8414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459441000
+              "createTime": 1749459441000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242061",
@@ -7981,7 +8434,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459549000
+              "createTime": 1749459549000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242064",
@@ -7998,7 +8454,70 @@ export default [
               "visible": false,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459724000
+              "createTime": 1749459724000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
+          },
+          {
+              "id": "1939565518595346434",
+              "name": "岗位管理",
+              "permission": "SystemJob",
+              "type": 2,
+              "sort": 2,
+              "parentId": "1930877489578242054",
+              "path": "list",
+              "icon": "ep:add-location",
+              "component": "system/job/index",
+              "componentName": "SystemJobIndex",
+              "status": 0,
+              "visible": true,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1751263430000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
+          },
+          {
+              "id": "1939891937186779137",
+              "name": "基层治理",
+              "permission": "",
+              "type": 1,
+              "sort": 2,
+              "parentId": 0,
+              "path": "/basic",
+              "icon": "ep:add-location",
+              "component": "",
+              "componentName": "",
+              "status": 0,
+              "visible": true,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1751341254000,
+              "manageId": "1932725509586165761",
+              "manageName": null,
+              "routeType": 1
+          },
+          {
+              "id": "1939979306553389057",
+              "name": "详情",
+              "permission": "",
+              "type": 2,
+              "sort": 2,
+              "parentId": "1939892075393290241",
+              "path": "detail",
+              "icon": "ep:calendar",
+              "component": "Exhibition/detail",
+              "componentName": "ExhibitionDetail",
+              "status": 0,
+              "visible": false,
+              "keepAlive": true,
+              "alwaysShow": true,
+              "createTime": 1751362084000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 1
           },
           {
               "id": 112,
@@ -8015,7 +8534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 116,
@@ -8032,7 +8554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1003,
@@ -8049,7 +8574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1010,
@@ -8066,7 +8594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1015,
@@ -8083,7 +8614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1019,
@@ -8100,7 +8634,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1023,
@@ -8117,7 +8654,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1028,
@@ -8134,7 +8674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1033,
@@ -8151,7 +8694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1038,
@@ -8168,7 +8714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1045,
@@ -8185,7 +8734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1051,
@@ -8202,7 +8754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1057,
@@ -8219,7 +8774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1086,
@@ -8236,7 +8794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1614297200000
+              "createTime": 1614297200000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1097,
@@ -8253,7 +8814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617246435000
+              "createTime": 1617246435000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1103,
@@ -8270,7 +8834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617269717000
+              "createTime": 1617269717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1190,
@@ -8287,7 +8854,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640839102000
+              "createTime": 1640839102000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1212,
@@ -8304,7 +8874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642097660000
+              "createTime": 1642097660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1220,
@@ -8321,7 +8894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642869393000
+              "createTime": 1642869393000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1240,
@@ -8338,7 +8914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647326128000
+              "createTime": 1647326128000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1258,
@@ -8355,7 +8934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1651041452000
+              "createTime": 1651041452000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1266,
@@ -8372,7 +8954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1652171193000
+              "createTime": 1652171193000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2134,
@@ -8389,7 +8974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674610428000
+              "createTime": 1674610428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2139,
@@ -8406,7 +8994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674619531000
+              "createTime": 1674619531000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2144,
@@ -8423,7 +9014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674872718000
+              "createTime": 1674872718000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2148,
@@ -8440,7 +9034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674844002000
+              "createTime": 1674844002000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2394,
@@ -8457,7 +9054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698541461000
+              "createTime": 1698541461000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2401,
@@ -8474,7 +9074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698547841000
+              "createTime": 1698547841000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2407,
@@ -8491,7 +9094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698548789000
+              "createTime": 1698548789000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2413,
@@ -8508,7 +9114,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549155000
+              "createTime": 1698549155000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2419,
@@ -8525,7 +9134,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549296000
+              "createTime": 1698549296000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2425,
@@ -8542,7 +9154,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2431,
@@ -8559,7 +9174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2481,
@@ -8576,7 +9194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700030550000
+              "createTime": 1700030550000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2487,
@@ -8593,7 +9214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700108307000
+              "createTime": 1700108307000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2493,
@@ -8610,7 +9234,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700110417000
+              "createTime": 1700110417000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2521,
@@ -8627,7 +9254,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285633000
+              "createTime": 1700285633000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2529,
@@ -8644,7 +9274,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701787683000
+              "createTime": 1701787683000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2532,
@@ -8661,7 +9294,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701838356000
+              "createTime": 1701838356000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2535,
@@ -8678,7 +9314,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701838439000
+              "createTime": 1701838439000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2706,
@@ -8695,7 +9334,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708518981000
+              "createTime": 1708518981000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2714,
@@ -8712,7 +9354,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709834451000
+              "createTime": 1709834451000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2717,
@@ -8729,7 +9374,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709834451000
+              "createTime": 1709834451000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2729,
@@ -8746,7 +9394,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709971534000
+              "createTime": 1709971534000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2734,
@@ -8763,7 +9414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709994908000
+              "createTime": 1709994908000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2736,
@@ -8780,7 +9434,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1712296160000
+              "createTime": 1712296160000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242055",
@@ -8797,7 +9454,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749458957000
+              "createTime": 1749458957000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242059",
@@ -8814,7 +9474,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459471000
+              "createTime": 1749459471000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242062",
@@ -8831,7 +9494,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459574000
+              "createTime": 1749459574000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242065",
@@ -8848,7 +9514,10 @@ export default [
               "visible": false,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459761000
+              "createTime": 1749459761000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 107,
@@ -8865,7 +9534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1004,
@@ -8882,7 +9554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1011,
@@ -8899,7 +9574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1016,
@@ -8916,7 +9594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1020,
@@ -8933,7 +9614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1024,
@@ -8950,7 +9634,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1029,
@@ -8967,7 +9654,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1034,
@@ -8984,7 +9674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1039,
@@ -9001,7 +9694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1052,
@@ -9018,7 +9714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1059,
@@ -9035,7 +9734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1077,
@@ -9052,7 +9754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1612788091000
+              "createTime": 1612788091000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1083,
@@ -9069,7 +9774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1614277104000
+              "createTime": 1614277104000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1092,
@@ -9086,7 +9794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1615551380000
+              "createTime": 1615551380000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1098,
@@ -9103,7 +9814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617246435000
+              "createTime": 1617246435000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1104,
@@ -9120,7 +9834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617269717000
+              "createTime": 1617269717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1191,
@@ -9137,7 +9854,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640839102000
+              "createTime": 1640839102000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1197,
@@ -9154,7 +9874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641207748000
+              "createTime": 1641207748000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1209,
@@ -9171,7 +9894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642097660000
+              "createTime": 1642097660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1213,
@@ -9188,7 +9914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642097660000
+              "createTime": 1642097660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1241,
@@ -9205,7 +9934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647326128000
+              "createTime": 1647326128000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1259,
@@ -9222,7 +9954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1651041452000
+              "createTime": 1651041452000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1267,
@@ -9239,7 +9974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1652171193000
+              "createTime": 1652171193000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2135,
@@ -9256,7 +9994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674610428000
+              "createTime": 1674610428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2140,
@@ -9273,7 +10014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674619531000
+              "createTime": 1674619531000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2149,
@@ -9290,7 +10034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674844002000
+              "createTime": 1674844002000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2395,
@@ -9307,7 +10054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698541461000
+              "createTime": 1698541461000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2402,
@@ -9324,7 +10074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698547841000
+              "createTime": 1698547841000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2408,
@@ -9341,7 +10094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698548789000
+              "createTime": 1698548789000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2414,
@@ -9358,7 +10114,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549155000
+              "createTime": 1698549155000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2420,
@@ -9375,7 +10134,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549296000
+              "createTime": 1698549296000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2426,
@@ -9392,7 +10154,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2432,
@@ -9409,7 +10174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2482,
@@ -9426,7 +10194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700030550000
+              "createTime": 1700030550000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2488,
@@ -9443,7 +10214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700108307000
+              "createTime": 1700108307000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2494,
@@ -9460,7 +10234,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700110417000
+              "createTime": 1700110417000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2522,
@@ -9477,7 +10254,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285633000
+              "createTime": 1700285633000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2530,
@@ -9494,7 +10274,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701787697000
+              "createTime": 1701787697000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2536,
@@ -9511,7 +10294,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701838454000
+              "createTime": 1701838454000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2703,
@@ -9528,7 +10314,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708517717000
+              "createTime": 1708517717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2707,
@@ -9545,7 +10334,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708518996000
+              "createTime": 1708518996000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2718,
@@ -9562,7 +10354,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709834451000
+              "createTime": 1709834451000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2730,
@@ -9579,7 +10374,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709971534000
+              "createTime": 1709971534000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2735,
@@ -9596,7 +10394,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709994908000
+              "createTime": 1709994908000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2737,
@@ -9613,7 +10414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1712296660000
+              "createTime": 1712296660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": "1930877489578242063",
@@ -9629,8 +10433,31 @@ export default [
               "status": 0,
               "visible": true,
               "keepAlive": true,
+              "alwaysShow": false,
+              "createTime": 1749459647000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
+          },
+          {
+              "id": "1939564770662862849",
+              "name": "岗位详情",
+              "permission": "SystemJob",
+              "type": 1,
+              "sort": 4,
+              "parentId": "1930877489578242054",
+              "path": "system/organization/job/detail",
+              "icon": "ep:add-location",
+              "component": "/system/job/detail",
+              "componentName": "SystemJobDetail",
+              "status": 0,
+              "visible": false,
+              "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1749459647000
+              "createTime": 1751263251000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 100,
@@ -9647,7 +10474,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 104,
@@ -9664,7 +10494,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1005,
@@ -9681,7 +10514,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1012,
@@ -9698,7 +10534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1025,
@@ -9715,7 +10554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1030,
@@ -9732,7 +10574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1035,
@@ -9749,7 +10594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1053,
@@ -9766,7 +10614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1060,
@@ -9783,7 +10634,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1090,
@@ -9800,7 +10654,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1615551380000
+              "createTime": 1615551380000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1105,
@@ -9817,7 +10674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1617269717000
+              "createTime": 1617269717000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1109,
@@ -9834,7 +10694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1618101425000
+              "createTime": 1618101425000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1192,
@@ -9851,7 +10714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640839102000
+              "createTime": 1640839102000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1198,
@@ -9868,7 +10734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641207763000
+              "createTime": 1641207763000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1242,
@@ -9885,7 +10754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647326128000
+              "createTime": 1647326128000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1260,
@@ -9902,7 +10774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1651041452000
+              "createTime": 1651041452000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2143,
@@ -9919,7 +10794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674746955000
+              "createTime": 1674746955000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2150,
@@ -9936,7 +10814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1674874483000
+              "createTime": 1674874483000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2396,
@@ -9953,7 +10834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698541461000
+              "createTime": 1698541461000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2403,
@@ -9970,7 +10854,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698547841000
+              "createTime": 1698547841000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2409,
@@ -9987,7 +10874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698548789000
+              "createTime": 1698548789000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2415,
@@ -10004,7 +10894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549155000
+              "createTime": 1698549155000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2421,
@@ -10021,7 +10914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549296000
+              "createTime": 1698549296000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2427,
@@ -10038,7 +10934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2433,
@@ -10055,7 +10954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2483,
@@ -10072,7 +10974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700030550000
+              "createTime": 1700030550000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2489,
@@ -10089,7 +10994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700108307000
+              "createTime": 1700108307000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2495,
@@ -10106,7 +11014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700110417000
+              "createTime": 1700110417000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2523,
@@ -10123,7 +11034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700285633000
+              "createTime": 1700285633000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2525,
@@ -10140,7 +11054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700739715000
+              "createTime": 1700739715000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2531,
@@ -10157,7 +11074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701787709000
+              "createTime": 1701787709000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2708,
@@ -10174,7 +11094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1708764280000
+              "createTime": 1708764280000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2726,
@@ -10191,7 +11114,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709971534000
+              "createTime": 1709971534000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2738,
@@ -10208,7 +11134,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1712976806000
+              "createTime": 1712976806000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 101,
@@ -10225,7 +11154,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 105,
@@ -10242,24 +11174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
-          },
-          {
-              "id": 106,
-              "name": "字典管理1",
-              "permission": "",
-              "type": 2,
-              "sort": 6,
-              "parentId": 1,
-              "path": "exhibition",
-              "icon": "ep:collection",
-              "component": "exhibition/index",
-              "componentName": "ExhibitionList",
-              "status": 0,
-              "visible": true,
-              "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1006,
@@ -10276,7 +11194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1063,
@@ -10293,7 +11214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609926824000
+              "createTime": 1609926824000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1106,
@@ -10310,7 +11234,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1618072000000
+              "createTime": 1618072000000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1199,
@@ -10327,7 +11254,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641207804000
+              "createTime": 1641207804000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1243,
@@ -10344,7 +11274,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1647445660000
+              "createTime": 1647445660000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2562,
@@ -10361,7 +11294,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1706764140000
+              "createTime": 1706764140000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2731,
@@ -10378,7 +11314,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1709994908000
+              "createTime": 1709994908000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 102,
@@ -10395,7 +11334,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 110,
@@ -10412,7 +11354,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1007,
@@ -10429,7 +11374,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1054,
@@ -10446,7 +11394,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1064,
@@ -10463,7 +11414,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609926991000
+              "createTime": 1609926991000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2739,
@@ -10480,7 +11434,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1713801270000
+              "createTime": 1713801270000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2913,
@@ -10497,7 +11454,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1737113526000
+              "createTime": 1737113526000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 103,
@@ -10514,7 +11474,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 106,
@@ -10531,7 +11494,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1065,
@@ -10548,7 +11514,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609986208000
+              "createTime": 1609986208000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1075,
@@ -10565,7 +11534,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1612674190000
+              "createTime": 1612674190000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2404,
@@ -10582,24 +11554,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698548789000
-          },
-          {
-              "id": "1930876052676800513",
-              "name": "天诚伟业2",
-              "permission": "",
-              "type": 1,
-              "sort": 8,
-              "parentId": 0,
-              "path": "/tcwy",
-              "icon": "ep:avatar",
-              "component": "",
-              "componentName": "",
-              "status": 1,
-              "visible": true,
-              "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1749191700000
+              "createTime": 1698548789000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 108,
@@ -10616,24 +11574,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
-          },
-          {
-              "id": 1,
-              "name": "系统管理",
-              "permission": "",
-              "type": 1,
-              "sort": 10,
-              "parentId": 0,
-              "path": "/system",
-              "icon": "ep:tools",
-              "component": null,
-              "componentName": null,
-              "status": 0,
-              "visible": true,
-              "keepAlive": true,
-              "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1186,
@@ -10650,7 +11594,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640867310000
+              "createTime": 1640867310000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1207,
@@ -10667,7 +11614,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641609217000
+              "createTime": 1641609217000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1215,
@@ -10684,7 +11634,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642868503000
+              "createTime": 1642868503000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1261,
@@ -10701,7 +11654,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1652110697000
+              "createTime": 1652110697000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2391,
@@ -10718,7 +11674,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698541461000
+              "createTime": 1698541461000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2490,
@@ -10735,7 +11694,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700110417000
+              "createTime": 1700110417000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2543,
@@ -10752,7 +11714,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1704187705000
+              "createTime": 1704187705000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2721,
@@ -10769,7 +11734,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1711036650000
+              "createTime": 1711036650000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2740,
@@ -10786,7 +11754,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1713801884000
+              "createTime": 1713801884000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2497,
@@ -10803,7 +11774,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700121059000
+              "createTime": 1700121059000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2544,
@@ -10820,7 +11794,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1704187723000
+              "createTime": 1704187723000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2724,
@@ -10837,7 +11814,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1711068202000
+              "createTime": 1711068202000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2472,
@@ -10854,7 +11834,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1699821591000
+              "createTime": 1699821591000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2,
@@ -10867,11 +11850,14 @@ export default [
               "icon": "ep:monitor",
               "component": null,
               "componentName": null,
-              "status": 0,
+              "status": 1,
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1609837428000
+              "createTime": 1609837428000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1200,
@@ -10888,7 +11874,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641570708000
+              "createTime": 1641570708000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1208,
@@ -10905,7 +11894,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1641609253000
+              "createTime": 1641609253000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1216,
@@ -10922,7 +11914,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642868813000
+              "createTime": 1642868813000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2416,
@@ -10939,7 +11934,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549296000
+              "createTime": 1698549296000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1217,
@@ -10956,7 +11954,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642868895000
+              "createTime": 1642868895000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1218,
@@ -10973,7 +11974,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1642868921000
+              "createTime": 1642868921000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2546,
@@ -10990,7 +11994,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1705325374000
+              "createTime": 1705325374000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2713,
@@ -11007,7 +12014,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1710683423000
+              "createTime": 1710683423000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 5,
@@ -11024,7 +12034,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1632126379000
+              "createTime": 1632126379000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2410,
@@ -11041,7 +12054,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549155000
+              "createTime": 1698549155000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 1185,
@@ -11058,7 +12074,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1640867196000
+              "createTime": 1640867196000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2398,
@@ -11075,7 +12094,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698547841000
+              "createTime": 1698547841000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2422,
@@ -11092,7 +12114,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2428,
@@ -11109,7 +12134,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698549489000
+              "createTime": 1698549489000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2526,
@@ -11126,7 +12154,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1701787526000
+              "createTime": 1701787526000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2397,
@@ -11143,7 +12174,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1698570510000
+              "createTime": 1698570510000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2560,
@@ -11160,7 +12194,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1706280635000
+              "createTime": 1706280635000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           },
           {
               "id": 2524,
@@ -11177,7 +12214,10 @@ export default [
               "visible": true,
               "keepAlive": true,
               "alwaysShow": true,
-              "createTime": 1700315880000
+              "createTime": 1700315880000,
+              "manageId": null,
+              "manageName": null,
+              "routeType": 0
           }
       ],
       "msg": ""

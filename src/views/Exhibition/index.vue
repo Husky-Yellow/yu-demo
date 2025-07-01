@@ -3,7 +3,7 @@
     <StatisticCards :stats="stats" />
 
     <!-- 搜索表单区 -->
-    <SearchForm :fields="searchFields" @search="onSearch" />
+    <SearchForm :fields="queryConfig" @search="onSearch" />
 
     <!-- 表格区 -->
     <DataTable
@@ -33,6 +33,7 @@ const route = useRoute()
 
 const columns = ref<Partial<LabelFieldConfig>[]>([])
 const queryConfig = ref<QueryResItem[]>([])
+  const formModel = reactive<{ [key: string]: any }>({})
 
 const stats = [
   { label: '户籍人口', value: 651 },
@@ -102,7 +103,23 @@ onMounted(async () => {
   const queryConfList = await LabelApi.getQueryConfList({
     manageId
   })
-  console.log(queryConfList)
+  console.log('queryConfList', queryConfList)
+  // 补充字段信息
+  queryConfList.forEach((field) => {
+    // fieldIds 可能是 'id1,id2'
+    const ids = (field.fieldIds || '').split(',').filter(Boolean)
+    // 查找所有对应字段
+    const matchedFields = res.filter(r => ids.includes(r.id))
+    // 补充 name、id 等信息（如只取第一个）
+    if (matchedFields.length) {
+      field.fieldNames = matchedFields.map(f => f.name).join(',') // 可选：多个字段名拼接
+      field.fieldName = matchedFields[0].name // 可选：第一个字段名
+      field.fieldId = matchedFields[0].id     // 可选：第一个字段id
+      // 你还可以补充其它字段
+    }
+    formModel[field.fieldCodes] = field.defaultValue
+  })
+  queryConfig.value = queryConfList
   queryConfig.value = queryConfList
   const data = await BusinessDataApi.getBusinessDataPage({
     manageId,
@@ -110,6 +127,9 @@ onMounted(async () => {
     pageSize: 10
   })
   console.log(data)
+
+  const countConfigList = await LabelApi.getCountConfigList({ manageId: manageId })
+  console.log('countConfigList', countConfigList)
 })
 
 </script>
