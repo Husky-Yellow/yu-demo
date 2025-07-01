@@ -24,12 +24,12 @@
         <div class="font-bold mb-16px">排序设置</div>
         <div class="panel-actions">
           <el-button type="primary" @click="addSortItem">添加</el-button>
-          <el-button type="danger" @click="removeLastSortItem">删除</el-button>
+          <!-- <el-button type="danger" @click="removeLastSortItem">删除</el-button> -->
         </div>
       </div>
       <div class="overflow-y-auto h-[calc(100vh-340px)]">
         <el-form :model="formModel.sortItems" ref="sortFormRef" label-width="100px">
-          <div v-for="(item, index) in formModel.sortItems" :key="item.uuid" class="sort-item" @click="setClickIndex(item)">
+          <div v-for="(item, index) in formModel.sortItems" :key="item.uuid" class="sort-item relative">
             <div class="sort-item-header">
               <span>排序顺位{{ index + 1 }}</span>
             </div>
@@ -62,6 +62,7 @@
                 <el-option label="降序" :value="0" />
               </el-select>
             </el-form-item>
+            <el-button v-show="index !== 0" @click.stop="removeSelectedStatistic(index)" size="small" class="absolute top-0 right-0 z-10" type="danger" :icon="Delete" circle />
           </div>
         </el-form>
       </div>
@@ -71,6 +72,9 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
+import {
+  Delete,
+} from '@element-plus/icons-vue'
 import * as LabelApi from '@/api/system/label'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
@@ -120,33 +124,52 @@ function addSortItem() {
   })
 }
 
-function removeLastSortItem() {
-  const idx = clickIndex.value;
+const removeSelectedStatistic = (index: number) => {
   const items = formModel.value.sortItems;
   if (items.length <= 1) return;
 
   const removeAt = (index: number) => items.splice(index, 1);
   const removeLast = () => items.pop();
 
-  if (idx !== -1 && items[idx]?.id) {
-    LabelApi.deleteSortConfList({ id: items[idx].id as string })
+  if (index !== -1 && items[index]?.id) {
+    LabelApi.deleteSortConfList({ id: items[index].id as string })
       .then(() => {
         ElMessage.success('删除成功');
-        removeAt(idx);
+        removeAt(index);
       })
       .catch(() => {
         ElMessage.error('删除失败');
       });
-  } else if (idx !== -1) {
-    removeAt(idx);
+  } else if (index !== -1) {
+    removeAt(index);
   } else {
     removeLast();
   }
 }
 
-function setClickIndex(item: SortItem) {
-  clickIndex.value = formModel.value.sortItems.findIndex((i) => i.uuid === item.uuid)
-}
+// function removeLastSortItem() {
+//   const idx = clickIndex.value;
+//   const items = formModel.value.sortItems;
+//   if (items.length <= 1) return;
+
+//   const removeAt = (index: number) => items.splice(index, 1);
+//   const removeLast = () => items.pop();
+
+//   if (idx !== -1 && items[idx]?.id) {
+//     LabelApi.deleteSortConfList({ id: items[idx].id as string })
+//       .then(() => {
+//         ElMessage.success('删除成功');
+//         removeAt(idx);
+//       })
+//       .catch(() => {
+//         ElMessage.error('删除失败');
+//       });
+//   } else if (idx !== -1) {
+//     removeAt(idx);
+//   } else {
+//     removeLast();
+//   }
+// }
 
 // 开始拖拽时保存字段数据
 function onDragStart(evt: any) {
