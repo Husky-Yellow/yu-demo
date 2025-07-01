@@ -100,7 +100,7 @@ const formModel = ref<{ sortItems: SortItem[] }>({
 })
 
 const sortFormRef = ref<FormInstance>()
-const clickIndex = ref<number>(-1)
+// const clickIndex = ref<number>(-1)
 // 当前拖拽的字段
 const draggedField = ref<LabelFieldConfig | null>(null)
 
