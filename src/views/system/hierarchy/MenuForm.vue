@@ -31,6 +31,19 @@
           </el-radio-button>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="路由类型" prop="routeType">
+        <el-radio-group v-model="formData.routeType">
+          <el-radio-button :value="CommonStatusEnum.DISABLE">内部菜单</el-radio-button>
+          <el-radio-button :value="CommonStatusEnum.ENABLE">外部/可输入链接</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+      <!-- manageId -->
+      <el-form-item label="路径地址" prop="manageId" v-if="formData.type !== 3">
+        <el-select v-model="formData.manageId" placeholder="请选择路径地址">
+          <el-option v-for="item in labelList" :key="item.id" :label="item.name" :value="item.id" />
+        </el-select>
+        <!-- <el-input v-model="formData.manageId" clearable placeholder="请输入管理ID" /> -->
+      </el-form-item>
       <el-form-item v-if="formData.type !== 3" label="菜单图标">
         <IconSelect v-model="formData.icon" clearable />
       </el-form-item>
@@ -116,6 +129,7 @@
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as MenuApi from '@/api/system/menu'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
+import * as LabelApi from '@/api/system/label'
 import { CommonStatusEnum, SystemMenuTypeEnum } from '@/utils/constants'
 import { defaultProps, handleTree } from '@/utils/tree'
 
@@ -143,7 +157,10 @@ const formData = ref({
   status: CommonStatusEnum.ENABLE,
   visible: true,
   keepAlive: true,
-  alwaysShow: true
+  alwaysShow: true,
+
+  routeType: CommonStatusEnum.DISABLE,
+  manageId: undefined
 })
 const formRules = reactive({
   name: [{ required: true, message: '菜单名称不能为空', trigger: 'blur' }],
@@ -174,6 +191,7 @@ const open = async (type: string, id?: number, parentId?: number) => {
   }
   // 获得菜单列表
   await getTree()
+  await getLabelList()
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
@@ -245,9 +263,23 @@ const resetForm = () => {
     status: CommonStatusEnum.ENABLE,
     visible: true,
     keepAlive: true,
-    alwaysShow: true
+    alwaysShow: true,
+    routeType: CommonStatusEnum.DISABLE,
+    manageId: undefined
   }
   formRef.value?.resetFields()
+}
+
+const labelList = ref<any[]>([])
+const getLabelList = async () => {
+  try {
+    const data = await LabelApi.getLabelConfigList({
+      pageNo: 1,
+      pageSize: 10
+    })
+    labelList.value = data
+  } finally {
+  }
 }
 
 /** 判断 path 是不是外部的 HTTP 等链接 */

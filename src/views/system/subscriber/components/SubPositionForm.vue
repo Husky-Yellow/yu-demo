@@ -9,7 +9,6 @@
     <el-tree
       ref="treeRef"
       style="max-width: 600px"
-      class="filter-tree"
       :data="data"
       :props="defaultProps"
       default-expand-all
@@ -30,8 +29,16 @@ import type { TreeInstance } from 'element-plus'
 import { handleTree } from '@/utils/tree'
 import * as PostApi from '@/api/system/post'
 import * as DeptApi from '@/api/system/dept'
+import * as JobApi from '@/api/system/job'
 
 defineOptions({ name: 'SystemSubscriberSubPositionForm' })
+
+defineProps({
+  jobList: {
+    type: Array as PropType<JobApi.JobDetailData[]>,
+    required: true
+  }
+})
 
 // 定义树节点的数据结构
 interface Tree {

@@ -1,5 +1,4 @@
 <template>
-  <div>
     <!-- 统计卡片区 -->
     <StatisticCards :stats="stats" />
 
@@ -17,7 +16,6 @@
         <TableActions :actions="actionList" :row="row" @action="onAction" />
       </template>
     </DataTable>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -27,6 +25,10 @@ import DataTable from './components/DataTable.vue'
 import TableActions from './components/TableActions.vue'
 
 defineOptions({ name: 'ExhibitionList' })
+
+const route = useRoute()
+const routeMeta = route.meta
+console.log(routeMeta)
 
 const stats = [
   { label: '户籍人口', value: 651 },

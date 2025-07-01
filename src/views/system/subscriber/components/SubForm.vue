@@ -92,7 +92,7 @@
         </el-col>
       </el-row>
     </el-form>
-    <SubPositionForm  ref="subPositionFormRef" @success="setPosition" />
+    <SubPositionForm  ref="subPositionFormRef" @success="setPosition" :job-list="[]" />
     <template #footer>
       <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>

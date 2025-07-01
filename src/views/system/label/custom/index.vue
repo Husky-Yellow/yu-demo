@@ -89,7 +89,7 @@ const queryParams = reactive({
   pageSize: 100,
   name: undefined,
   status: undefined,
-  labelId: query.labelId
+  labelId: query.lableId
 })
 const queryFormRef = ref() // 搜索的表单
 const refreshTable = ref(true) // 重新渲染表格状态
