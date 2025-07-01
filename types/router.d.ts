@@ -80,5 +80,6 @@ declare global {
     visible?: boolean
     parentId?: number
     alwaysShow?: boolean
+    manageId?: string
   }
 }

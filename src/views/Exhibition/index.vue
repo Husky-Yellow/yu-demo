@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import * as LabelApi from '@/api/system/label'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
@@ -27,9 +28,6 @@ import TableActions from './components/TableActions.vue'
 defineOptions({ name: 'ExhibitionList' })
 
 const route = useRoute()
-const routeMeta = route.meta
-console.log(routeMeta)
-
 const stats = [
   { label: '户籍人口', value: 651 },
   { label: '刑满释放人员', value: 651 },
@@ -98,6 +96,14 @@ function onAction(action: string, row: any) {
   // 这里处理表格操作
   console.log('操作', action, row)
 }
+
+onMounted(async () => {
+  const res = await LabelApi.getFieldConfigList({
+    manageId: route.meta.manageId as string || '1932725509586165761'
+  })
+  console.log(res)
+})
+
 </script>
 
 <style scoped lang="scss"></style>

@@ -18,7 +18,7 @@ export const getLabelManagePage = async (params: PageParam) => {
  * @returns {Promise<any>} 标签管理树形数据
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076048
  */
-export const getLabelManageTree = async (params: { labelId: string }) => {
+export const getLabelManageTree = async (params?: { labelId?: string }) => {
   return await request.get({ url: '/data/label-manage/tree', params })
 }
 
@@ -69,7 +69,7 @@ export const getFieldConfigListByManageId = async (params: { manageId: string })
  * @param params.id - 排序配置ID
  * @returns {Promise<any>} 删除结果
  */
-export const deleteSortConfList = async (params: { id: string }) => {
+export const deleteSortConfList = async (params: { id: string, manageId: string }) => {
   return await request.delete({ url: '/data/sort-conf/delete', params })
 }
 
@@ -79,7 +79,7 @@ export const deleteSortConfList = async (params: { id: string }) => {
  * @param params.ids - 过滤配置ID列表
  * @returns {Promise<any>} 删除结果
  */
-export const deleteFilterConfList = async (params: { id: string }) => {
+export const deleteFilterConfList = async (params: { id: string, manageId: string }) => {
   return await request.delete({ url: '/data/conf/delete', params })
 }
 
@@ -309,7 +309,7 @@ export const updateQueryConfList = async (data: QueryResItem[]) => {
  * @returns {Promise<any>} 删除结果
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076059
  */
-export const deleteQueryConfList = async (params: { ids: string[] }) => {
+export const deleteQueryConfList = async (params: { ids: string[], manageId: string }) => {
   return await request.delete({ url: '/data/query-conf/delete-list', params })
 }
 
@@ -321,6 +321,6 @@ export const deleteQueryConfList = async (params: { ids: string[] }) => {
  * @returns {Promise<any>} 删除结果
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076058
  */
-export const deleteCountConfigList = async (params: { id: string }) => {
+export const deleteCountConfigList = async (params: { id: string, manageId: string }) => {
   return await request.delete({ url: '/data/count-conf/delete', params })
 }

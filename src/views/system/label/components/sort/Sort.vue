@@ -129,7 +129,7 @@ function removeLastSortItem() {
   const removeLast = () => items.pop();
 
   if (idx !== -1 && items[idx]?.id) {
-    LabelApi.deleteSortConfList({ id: items[idx].id as string })
+    LabelApi.deleteSortConfList({ id: items[idx].id as string, manageId: query.manageId as string })
       .then(() => {
         ElMessage.success('删除成功');
         removeAt(idx);

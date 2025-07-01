@@ -221,7 +221,7 @@ function removeSelected() {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(() => {
-    LabelApi.deleteQueryConfList({ ids: selectedRowKeys.value }).then(() => {
+    LabelApi.deleteQueryConfList({ ids: selectedRowKeys.value, manageId: query.manageId as string }).then(() => {
     tableData.value = tableData.value.filter((row) => !selectedRowKeys.value.includes(row.uuid!))
     selectedRowKeys.value = []
     ElMessage.success('删除成功')

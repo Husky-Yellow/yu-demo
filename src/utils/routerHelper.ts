@@ -71,6 +71,7 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
       icon: route.icon,
       hidden: !route.visible,
       noCache: !route.keepAlive,
+      manageId: route.manageId,
       alwaysShow:
         route.children &&
         route.children.length > 0 &&

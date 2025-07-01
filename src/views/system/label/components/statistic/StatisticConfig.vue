@@ -26,8 +26,8 @@
       <el-form :model="statistics" ref="statFormRef">
         <VueDraggable :list="statistics" :item-key="'uuid'" class="statistic-list">
           <template #item="{ element: item, index: idx }">
-            <div 
-              class="stat-item" 
+            <div
+              class="stat-item"
               :class="{ 'stat-item-selected': selectedIndex === idx }"
               @click="handleStatisticClick(idx)"
             >
@@ -221,7 +221,7 @@ const removeSelectedStatistic = async () => {
   const item = statistics.value[idx]
   if (item?.id) {
     try {
-      await LabelApi.deleteCountConfigList({ id: item.id })
+      await LabelApi.deleteCountConfigList({ id: item.id, manageId: query.manageId as string })
       ElMessage.success('删除成功')
       statistics.value.splice(idx, 1)
       selectedIndex.value = -1
@@ -369,7 +369,7 @@ const fetchData = async () => {
         countConfigList.map(async (item) => {
           const field = fieldConfigRes.find((f) => String(f.id) === String(item.fieldId))
           const selectedOptions = field ? await getEnumOptions(field as ExtendedStatisticField) : []
-          
+
           return {
             ...item,
             fields: field

@@ -18,8 +18,7 @@
 <script lang="ts" setup>
 import { ElTree } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
-import { defaultProps } from '@/utils/tree'
-import { handleTree2 } from '@/utils/tree'
+import { defaultProps, handleTree2 } from '@/utils/tree'
 defineOptions({ name: 'LabelFidldConfig' })
 
 const { query } = useRoute() // 查询参数

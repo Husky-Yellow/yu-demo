@@ -240,7 +240,7 @@ function addRule() {
 function removeLastRule() {
   if (filterRules.value.length > 1) {
     if (filterRules.value[clickIndex.value]?.uuid) {
-      LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].uuid }).then(() => {
+      LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].uuid, manageId: query.manageId as string }).then(() => {
         ElMessage.success('删除成功')
         if (clickIndex.value !== -1) {
           filterRules.value.splice(clickIndex.value, 1)

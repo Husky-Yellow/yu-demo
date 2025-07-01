@@ -131,7 +131,7 @@ import * as MenuApi from '@/api/system/menu'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 import * as LabelApi from '@/api/system/label'
 import { CommonStatusEnum, SystemMenuTypeEnum } from '@/utils/constants'
-import { defaultProps, handleTree } from '@/utils/tree'
+import { defaultProps, handleTree, handleTree2 } from '@/utils/tree'
 
 defineOptions({ name: 'SystemHierarchyForm' })
 
@@ -273,11 +273,8 @@ const resetForm = () => {
 const labelList = ref<any[]>([])
 const getLabelList = async () => {
   try {
-    const data = await LabelApi.getLabelConfigList({
-      pageNo: 1,
-      pageSize: 10
-    })
-    labelList.value = data
+    const data = await LabelApi.getLabelManageTree()
+    labelList.value = handleTree2(data)
   } finally {
   }
 }
