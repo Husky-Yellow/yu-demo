@@ -183,7 +183,7 @@ const showDialog = ref<boolean>(false)
 const showSubFieldDialog = ref<boolean>(false)
 const showPreviewDialog = ref<boolean>(false)
 const currentRow = ref<QueryTableRow | null>(null) // 当前行
-const selectedRowKeys = ref<string[]>([])
+const selectedRowKeys = ref<QueryTableRow[]>([])
 const tableRef = ref<InstanceType<typeof ElTable>>()
 const sortable = ref(null)
 
@@ -221,18 +221,31 @@ function removeSelected() {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(() => {
-    LabelApi.deleteQueryConfList({ ids: selectedRowKeys.value, manageId: query.manageId as string }).then(() => {
-    tableData.value = tableData.value.filter((row) => !selectedRowKeys.value.includes(row.uuid!))
-    selectedRowKeys.value = []
-    ElMessage.success('删除成功')
-  }).catch(() => {
-    ElMessage.error('删除失败')
-  })
+    const ids = selectedRowKeys.value.map(r => r.id).filter(Boolean) as string[]
+    const uuids = selectedRowKeys.value.map(r => r.uuid).filter(Boolean) as string[]
+
+    const filterTable = () => {
+      tableData.value = tableData.value.filter(
+        row => !uuids.includes(row.uuid!) && !ids.includes(row.id!)
+      )
+      selectedRowKeys.value = []
+      ElMessage.success('删除成功')
+    }
+
+    if (ids.length > 0) {
+      const idsStr = ids.map(value => `ids=${encodeURIComponent(value)}`).join('&')
+      LabelApi.deleteQueryConfList(`manageId=${query.manageId as string}&${idsStr}`)
+        .then(filterTable)
+        .catch(() => ElMessage.error('删除失败'))
+    } else {
+      filterTable()
+    }
   })
 }
 
 function onSelectionChange(rows: QueryTableRow[]) {
-  selectedRowKeys.value = rows.map((r) => r.uuid!)
+  console.log('onSelectionChange', rows)
+  selectedRowKeys.value = rows
 }
 
 function openSubFieldDialog(row: QueryTableRow) {
@@ -341,6 +354,7 @@ const submitForm = async () => {
   })
   LabelApi.updateQueryConfList(submitData).then(() => {
     ElMessage.success('更新成功')
+    fetchData()
   }).catch(() => {
     ElMessage.error('更新失败')
   })

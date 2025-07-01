@@ -219,6 +219,7 @@ const removeSelectedStatistic = async () => {
   }
 
   const item = statistics.value[idx]
+  console.log('removeSelectedStatistic', item)
   if (item?.id) {
     try {
       await LabelApi.deleteCountConfigList({ id: item.id, manageId: query.manageId as string })

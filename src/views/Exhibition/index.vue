@@ -20,14 +20,20 @@
 
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
+import * as BusinessDataApi from '@/api/system/business-data'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
 import TableActions from './components/TableActions.vue'
+import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
 
 defineOptions({ name: 'ExhibitionList' })
 
 const route = useRoute()
+
+const columns = ref<Partial<LabelFieldConfig>[]>([])
+const queryConfig = ref<QueryResItem[]>([])
+
 const stats = [
   { label: '户籍人口', value: 651 },
   { label: '刑满释放人员', value: 651 },
@@ -44,17 +50,7 @@ const searchFields = [
   ], placeholder: '请选择性别' },
 ]
 
-const columns = [
-  { label: '序号', prop: 'id', width: 60 },
-  { label: '姓名', prop: 'name' },
-  { label: '公民身份证号码', prop: 'idCard' },
-  { label: '性别', prop: 'gender' },
-  { label: '民族', prop: 'nation' },
-  { label: '所属网格', prop: 'grid' },
-  { label: '标准地址', prop: 'address' },
-  { label: '户籍所在地', prop: 'location' },
-  { label: '信息变更时间', prop: 'updateTime' },
-]
+
 
 const actionList = [
   { label: '查看详情', action: 'view', type: 'primary' },
@@ -98,10 +94,22 @@ function onAction(action: string, row: any) {
 }
 
 onMounted(async () => {
+  const manageId = route.meta.manageId as string || '1935524876651073537'
   const res = await LabelApi.getFieldConfigList({
-    manageId: route.meta.manageId as string || '1932725509586165761'
+    manageId
   })
-  console.log(res)
+  columns.value = res.filter((item: LabelFieldConfig) => item.pcViewFlag === 1)
+  const queryConfList = await LabelApi.getQueryConfList({
+    manageId
+  })
+  console.log(queryConfList)
+  queryConfig.value = queryConfList
+  const data = await BusinessDataApi.getBusinessDataPage({
+    manageId,
+    pageNo: 1,
+    pageSize: 10
+  })
+  console.log(data)
 })
 
 </script>

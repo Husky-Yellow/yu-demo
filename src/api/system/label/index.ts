@@ -157,11 +157,11 @@ export const updateFieldConfigList = async (data: LabelFieldConfig[]) => {
 
 /**
  * 获取标签配置列表
- * @param {PageParam} params - 分页查询参数
- * @returns {Promise<PageResult<any>>} 标签配置列表
+ * @param {manageId} params - 分页查询参数
+ * @returns {Promise<LabelFieldConfig[]>} 标签配置列表
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076064
  */
-export const getFieldConfigList = async (params: { manageId: string }) => {
+export const getFieldConfigList = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
   return await request.get({ url: '/data/field-conf/list', params })
 }
 
@@ -309,8 +309,8 @@ export const updateQueryConfList = async (data: QueryResItem[]) => {
  * @returns {Promise<any>} 删除结果
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076059
  */
-export const deleteQueryConfList = async (params: { ids: string[], manageId: string }) => {
-  return await request.delete({ url: '/data/query-conf/delete-list', params })
+export const deleteQueryConfList = async (params: string) => {
+  return await request.delete({ url: `/data/query-conf/delete-list?${params}` })
 }
 
 

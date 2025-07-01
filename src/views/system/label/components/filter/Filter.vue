@@ -238,25 +238,26 @@ function addRule() {
 
 // 移除最后一个规则
 function removeLastRule() {
-  if (filterRules.value.length > 1) {
-    if (filterRules.value[clickIndex.value]?.uuid) {
-      LabelApi.deleteFilterConfList({ id: filterRules.value[clickIndex.value].uuid, manageId: query.manageId as string }).then(() => {
+  const removeRule = () => {
+    if (clickIndex.value !== -1) {
+      filterRules.value.splice(clickIndex.value, 1)
+    } else {
+      filterRules.value.pop()
+    }
+  }
+
+  const rule = filterRules.value[clickIndex.value]
+  if (rule?.id) {
+    LabelApi.deleteFilterConfList({ id: rule.id, manageId: query.manageId as string })
+      .then(() => {
         ElMessage.success('删除成功')
-        if (clickIndex.value !== -1) {
-          filterRules.value.splice(clickIndex.value, 1)
-        } else {
-          filterRules.value.pop()
-        }
-      }).catch(() => {
+        removeRule()
+      })
+      .catch(() => {
         ElMessage.error('删除失败')
       })
-    } else {
-      if (clickIndex.value !== -1) {
-        filterRules.value.splice(clickIndex.value, 1)
-      } else {
-        filterRules.value.pop()
-      }
-    }
+  } else {
+    removeRule()
   }
 }
 

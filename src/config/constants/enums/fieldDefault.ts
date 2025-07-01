@@ -272,6 +272,7 @@ export interface StatisticItem {
 }
 
 export interface FilterRuleConfig {
+  id?: string
   uuid: string
   fieldId: string | null
   filterType: BooleanEnum.TRUE | BooleanEnum.FALSE

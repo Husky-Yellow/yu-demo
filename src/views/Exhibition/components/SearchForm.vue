@@ -1,37 +1,64 @@
 <template>
-  <el-form :inline="true" @submit.prevent>
-    <template v-for="field in fields" :key="field.prop">
-      <el-form-item :label="field.label">
-        <el-input
-          v-if="field.type === 'input'"
-          v-model="form[field.prop]"
-          :placeholder="field.placeholder || ''"
-          clearable
-        />
-        <el-select
-          v-else-if="field.type === 'select'"
-          v-model="form[field.prop]"
-          :placeholder="field.placeholder || ''"
-          clearable
-        >
-          <el-option
-            v-for="opt in field.options || []"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
-          />
-        </el-select>
-      </el-form-item>
-    </template>
-    <el-form-item>
-      <el-button type="primary" @click="handleSearch">查询</el-button>
-      <el-button @click="handleReset">重置</el-button>
-    </el-form-item>
-  </el-form>
+    <el-form :model="formModel" label-width="0px" class="query-form">
+      <el-row :gutter="16">
+        <!-- Always visible fields -->
+        <el-col v-for="field in fields" :key="field.key" :span="8">
+          <el-form-item>
+            <component
+              :is="getComponent(field.queryType)"
+              v-model="formModel[field.key]"
+              :placeholder="getPlaceholder(field)"
+              v-bind="getComponentProps(field)"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </el-col>
+
+        <!-- Expandable fields -->
+        <!-- <template v-if="isExpanded">
+          <el-col v-for="field in hiddenFields" :key="field.key" :span="8">
+            <el-form-item>
+              <component
+                :is="getComponent(field.queryType)"
+                v-model="formModel[field.key]"
+                :placeholder="getPlaceholder(field)"
+                v-bind="getComponentProps(field)"
+                style="width: 100%"
+              />
+            </el-form-item>
+          </el-col>
+        </template> -->
+
+        <!-- Action Buttons -->
+        <!-- <el-col :span="8" class="action-buttons">
+          <el-button type="primary">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
+          <el-button v-if="queryFields.length > 2"  @click="toggleExpand">
+            {{ isExpanded ? '收起' : '更多搜索' }}
+            <el-icon>
+              <ArrowUp v-if="isExpanded" />
+              <ArrowDown v-else />
+            </el-icon>
+          </el-button>
+        </el-col> -->
+      </el-row>
+    </el-form>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, reactive } from 'vue'
+import { FieldType } from '@/config/constants/enums/field'
+import {
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElSelect,
+  ElDatePicker,
+  ElButton,
+  ElRow,
+  ElCol,
+  ElIcon
+} from 'element-plus'
+import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 
 interface FieldOption {
   label: string
@@ -62,4 +89,31 @@ function handleReset() {
   })
   emit('search', { ...form })
 }
-</script> 
+
+function getComponent(queryType: FieldType) {
+  console.log('getComponent queryType', queryType)
+  switch (queryType) {
+    case FieldType.TEXT:
+    case FieldType.NUMBER:
+      return markRaw(ElInput)
+    case FieldType.RADIO:
+    case FieldType.CHECKBOX:
+    case FieldType.REGION:
+    case FieldType.TAG:
+      return markRaw(ElSelect)
+    case FieldType.DATE:
+    case FieldType.DATE_RANGE:
+      return markRaw(ElDatePicker)
+    default:
+      return markRaw(ElInput)
+  }
+}
+
+function getPlaceholder(field: any) {
+  if (field.queryType === 'search' && field.subFields?.length) {
+    const subLabels = field.subFields.map((f: any) => f.name).join('/')
+    return `请输入${field.name}/${subLabels}`
+  }
+  return field.placeholder || `请输入${field.name}`
+}
+</script>

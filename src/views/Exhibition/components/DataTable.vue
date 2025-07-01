@@ -2,10 +2,9 @@
   <el-table :data="data" :row-key="rowKey" border style="width: 100%">
     <el-table-column
       v-for="col in columns"
-      :key="col.prop"
-      :prop="col.prop"
-      :label="col.label"
-      :width="col.width"
+      :key="col.code"
+      :prop="col.code"
+      :label="col.name"
     />
     <el-table-column
       v-if="actions && actions.length"
@@ -22,17 +21,12 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-
-interface ColumnConfig {
-  label: string
-  prop: string
-  width?: string | number
-}
+import { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 const props = defineProps<{
-  columns: ColumnConfig[]
+  columns: LabelFieldConfig[]
   data: any[]
   rowKey: string
   actions?: string[]
 }>()
-</script> 
+</script>
