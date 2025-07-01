@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="data" :row-key="rowKey" border style="width: 100%">
+  <el-table :data="data" :loading="loading" :row-key="rowKey" border style="width: 100%">
     <el-table-column
       v-for="col in columns"
       :key="col.code"
@@ -28,5 +28,6 @@ const props = defineProps<{
   data: any[]
   rowKey: string
   actions?: string[]
+  loading?: boolean
 }>()
 </script>

@@ -1,8 +1,8 @@
 <template>
-    <el-form :model="form" label-width="0px" class="query-form">
+    <el-form :model="form" label-width="120px">
       <el-row :gutter="16">
         <el-col v-for="field in fields" :key="field.id || field.fieldCodes" :span="8">
-          <el-form-item :label="field.hint">
+          <el-form-item :label="field.fieldName" :prop="field.fieldCodes || field.id || field.hint">
             <component
               :is="getComponent(field.queryType)"
               v-model="form[field.fieldCodes || field.id || field.hint]"

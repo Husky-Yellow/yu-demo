@@ -1,12 +1,17 @@
 <template>
+  <ContentWrap>
     <!-- 统计卡片区 -->
     <StatisticCards :stats="stats" />
-
+  </ContentWrap>
+  <ContentWrap>
     <!-- 搜索表单区 -->
     <SearchForm :fields="queryConfig" @search="onSearch" />
 
+  </ContentWrap>
+
     <!-- 表格区 -->
     <DataTable
+      :loading="loading"
       :columns="columns"
       :data="tableData"
       row-key="id"
@@ -16,6 +21,14 @@
         <TableActions :actions="actionList" :row="row" @action="onAction" />
       </template>
     </DataTable>
+
+      <!-- 分页 -->
+      <Pagination
+      v-model:limit="queryParams.pageSize"
+      v-model:page="queryParams.pageNo"
+      :total="total"
+      @pagination="getList"
+    />
 </template>
 
 <script setup lang="ts">
@@ -34,6 +47,12 @@ const route = useRoute()
 const columns = ref<Partial<LabelFieldConfig>[]>([])
 const queryConfig = ref<QueryResItem[]>([])
   const formModel = reactive<{ [key: string]: any }>({})
+  const loading = ref(true) // 列表的加载中
+  const queryParams = reactive({
+  pageNo: 1,
+  pageSize: 10,
+})
+const total = ref(0) // 列表的总页数
 
 const stats = [
   { label: '户籍人口', value: 651 },
@@ -119,8 +138,9 @@ onMounted(async () => {
     }
     formModel[field.fieldCodes] = field.defaultValue
   })
+  console.log('queryConfList', queryConfList)
   queryConfig.value = queryConfList
-  queryConfig.value = queryConfList
+
   const data = await BusinessDataApi.getBusinessDataPage({
     manageId,
     pageNo: 1,
