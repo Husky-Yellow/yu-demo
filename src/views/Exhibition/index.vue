@@ -1,34 +1,31 @@
 <template>
   <ContentWrap>
-    <!-- 统计卡片区 -->
     <StatisticCards :stats="stats" />
   </ContentWrap>
   <ContentWrap>
-    <!-- 搜索表单区 -->
     <SearchForm :fields="queryConfig" @search="onSearch" />
-
   </ContentWrap>
 
-    <!-- 表格区 -->
-    <DataTable
-      :loading="loading"
-      :columns="columns"
-      :data="tableData"
-      row-key="id"
-      :actions="actionList"
-    >
-      <template #actions="{ row }">
-        <TableActions :actions="actionList" :row="row" @action="onAction" />
-      </template>
-    </DataTable>
+  <!-- 表格区 -->
+  <DataTable
+    :loading="loading"
+    :columns="columns"
+    :data="tableData"
+    row-key="id"
+    :actions="actionList"
+  >
+    <template #actions="{ row }">
+      <TableActions :actions="actionList" :row="row" @action="onAction" />
+    </template>
+  </DataTable>
 
-      <!-- 分页 -->
-      <Pagination
-      v-model:limit="queryParams.pageSize"
-      v-model:page="queryParams.pageNo"
-      :total="total"
-      @pagination="getList"
-    />
+  <!-- 分页 -->
+  <Pagination
+    v-model:limit="queryParams.pageSize"
+    v-model:page="queryParams.pageNo"
+    :total="total"
+    @pagination="getList"
+  />
 </template>
 
 <script setup lang="ts">
@@ -46,11 +43,11 @@ const route = useRoute()
 
 const columns = ref<Partial<LabelFieldConfig>[]>([])
 const queryConfig = ref<QueryResItem[]>([])
-  const formModel = reactive<{ [key: string]: any }>({})
-  const loading = ref(true) // 列表的加载中
-  const queryParams = reactive({
+const formModel = reactive<{ [key: string]: any }>({})
+const loading = ref(true) // 列表的加载中
+const queryParams = reactive({
   pageNo: 1,
-  pageSize: 10,
+  pageSize: 10
 })
 const total = ref(0) // 列表的总页数
 
@@ -58,24 +55,13 @@ const stats = [
   { label: '户籍人口', value: 651 },
   { label: '刑满释放人员', value: 651 },
   { label: '社区矫正人员', value: 1342 },
-  { label: '易肇精患人员', value: 651 },
+  { label: '易肇精患人员', value: 651 }
 ]
-
-const searchFields = [
-  { type: 'input', label: '姓名', prop: 'name', placeholder: '请输入姓名' },
-  { type: 'input', label: '身份证号', prop: 'idCard', placeholder: '请输入身份证号' },
-  { type: 'select', label: '性别', prop: 'gender', options: [
-    { label: '男', value: '男' },
-    { label: '女', value: '女' }
-  ], placeholder: '请选择性别' },
-]
-
-
 
 const actionList = [
   { label: '查看详情', action: 'view', type: 'primary' },
   { label: '编辑', action: 'edit', type: 'success' },
-  { label: '删除', action: 'delete', type: 'danger' },
+  { label: '删除', action: 'delete', type: 'danger' }
 ]
 
 const tableData = ref([
@@ -88,19 +74,8 @@ const tableData = ref([
     grid: 'xx镇/xx村/xxx网格',
     address: 'xx县/xx镇/xx村/xx小区/xx幢',
     location: 'xx省/xx市/xx区',
-    updateTime: '2023/1/1 11:00:00',
-  },
-  {
-    id: 2,
-    name: '李四',
-    idCard: '3303************22',
-    gender: '女',
-    nation: '汉',
-    grid: 'xx镇/xx村/xxx网格',
-    address: 'xx县/xx镇/xx村/xx小区/xx幢',
-    location: 'xx省/xx市/xx区',
-    updateTime: '2023/1/1 11:00:00',
-  },
+    updateTime: '2023/1/1 11:00:00'
+  }
 ])
 
 function onSearch(params: any) {
@@ -113,45 +88,74 @@ function onAction(action: string, row: any) {
   console.log('操作', action, row)
 }
 
-onMounted(async () => {
-  const manageId = route.meta.manageId as string || '1935524876651073537'
-  const res = await LabelApi.getFieldConfigList({
-    manageId
-  })
+const getList = async () => {
+  loading.value = true
+  try {
+    const manageId = (route.meta.manageId as string) || '1935524876651073537'
+    const data = await BusinessDataApi.getBusinessDataPage({
+      manageId,
+      ...queryParams
+    })
+    console.log(data)
+  } finally {
+    loading.value = false
+  }
+}
+
+async function fetchFieldConfig(manageId: string) {
+  try {
+    return await LabelApi.getFieldConfigList({ manageId })
+  } catch (e) {
+    console.error('字段配置获取失败', e)
+    return []
+  }
+}
+
+async function fetchQueryConf(manageId: string) {
+  try {
+    return await LabelApi.getQueryConfList({ manageId })
+  } catch (e) {
+    console.error('查询配置获取失败', e)
+    return []
+  }
+}
+
+async function fetchCountConfig(manageId: string) {
+  try {
+    return await LabelApi.getCountConfigList({ manageId })
+  } catch (e) {
+    console.error('统计配置获取失败', e)
+    return []
+  }
+}
+
+const init = async () => {
+  const manageId = (route.meta.manageId as string) || '1935524876651073537'
+
+  const res = await fetchFieldConfig(manageId)
   columns.value = res.filter((item: LabelFieldConfig) => item.pcViewFlag === 1)
-  const queryConfList = await LabelApi.getQueryConfList({
-    manageId
-  })
-  console.log('queryConfList', queryConfList)
-  // 补充字段信息
+
+  const queryConfList = await fetchQueryConf(manageId)
   queryConfList.forEach((field) => {
-    // fieldIds 可能是 'id1,id2'
     const ids = (field.fieldIds || '').split(',').filter(Boolean)
-    // 查找所有对应字段
-    const matchedFields = res.filter(r => ids.includes(r.id))
-    // 补充 name、id 等信息（如只取第一个）
+    const matchedFields = res.filter((r) => ids.includes(r.id))
     if (matchedFields.length) {
-      field.fieldNames = matchedFields.map(f => f.name).join(',') // 可选：多个字段名拼接
-      field.fieldName = matchedFields[0].name // 可选：第一个字段名
-      field.fieldId = matchedFields[0].id     // 可选：第一个字段id
-      // 你还可以补充其它字段
+      field.fieldNames = matchedFields.map((f) => f.name).join(',')
+      field.fieldName = matchedFields[0].name
+      field.fieldId = matchedFields[0].id
     }
     formModel[field.fieldCodes] = field.defaultValue
   })
-  console.log('queryConfList', queryConfList)
   queryConfig.value = queryConfList
 
-  const data = await BusinessDataApi.getBusinessDataPage({
-    manageId,
-    pageNo: 1,
-    pageSize: 10
-  })
-  console.log(data)
+  await getList()
 
-  const countConfigList = await LabelApi.getCountConfigList({ manageId: manageId })
-  console.log('countConfigList', countConfigList)
+  await fetchCountConfig(manageId)
+}
+
+onMounted(async () => {
+  await init()
 })
-
 </script>
 
 <style scoped lang="scss"></style>
