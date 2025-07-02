@@ -1,35 +1,32 @@
 <template>
   <div class="flex gap-3 h-full">
-    <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
-      <div class="font-bold mb-16px">选择统计字段</div>
+    <div class="bg-white rounded-2 shadow p-6 w-60">
+      <div class="font-bold mb-4 text-lg">选择统计字段</div>
       <VueDraggable
         :list="statisticConfigFields"
         :group="{ name: 'fields', pull: 'clone', put: false }"
         :item-key="'uuid'"
         :clone="cloneField"
         :sort="false"
-        class="min-h-[100px]"
+        class="min-h-25"
       >
         <template #item="{ element }">
           <FieldPoolItem :hasKeyString="'uuid'" :element="element" :isFieldUsed="isFieldUsed" />
         </template>
       </VueDraggable>
     </div>
-    <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 flex-1">
-      <div class="panel-header">
-        <div class="font-bold">统计设置</div>
-        <div class="panel-actions">
+    <div class="bg-white rounded-2 shadow p-6 flex-1">
+      <div class="flex justify-between items-center mb-4">
+        <div class="font-bold text-lg">统计设置</div>
+        <div class="flex gap-2">
           <el-button type="primary" @click="addStatistic">添加</el-button>
-          <el-button type="danger" :disabled="statistics.length <= 1" @click="removeSelectedStatistic">删除</el-button>
         </div>
       </div>
-      <el-form :model="statistics" ref="statFormRef">
+      <el-form :model="statistics" ref="statFormRef" label-width="0">
         <VueDraggable :list="statistics" :item-key="'uuid'" class="statistic-list">
           <template #item="{ element: item, index: idx }">
             <div
-              class="stat-item"
-              :class="{ 'stat-item-selected': selectedIndex === idx }"
-              @click="handleStatisticClick(idx)"
+              class="stat-item relative"
             >
               <Icon icon="ep:rank" class="text-red-500 mr-2 cursor-pointer" />
               <div class="stat-item-header">
@@ -55,7 +52,7 @@
               >
                 <template #item="{ element: field, index: fieldIndex }">
                   <div class="stat-field-item">
-                    <span class="!w-[80px] text-right mr-6px">{{ field.name }}</span>
+                    <span class="!w-[100px] text-right mr-6px">{{ field.name }}</span>
                     <el-form-item
                       :prop="`${idx}.fields.${fieldIndex}.filterType`"
                       :rules="{ required: true, message: '请选择条件' }"
@@ -79,7 +76,7 @@
                           v-model="field.data"
                           :multiple="field.fieldType === FieldType.CHECKBOX"
                           placeholder="请选择"
-                          class="!w-220px mt-18px mr-6px"
+                          class="!w-240px mt-18px mr-6px"
                         >
                           <el-option
                             v-for="opt in field.selectedOptions"
@@ -102,13 +99,13 @@
                           check-strictly
                           :render-after-expand="false"
                           check-on-click-node
-                          class="!w-220px mt-18px mr-6px"
+                          class="!w-240px mt-18px mr-6px"
                           :props="treeSelectProps"
                         />
                       </el-form-item>
                     </template>
 
-                    <el-button @click="removeField(idx, fieldIndex)">删除</el-button>
+                    <el-button class="mr-6px" @click="removeField(idx, fieldIndex)">删除</el-button>
                   </div>
                 </template>
                 <template #footer>
@@ -117,6 +114,7 @@
                   </div>
                 </template>
               </VueDraggable>
+                <el-button  @click.stop="removeSelectedStatistic(idx)" size="small" class="absolute top-0 right-0 z-10" type="danger" :icon="Delete" circle />
             </div>
           </template>
         </VueDraggable>
@@ -127,6 +125,9 @@
 
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
+import {
+  Delete,
+} from '@element-plus/icons-vue'
 import { ElInput, ElButton, ElSelect, ElOption, ElTreeSelect } from 'element-plus'
 import type { FormInstance, FormItemRule } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
@@ -209,34 +210,21 @@ const addStatistic = () => {
   statistics.value.push({ uuid: generateUUID(), name: '', fields: [] })
 }
 
-const removeSelectedStatistic = async () => {
-  if (statistics.value.length <= 1) return
+const removeSelectedStatistic = async (index: number) => {
+  const item = statistics.value[index]
 
-  const idx = selectedIndex.value
-  if (idx === -1) {
-    statistics.value.pop()
-    return
-  }
-
-  const item = statistics.value[idx]
-  console.log('removeSelectedStatistic', item)
   if (item?.id) {
     try {
       await LabelApi.deleteCountConfigList({ id: item.id, manageId: query.manageId as string })
       ElMessage.success('删除成功')
-      statistics.value.splice(idx, 1)
-      selectedIndex.value = -1
+      statistics.value.splice(index, 1)
+
     } catch (error) {
       ElMessage.error('删除失败')
     }
   } else {
-    statistics.value.splice(idx, 1)
-    selectedIndex.value = -1
+    statistics.value.splice(index, 1)
   }
-}
-
-const handleStatisticClick = (idx: number) => {
-  selectedIndex.value = idx
 }
 
 const removeField = (statIdx: number, fieldIdx: number) => {
@@ -423,12 +411,13 @@ defineExpose({ submitForm })
 .stat-item {
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 2px 14px;
   background: #fafbfc;
   display: flex;
   align-items: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-bottom: 10px;
 }
 
 .stat-item:hover {
@@ -436,10 +425,6 @@ defineExpose({ submitForm })
   background: #f0f9ff;
 }
 
-.stat-item-selected {
-  border-color: #409eff;
-  background: #e6f7ff;
-}
 
 .stat-item-header {
   display: flex;

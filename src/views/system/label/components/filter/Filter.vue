@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-3 h-full">
     <!-- 左侧选择筛选字段区域 -->
-    <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
+    <div class="bg-white rounded-2 shadow p-6 w-60">
       <div class="font-bold mb-16px">选择筛选字段</div>
       <VueDraggable
         :list="filterFields"
@@ -19,19 +19,19 @@
     </div>
 
     <!-- 右侧设置筛选规则区域 -->
-    <div class="right-panel">
-      <div class="panel-header">
+    <div class="flex-1 bg-white rounded-2 shadow p-4">
+      <div class="flex justify-between items-center mb-4">
         <div class="font-bold">设置筛选规则</div>
-        <div class="panel-actions">
+        <div class="flex gap-2">
           <el-button type="primary" @click="addRule">添加</el-button>
-          <el-button type="danger" @click="removeLastRule">删除</el-button>
+          <!-- <el-button type="danger" @click="removeLastRule">删除</el-button> -->
         </div>
       </div>
       <el-form :model="filterRules" ref="filterFormRef" :inline="true">
-        <div v-for="(rule, index) in filterRules" :key="rule.uuid" class="rule-item" @click="setClickIndex(rule)">
+        <div v-for="(rule, index) in filterRules" :key="rule.uuid" class="rule-item relative" @click="setClickIndex(rule)">
           <div class="rule-content">
             <el-form-item :prop="`filterRules.${index}.field`" :rules="[{ validator: validateFieldsNotEmpty(rule), trigger: 'submit' }]">
-              <div class=" bg-gray-100 border border-dashed border-gray-300 rounded px-2px py-2px w-full mt-18px min-w-300px" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
+              <div class="bg-gray-100 border border-dashed border-gray-300 rounded px-2px py-2px w-full mt-18px min-w-400px" @dragover.prevent @drop="(e) => onFieldDrop(e, index)">
                 <div v-if="rule.fieldId" class="field-display">
                   <span>{{ getFieldLabel(rule.fieldId) }}</span>
                   <el-button
@@ -58,37 +58,39 @@
             </el-form-item>
             <el-form-item :prop="`filterRules.${index}.data`" :rules="[{ validator: validateValueNotEmpty(rule), trigger: 'submit' }]">
               <!-- 单选、多选、组织、标签 -->
-          <el-select
+              <el-select
                  v-if="getFieldType(rule.fieldId) === FieldType.RADIO || getFieldType(rule.fieldId) === FieldType.CHECKBOX"
                  v-model="rule.data"
                  :multiple="getFieldType(rule.fieldId) === FieldType.CHECKBOX"
                  placeholder="请选择"
-                 class="!w-240px mt-18px"
+                 class="!w-260px mt-18px"
                >
                  <el-option
                    v-for="opt in rule.selectedOptions"
                    :key="opt.dictType"
                    :label="opt.label"
                    :value="opt.value"
-                 /></el-select>
-                 <el-tree-select
-                 v-else
-                v-model="rule.data"
-                :data="deptList"
-                check-strictly
-                :render-after-expand="false"
-                check-on-click-node
-                class="!w-240px mt-18px"
-                :props="{
-                  ...defaultProps,
-                  children: 'childList',
-                  label: 'name'
-                }"
-              />
+                 />
+                </el-select>
+                <el-tree-select
+                  v-else
+                  v-model="rule.data"
+                  :data="deptList"
+                  check-strictly
+                  :render-after-expand="false"
+                  check-on-click-node
+                  class="!w-260px mt-18px"
+                  :props="{
+                    ...defaultProps,
+                    children: 'childList',
+                    label: 'name'
+                  }"
+                />
             </el-form-item>
           </div>
+          <el-button v-show="index !== 0" @click.stop="removeSelectedStatistic(index)" size="small" class="absolute top-0 right-0 z-10" type="danger" :icon="Delete" circle />
           <!-- 且/或按钮 -->
-          <div v-if="index < filterRules.length - 1" class="logic-button">
+          <div v-if="index < filterRules.length - 1" class="flex justify-center my-1">
             <el-button type="primary" plain @click="toggleLogic(index)">
               {{ rule.connectType === BooleanEnum.TRUE ? '且' : '或' }}
             </el-button>
@@ -236,30 +238,29 @@ function addRule() {
   })
 }
 
-// 移除最后一个规则
-function removeLastRule() {
-  const removeRule = () => {
-    if (clickIndex.value !== -1) {
-      filterRules.value.splice(clickIndex.value, 1)
-    } else {
-      filterRules.value.pop()
-    }
-  }
+function removeSelectedStatistic(index: number) {
+  const items = filterRules.value;
+  if (items.length <= 1) return;
 
-  const rule = filterRules.value[clickIndex.value]
-  if (rule?.id) {
-    LabelApi.deleteFilterConfList({ id: rule.id, manageId: query.manageId as string })
+  const removeAt = (index: number) => items.splice(index, 1);
+  const removeLast = () => items.pop();
+
+  if (index !== -1 && items[index]?.uuid) {
+    LabelApi.deleteFilterConfList({ id: items[index].uuid as string })
       .then(() => {
-        ElMessage.success('删除成功')
-        removeRule()
+        ElMessage.success('删除成功');
+        removeAt(index);
       })
       .catch(() => {
-        ElMessage.error('删除失败')
-      })
+        ElMessage.error('删除失败');
+      });
+  } else if (index !== -1) {
+    removeAt(index);
   } else {
-    removeRule()
+    removeLast();
   }
 }
+
 
 // 切换逻辑操作符
 function toggleLogic(index: number) {
