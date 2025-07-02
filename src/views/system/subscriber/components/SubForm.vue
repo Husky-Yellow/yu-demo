@@ -33,7 +33,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="登录密码" prop="password">
+          <el-form-item label="登录密码" prop="password">
             <el-input
               v-model="formData.password"
               placeholder="请输入登录密码"
@@ -45,12 +45,12 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="手机号码" prop="username">
-            <el-input v-model="formData.username" maxlength="11" placeholder="请输入手机号码" />
+          <el-form-item label="手机号码" prop="mobile">
+            <el-input v-model="formData.mobile" maxlength="11" placeholder="请输入手机号码" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="敏感密码" prop="sensitivePwd">
+          <el-form-item label="敏感密码" prop="sensitivePwd">
             <el-input
               v-model="formData.sensitivePwd"
               placeholder="请输入敏感密码"
@@ -68,32 +68,39 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="备注" prop="remark">
-            <el-input v-model="formData.remark" maxlength="50" placeholder="请输入备注" type="textarea" :rows="1"/>
+            <el-input
+              v-model="formData.remark"
+              maxlength="50"
+              placeholder="请输入备注"
+              type="textarea"
+              :rows="1"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="所属岗位">
-            <el-button
-                type="primary"
-                text
-                @click="openForm"
-              >
-              所属岗位
-            </el-button>
-            <br />
-            <div class="flex gap-2">
-              <el-tag v-for="id in formData.postIds" :key="id" @close="handleClose(id)" closable>
-                {{ findLinkPath(deptList, id) }}
-              </el-tag>
+            <div class="display-block">
+              <el-button type="primary" text @click="openForm"> 所属岗位 </el-button>
+              <el-row>
+                <el-col v-for="id in formData.postIds" :key="id" :span="24">
+                  <el-tag @close="handleClose(id)" closable>
+                    {{ seePath(id) }}
+                  </el-tag>
+                </el-col>
+              </el-row>
             </div>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <!-- todo 这个功能迟早得调整 -->
-    <SubPositionForm  ref="subPositionFormRef" @success="setPosition" />
+    <SubPositionForm
+      ref="subPositionFormRef"
+      @success="setPosition"
+      :post-ids="formData.postIds || []"
+    />
     <template #footer>
       <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -119,21 +126,23 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref<Partial<UserApi.UserResp>>({
   id: undefined,
-  nickname: '',
-  username: '',
-  deptId: '',
+  nickname: undefined,
+  deptId: undefined,
+  username: undefined,
+  password: undefined,
+  mobile: undefined,
+  sensitivePwd: undefined,
+  email: undefined,
+  remark: undefined,
   postIds: [],
-  mobile: '',
-  email: '',
-  password: '',
-  sensitivePwd: '',
-  remark: '',
-  status: CommonStatusEnum.ENABLE,
+  status: CommonStatusEnum.ENABLE
 })
 const formRules = reactive<FormRules>({
-  username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
-  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
+  nickname: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
+  deptId: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
+  username: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
   password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
+  sensitivePwd: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
   email: [
     {
       type: 'email',
@@ -143,6 +152,7 @@ const formRules = reactive<FormRules>({
   ],
   mobile: [
     {
+      required: true,
       pattern: /^(?:(?:\+|00)86)?1(?:3[\d]|4[5-79]|5[0-35-9]|6[5-7]|7[0-8]|8[\d]|9[189])\d{8}$/,
       message: '请输入正确的手机号码',
       trigger: 'blur'
@@ -151,11 +161,11 @@ const formRules = reactive<FormRules>({
 })
 const formRef = ref() // 表单 Ref
 const deptList = ref<Tree[]>([]) // 树形结构
+const deptTree = ref<DeptApi.DeptNode[]>([])
 const postList = ref([] as PostApi.PostVO[]) // 岗位列表
 
-
 const handleClose = (id: number) => {
-  formData.value.postIds = formData.value?.postIds?.filter(item => item !== id) || []
+  formData.value.postIds = formData.value?.postIds?.filter((item) => item !== id)
 }
 
 /** 打开弹窗 */
@@ -168,7 +178,8 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await UserApi.getUser(id)
+       const userInfo = await UserApi.getUser(id)
+       formData.value = userInfo
     } finally {
       formLoading.value = false
     }
@@ -177,6 +188,9 @@ const open = async (type: string, id?: number) => {
   deptList.value = handleTree(await DeptApi.getSimpleDeptList())
   // 加载岗位列表
   postList.value = await PostApi.getSimplePostList()
+
+  const deptTreeData = await DeptApi.getDeptTreeWithPost()
+  deptTree.value = deptTreeData
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
@@ -208,23 +222,22 @@ const submitForm = async () => {
 
 const setPosition = (val) => {
   formData.value.postIds = val
-
 }
 
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
     id: undefined,
-    nickname: '',
-    username: '',
-    deptId: '',
+    nickname: undefined,
+    deptId: undefined,
+    username: undefined,
+    password: undefined,
+    mobile: undefined,
+    sensitivePwd: undefined,
+    email: undefined,
+    remark: undefined,
     postIds: [],
-    mobile: '',
-    email: '',
-    password: '',
-    sensitivePwd: '',
-    remark: '',
-    status: CommonStatusEnum.ENABLE,
+    status: CommonStatusEnum.ENABLE
   }
   formRef.value?.resetFields()
 }
@@ -235,4 +248,8 @@ const openForm = () => {
   subPositionFormRef.value.open()
 }
 
+const seePath = (id: number) => {
+  const node = findLinkPath(deptTree.value, id)
+  return node?.map((item) => item.name).join(' > ')
+}
 </script>

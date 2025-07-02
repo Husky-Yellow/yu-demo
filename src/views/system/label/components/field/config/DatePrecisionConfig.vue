@@ -54,8 +54,10 @@ const convertFormForSubmission = () => {
     ...item,
     fieldType: props?.type,
     type: typeMap[item.name as keyof typeof typeMap],
-    optionsJson: Object.fromEntries(
+    optionsJson: JSON.stringify(
+      Object.fromEntries(
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, `${item.label} ${item.example}`])
+      )
       )
   }))
 }

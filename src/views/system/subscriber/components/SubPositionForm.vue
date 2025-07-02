@@ -66,7 +66,7 @@ defineOptions({ name: 'SystemSubscriberSubPositionForm' })
 
 const props = defineProps({
   postIds: {
-    type: Array as PropType<number[]>,
+    type: Array as PropType<string[]>,
     required: true
   }
 })
@@ -112,7 +112,7 @@ const open = async () => {
   // 修改时，设置数据
   // if (id) {
   formLoading.value = true
-
+  tableData.value = []
   if (props.postIds?.length > 0) {
     props.postIds.forEach(item => {
       const node = findNode(deptTree.value, i => `${i.id}` === `${item}`)
@@ -133,6 +133,10 @@ const open = async () => {
     formLoading.value = false
   }
 }
+const reset = () => {
+  tableData.value = []
+  dialogVisible.value = false
+}
 // 提交表单的方法
 const submitForm = async () => {
   formLoading.value = true
@@ -141,9 +145,7 @@ const submitForm = async () => {
 
     // 发送操作成功的事件
     emit('success', postIds)
-    console.log('postIds', postIds);
-
-    dialogVisible.value = false
+    reset()
   } finally {
     formLoading.value = false
   }

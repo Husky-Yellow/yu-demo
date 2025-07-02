@@ -1,7 +1,5 @@
 import { JSEncrypt } from 'jsencrypt'
 
-// 密钥对生成 http://web.chacuo.net/netrsakeypair
-
 const publicKey =
   'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKoR8mX0rGKLqzcWmOzbfj64K8ZIgOdH\n' +
   'nzkXSOVOZbFu/TJhZ7rFAN+eaGkl3C4buccQd/EjEsj9ir7ijT7h96MCAwEAAQ=='

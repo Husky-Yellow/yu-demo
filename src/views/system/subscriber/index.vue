@@ -6,7 +6,8 @@
         <TreeSelector
           :expand-all="false"
           :load-api="loadRoleData"
-           @node-click="handleOrgNodeClick" />
+          @node-click="handleOrgNodeClick"
+        />
       </ContentWrap>
     </el-col>
     <el-col :span="20" :xs="24" class="h-1/1">
@@ -39,17 +40,9 @@
             </el-select>
           </el-form-item>
           <el-form-item label="查看层级">
-            <el-select
-              v-model="searchForm.viewLevel"
-              placeholder="展示组织内成员"
-              class="!w-240px"
-            >
-            <el-option
-                v-for="option in getIntDictOptions(DICT_TYPE.SYSTEM_MEMBER_DISPLAY_SCOPE)"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-              />
+            <el-select v-model="searchForm.viewLevel" placeholder="展示组织内成员" class="!w-240px">
+              <el-option :value="CommonStatusEnum.ENABLE" label="展示组织内成员" />
+              <el-option :value="CommonStatusEnum.DISABLE" label="展示全部成员" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -85,7 +78,7 @@
     </el-col>
   </el-row>
   <!-- 添加或修改用户对话框 -->
-   <!-- todo: 弹窗内岗位的处理 -->
+  <!-- todo: 弹窗内岗位的处理 -->
   <SubForm ref="formRef" @success="getUsers" />
 </template>
 <script lang="ts" setup>
@@ -97,7 +90,6 @@ import { handleTree } from '@/utils/tree'
 import SubscriberTable from './components/SubscriberTable.vue'
 import SubForm from './components/SubForm.vue'
 import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS } from '@/config/constants'
-import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { CommonStatusEnum } from '@/utils/constants'
 
 const total = ref(0) // 列表的总页数
@@ -122,8 +114,8 @@ const getUsers = async () => {
   userTableData.value = []
   try {
     const res = await UserApi.getUserPage(searchForm)
-    userTableData.value = res.list;
-    total.value = res.total;
+    userTableData.value = res.list
+    total.value = res.total
   } catch (error) {
     ElMessage.error('获取用户列表失败')
   } finally {
@@ -181,7 +173,7 @@ const handleDelete = async (row: any) => {
     })
 
     // 调用删除 API
-    await UserApi.deleteUser(row.id);
+    await UserApi.deleteUser(row.id)
 
     // 刷新列表
     getUsers()
@@ -193,7 +185,7 @@ const handleDelete = async (row: any) => {
 
 const handleStatusChange = async (row: any) => {
   try {
-    await UserApi.updateUserStatus(row.id, row.status);
+    await UserApi.updateUserStatus(row.id, row.status)
     ElMessage.success('状态更新成功')
   } catch (error) {
     // 回滚状态
@@ -206,14 +198,11 @@ const handleSelectChange = (rows: any) => {
   selectedRows.value = rows
 }
 
-const handleExport = () => {
-}
+const handleExport = () => {}
 
 const handleImport = () => {
   UserApi.exportUser(searchForm)
 }
-
-
 
 const handleEnable = (type) => {
   const action = type ? '启用' : '停用'
@@ -223,15 +212,11 @@ const handleEnable = (type) => {
     ElMessage.warning(`请选择要${action}的用户`)
     return
   }
-  ElMessageBox.confirm(
-    `确定要${action}选中的用户吗？`,
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
+  ElMessageBox.confirm(`确定要${action}选中的用户吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
     .then(async () => {
       const ids = selectedRows.value.map((row: any) => row.id)
       await UserApi.updateUserBatchStatus({ ids, status })
@@ -243,17 +228,16 @@ const handleEnable = (type) => {
     })
 }
 
-
 const loadRoleData = async () => {
   try {
     const res = await DeptApi.getSimpleDeptList()
-    const treeData = handleTree(res);
-    return treeData || [];
+    const treeData = handleTree(res)
+    return treeData || []
   } catch (error) {
-    ElMessage.error('加载角色列表失败');
-    return [];
+    ElMessage.error('加载角色列表失败')
+    return []
   }
-};
+}
 
 const getDeptTree = async () => {
   const res = await DeptApi.getAllSimpleDeptList()
@@ -261,5 +245,4 @@ const getDeptTree = async () => {
     deptTree.value.set(item.id, item.name)
   })
 }
-
 </script>
