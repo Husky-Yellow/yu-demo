@@ -83,13 +83,6 @@ const tableRef = ref()
 const tableData = ref<DeptApi.DeptNode[]>([])
 
 const formLoading = ref(false)
-
-const formData = ref<{
-  postIds: string[]
-}>({
-  postIds: []
-})
-
 watch(filterTreeText, (val) => {
   treeRef.value!.filter(val)
 })
@@ -116,14 +109,13 @@ const filterTable = () => {
 // 打开弹窗的方法
 const open = async () => {
   dialogVisible.value = true
-  resetForm()
   // 修改时，设置数据
   // if (id) {
   formLoading.value = true
 
   if (props.postIds?.length > 0) {
     props.postIds.forEach(item => {
-      const node = findNode(deptTree.value, item => item.id == item)
+      const node = findNode(deptTree.value, i => `${i.id}` === `${item}`)
       if (node) {
         tableData.value.push(node)
       }
@@ -140,26 +132,18 @@ const open = async () => {
   } finally {
     formLoading.value = false
   }
-
-
 }
-
-// 重置表单的方法
-const resetForm = () => {
-  formData.value = {
-    postIds: []
-  }
-}
-
 // 提交表单的方法
-
 const submitForm = async () => {
-  // 提交请求
   formLoading.value = true
   try {
-    const postIds = formData.value.postIds.map(item => item.id)
+    const postIds = tableData.value.map(item => item.id)
+
     // 发送操作成功的事件
     emit('success', postIds)
+    console.log('postIds', postIds);
+
+    dialogVisible.value = false
   } finally {
     formLoading.value = false
   }

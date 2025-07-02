@@ -84,7 +84,7 @@
             </el-button>
             <br />
             <div class="flex gap-2">
-              <el-tag v-for="id in formData.postIds" :key="id" closable>
+              <el-tag v-for="id in formData.postIds" :key="id" @close="handleClose(id)" closable>
                 {{ findLinkPath(deptList, id) }}
               </el-tag>
             </div>
@@ -152,6 +152,11 @@ const formRules = reactive<FormRules>({
 const formRef = ref() // 表单 Ref
 const deptList = ref<Tree[]>([]) // 树形结构
 const postList = ref([] as PostApi.PostVO[]) // 岗位列表
+
+
+const handleClose = (id: number) => {
+  formData.value.postIds = formData.value?.postIds?.filter(item => item !== id) || []
+}
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {

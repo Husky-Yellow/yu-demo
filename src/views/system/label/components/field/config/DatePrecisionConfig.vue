@@ -43,6 +43,7 @@ const rules: FormRules = {
 const convertFormForSubmission = () => {
   const arr = convertObjectToArray(JSON.parse(JSON.stringify(form)))
   const optionsJsonMap = {
+    code2: LableDatePrecisionOptions,
     datePrecision: LableDatePrecisionOptions,
   }
   const typeMap = {
