@@ -21,8 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { FileSizeOptions, FileFormatOptions } from '@/config/constants/enums/field'
+import { FileSizeOptions, FileFormatOptions, FieldType } from '@/config/constants/enums/field'
 import type { FormInstance, FormRules } from 'element-plus'
+import { convertObjectToArray } from '@/utils'
 import { defaultUploadFieldForm, UploadFieldForm } from '@/config/constants/enums/fieldDefault'
 defineOptions({ name: 'UploadFieldConfig' })
 const props = defineProps<{
@@ -85,10 +86,25 @@ const validate = async () => {
 
 // 转换表单数据用于提交
 const convertFormForSubmission = () => {
-  return {
-    ...form,
-    allowedTypes: (form.allowedTypes as unknown as string[]).join(',')
+  const arr = convertObjectToArray(JSON.parse(JSON.stringify(form)))
+  const typeMap = {
+    sizeLimit: 2,
+    countLimit: 2,
+    allowedTypes: 2,
   }
+  const optionsJsonMap = {
+    sizeLimit: FileSizeOptions,
+    countLimit: Array(9).fill(0).map((_, index) => index + 1),
+    allowedTypes: FileFormatOptions,
+  }
+  return arr.map((item) => ({
+    ...item,
+    type: typeMap[item.name as keyof typeof typeMap],
+    fieldType: FieldType.ATTACHMENT,
+    optionsJson: Object.fromEntries(
+        (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])
+      )
+  }))
 }
 
 // 暴露给父组件的方法

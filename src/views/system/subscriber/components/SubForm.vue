@@ -84,15 +84,16 @@
             </el-button>
             <br />
             <div class="flex gap-2">
-              <el-tag v-for="tag in formData.postIds" :key="tag.label" closable :type="tag.id">
-                {{ tag.label }}
+              <el-tag v-for="id in formData.postIds" :key="id" closable>
+                {{ findLinkPath(deptList, id) }}
               </el-tag>
             </div>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <SubPositionForm  ref="subPositionFormRef" @success="setPosition" :job-list="[]" />
+    <!-- todo 这个功能迟早得调整 -->
+    <SubPositionForm  ref="subPositionFormRef" @success="setPosition" />
     <template #footer>
       <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -101,7 +102,7 @@
 </template>
 <script lang="ts" setup>
 import { CommonStatusEnum } from '@/utils/constants'
-import { defaultProps, handleTree } from '@/utils/tree'
+import { defaultProps, handleTree, findLinkPath } from '@/utils/tree'
 import SubPositionForm from './SubPositionForm.vue'
 import * as PostApi from '@/api/system/post'
 import * as DeptApi from '@/api/system/dept'
@@ -116,7 +117,7 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
-const formData = ref({
+const formData = ref<Partial<UserApi.UserResp>>({
   id: undefined,
   nickname: '',
   username: '',
@@ -184,7 +185,7 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as UserApi.UserVO
+    const data = formData.value as unknown as UserApi.UserResp
     if (formType.value === 'create') {
       await UserApi.createUser(data)
       message.success('新增成功')
@@ -201,7 +202,7 @@ const submitForm = async () => {
 }
 
 const setPosition = (val) => {
-  formData.value.postIds = val.postIds
+  formData.value.postIds = val
 
 }
 

@@ -33,18 +33,18 @@
           placeholder="请输入用户"
         >
           <template #append>
-            <el-button :icon="Search" />
+            <el-button :icon="Search" @click="filterTable" />
           </template>
         </el-input>
-        <el-table ref="tableRef" :data="tableData" style="width: 100%" height="400" @selection-change="handleSelectionChange">
+        <el-table ref="tableRef" :data="tableData" style="width: 100%" height="400">
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="nickname" label="用户名" />
+          <el-table-column prop="name" label="岗位" />
+          <el-table-column prop="detail" label="操作" >
+            <template #default="scope">
+              <el-button type="primary" text @click="handleClose(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
         </el-table>
-        <div class="flex gap-2">
-          <el-tag v-for="tag in formData.postIds" :key="tag.id" closable :type="tag.type" @close="handleClose(tag)">
-            {{ tag.nickname }}
-          </el-tag>
-        </div>
       </el-col>
     </el-row>
 
@@ -59,13 +59,12 @@
 // todo 数据回显，数据处理
 import { Search } from '@element-plus/icons-vue'
 import type { TreeInstance } from 'element-plus'
-import { defaultProps, treeToList } from '@/utils/tree'
+import { defaultProps, treeToList, findNode } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
-import * as UserApi from '@/api/system/user'
 
 defineOptions({ name: 'SystemSubscriberSubPositionForm' })
 
-defineProps({
+const props = defineProps({
   postIds: {
     type: Array as PropType<number[]>,
     required: true
@@ -79,17 +78,14 @@ const filterTreeText = ref('') //
 const filterTableText = ref('') //
 const postIdsMap = ref<Map<string, DeptApi.DeptNode>>(new Map())
 const deptTree = ref<DeptApi.DeptNode[]>([])
-const deptId = ref<string | undefined>(undefined)
 const treeRef = ref<TreeInstance>()
 const tableRef = ref()
-const tableData = ref<UserApi.UserResp[]>([])
+const tableData = ref<DeptApi.DeptNode[]>([])
 
 const formLoading = ref(false)
 
-type UserWithDeptId = Omit<UserApi.UserResp, 'deptId'> & { deptId: string }
-
 const formData = ref<{
-  postIds: UserWithDeptId[]
+  postIds: string[]
 }>({
   postIds: []
 })
@@ -104,35 +100,17 @@ const filterNode = (value: string, data: DeptApi.DeptNode) => {
 }
 
 const handleNodeClick = async (data: DeptApi.DeptNode) => {
-  const { id, type } = data
+  const { type } = data
   if (type !== DeptApi.DeptType.POSITION) return
-  deptId.value = undefined
-  tableRef.value?.clearSelection()
-  const userList = await UserApi.getUserListByPostId(Number(id))
-  deptId.value = String(id)
-  tableData.value = userList
+  tableData.value.push(data)
 }
 
-const handleSelectionChange = (selection: UserApi.UserResp[]) => {
-  if (!deptId.value) return
-  formData.value.postIds = selection.map(item => ({
-    ...item,
-    deptId: deptId.value!
-  }))
+const handleClose = (tag: DeptApi.DeptNode) => {
+  tableData.value = tableData.value.filter(item => item.id !== tag.id)
 }
 
-const handleClose = (tag: UserApi.UserResp) => {
-  // 从 formData.value.postIds 中删除 tag
-  const index = formData.value.postIds.findIndex(item => item.id === tag.id)
-  if (index > -1) {
-    formData.value.postIds.splice(index, 1)
-  }
-
-  // 从 tableData.value 中删除 tag
-  const rowIndex = tableData.value.findIndex(item => item.id === tag.id)
-  if (rowIndex > -1) {
-    tableRef.value?.toggleRowSelection(tableData.value[rowIndex], false)
-  }
+const filterTable = () => {
+  tableData.value = tableData.value.filter(item => item.name.includes(filterTableText.value))
 }
 
 // 打开弹窗的方法
@@ -142,6 +120,15 @@ const open = async () => {
   // 修改时，设置数据
   // if (id) {
   formLoading.value = true
+
+  if (props.postIds?.length > 0) {
+    props.postIds.forEach(item => {
+      const node = findNode(deptTree.value, item => item.id == item)
+      if (node) {
+        tableData.value.push(node)
+      }
+    })
+  }
   try {
     const deptTreeData = await DeptApi.getDeptTreeWithPost()
     deptTree.value = deptTreeData
@@ -170,22 +157,15 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const postIds = formData.value.postIds.map(item => ({
-      ...item,
-      id: item.id,
-      deptId: Number(item.deptId),
-      detail: postIdsMap.value.get(String(item.deptId))
-    }))
-    console.log('postIds', postIds)
-    // dialogVisible.value = false
-    // console.log('formData.value', formData.value)
-
+    const postIds = formData.value.postIds.map(item => item.id)
     // 发送操作成功的事件
-    // emit('success', formData.value)
+    emit('success', postIds)
   } finally {
     formLoading.value = false
   }
 }
+
+
 
 // 对外暴露 open 方法
 defineExpose({ open })

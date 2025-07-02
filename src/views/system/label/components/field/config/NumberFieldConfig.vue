@@ -80,9 +80,15 @@ const convertFormForSubmission = () => {
     decimalPlaces: DecimalPlacesOptions,
     duplicateCheck: DuplicateCheckOptions,
   }
+  const typeMap = {
+    numberType: 2,
+    decimalPlaces: 2,
+    duplicateCheck: 2,
+  }
   return arr.map((item) => ({
     ...item,
     fieldType: FieldType.NUMBER,
+    type: typeMap[item.name as keyof typeof typeMap],
     optionsJson: Object.fromEntries(
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])
       )

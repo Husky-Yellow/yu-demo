@@ -315,7 +315,7 @@ export const handleTree2 = <T extends Record<string, any>>(
 }
 
 /**
- * 校验选中的节点，是否为指定 level
+ * 校验选中的节点，是否为指定 level (未使用)
  *
  * @param tree 要操作的树结构数据
  * @param nodeId 需要判断在什么层级的数据
@@ -365,7 +365,7 @@ export const checkSelectedNode = (tree: any[], nodeId: any, level = 2): boolean 
 }
 
 /**
- * 获取节点的完整结构
+ * 获取节点的完整结构 (未使用)
  * @param tree 树数据
  * @param nodeId 节点 id
  */
@@ -406,4 +406,26 @@ export const treeToString = (tree: any[], nodeId) => {
     }
   }
   return str
+}
+
+/**
+ * 查找指定节点 ID 的完整链路并拼接名称（终极版）
+ * @param tree - 组织架构树
+ * @param targetId - 目标节点的 ID
+ * @param separator - 分隔符，默认为 ' > '
+ * @returns 链路名称拼接字符串，若未找到则返回空字符串
+ */
+export const findLinkPath = (tree: any[], targetId: string | number): any[] =>   {
+  for (const node of tree) {
+    if (String(node.id) === String(targetId)) {
+      return [node]
+    }
+    if (node.children && node.children.length > 0) {
+      const childPath = findLinkPath(node.children, targetId)
+      if (childPath.length) {
+        return [node, ...childPath]
+      }
+    }
+  }
+  return []
 }

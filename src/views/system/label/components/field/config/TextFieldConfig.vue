@@ -127,8 +127,16 @@ const convertFormForSubmission = () => {
     duplicateCheck: DuplicateCheckOptions,
     dataValidation: DataValidationOptions,
   }
+  const typeMap = {
+    textType: 2,
+    duplicateCheck:2,
+    dataValidation: 2,
+    regex: 1,
+    prompt: 1,
+  }
   return arr.map((item) => ({
     ...item,
+    type: typeMap[item.name as keyof typeof typeMap],
     fieldType: FieldType.TEXT,
     optionsJson: Object.fromEntries(
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])

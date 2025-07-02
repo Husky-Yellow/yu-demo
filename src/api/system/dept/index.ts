@@ -26,6 +26,7 @@ export interface DeptNode extends BaseEntity {
   type: DeptType;
   status: DeptStatus;
   sort: number;
+  postIds: string[];
   children?: DeptNode[] | null;
 
   // 部门特有字段

@@ -1,5 +1,6 @@
 import request from '@/config/axios'
 
+
 export interface UserVO {
   id: number
   username: string
@@ -17,12 +18,6 @@ export interface UserVO {
   createTime: Date
 }
 
-
-/**
- * cn.governance.pangu.module.system.controller.admin.user.vo.user.UserRespVO
- *
- * UserRespVO
- */
 export interface UserResp {
   /**
    * 用户头像
@@ -35,7 +30,7 @@ export interface UserResp {
   /**
    * 部门ID
    */
-  deptId?: number;
+  deptId?: number | string | undefined
   /**
    * 部门名称
    */
@@ -98,12 +93,12 @@ export const getUser = (id: number) => {
 }
 
 // 新增用户
-export const createUser = (data: UserVO) => {
+export const createUser = (data: UserResp) => {
   return request.post({ url: '/system/user/create', data })
 }
 
 // 修改用户
-export const updateUser = (data: UserVO) => {
+export const updateUser = (data: UserResp) => {
   return request.put({ url: '/system/user/update', data })
 }
 

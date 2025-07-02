@@ -45,9 +45,14 @@ const convertFormForSubmission = () => {
   const optionsJsonMap = {
     datePrecision: LableDatePrecisionOptions,
   }
+  const typeMap = {
+    code2: 1,
+    datePrecision: 2,
+  }
   return arr.map((item) => ({
     ...item,
     fieldType: props?.type,
+    type: typeMap[item.name as keyof typeof typeMap],
     optionsJson: Object.fromEntries(
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, `${item.label} ${item.example}`])
       )
