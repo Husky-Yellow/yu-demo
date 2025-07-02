@@ -50,7 +50,11 @@ const convertFormForSubmission = () => {
     code2: 1,
     datePrecision: 2,
   }
-  return arr.map((item) => ({
+  return arr.map((item) => {
+    if (item.name === 'code2') {
+      item['check_type'] = form.datePrecision
+    }
+    return {
     ...item,
     fieldType: props?.type,
     type: typeMap[item.name as keyof typeof typeMap],
@@ -59,7 +63,8 @@ const convertFormForSubmission = () => {
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, `${item.label} ${item.example}`])
       )
       )
-  }))
+  }
+  })
 }
 
 // 暴露验证方法
