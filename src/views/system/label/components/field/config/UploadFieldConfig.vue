@@ -2,7 +2,7 @@
   <el-form :model="form" :rules="rules" ref="formRef" label-width="140px">
     <el-form-item label="选择上传大小" prop="sizeLimit">
       <el-radio-group v-model="form.sizeLimit">
-        <el-radio v-for="item in FileSizeOptions" :key="item.value" :value="item.value">
+        <el-radio v-for="(item, index) in FileSizeOptions" :key="index" :value="index">
           {{ item.label }}
         </el-radio>
       </el-radio-group>
@@ -14,7 +14,7 @@
     </el-form-item>
     <el-form-item label="选择上传格式" prop="allowedTypes">
       <el-checkbox-group v-model="form.allowedTypes">
-        <el-checkbox v-for="item in FileFormatOptions" :key="item.value" :label="item.value" :value="item.value">{{ item.label }}</el-checkbox>
+        <el-checkbox v-for="(item, index) in FileFormatOptions" :key="item.value" :label="item.value" :value="index">{{ item.label }}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
   </el-form>

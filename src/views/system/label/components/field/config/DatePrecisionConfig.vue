@@ -6,9 +6,9 @@
     <el-form-item label="日期精度" required>
       <el-radio-group v-model="form.datePrecision">
         <el-radio
-          v-for="item in LableDatePrecisionOptions"
-          :key="item.value"
-          :value="item.value"
+          v-for="(item, index) in LableDatePrecisionOptions"
+          :key="index"
+          :value="index"
         >
           {{ item.label }} <span style="color: #888; font-size: 12px;">例：{{ item.example }}</span>
         </el-radio>
@@ -48,9 +48,9 @@ const convertFormForSubmission = () => {
   return arr.map((item) => ({
     ...item,
     fieldType: props?.type,
-    optionsJson: JSON.stringify(Object.fromEntries(
-        (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])
-      ))
+    optionsJson: Object.fromEntries(
+        (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, `${item.label} ${item.example}`])
+      )
   }))
 }
 

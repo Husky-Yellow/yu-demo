@@ -2,10 +2,10 @@
   <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
     <el-form-item label="数字类型" required>
       <el-radio-group v-model="form.numberType">
-        <el-radio v-for="item in NumberTypeOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
+        <el-radio v-for="(item, index) in NumberTypeOptions" :key="index" :value="index">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
-    <template v-if="form.numberType === 'decimal'">
+    <template v-if="form.numberType === 1">
       <el-form-item label="小数位数" required>
         <el-select
         v-model="form.decimalPlaces"
@@ -13,17 +13,17 @@
         class="!w-240px"
       >
           <el-option
-            v-for="item in DecimalPlacesOptions"
-            :key="item.value"
+            v-for="(item, index) in DecimalPlacesOptions"
+            :key="index"
             :label="item.label"
-            :value="item.value"
+            :value="index"
           />
       </el-select>
       </el-form-item>
     </template>
     <el-form-item label="是否进行查重校验" required>
       <el-radio-group v-model="form.duplicateCheck">
-        <el-radio v-for="item in DuplicateCheckOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
+        <el-radio v-for="(item, index) in DuplicateCheckOptions" :key="index" :value="index">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
   </el-form>
@@ -83,9 +83,9 @@ const convertFormForSubmission = () => {
   return arr.map((item) => ({
     ...item,
     fieldType: FieldType.NUMBER,
-    optionsJson: JSON.stringify(Object.fromEntries(
+    optionsJson: Object.fromEntries(
         (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, item.value])
-      ))
+      )
   }))
 }
 

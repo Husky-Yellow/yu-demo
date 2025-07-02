@@ -200,7 +200,6 @@ watch(
   () => props.data,
   (newVal) => {
     tableData.value = [...(newVal as LabelFieldConfig[])]
-    // 如果表格已渲染，重新初始化 Sortable
     if (tableRef.value) {
       initSortable()
     }
@@ -230,6 +229,7 @@ const handleDelete = () => {
 }
 
 const updateData = (data) => {
+  console.log('updateData', data)
   if (!data.uuid && !data.id) {
     data.uuid = generateUUID();
   }

@@ -331,7 +331,6 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
           ? dataSource.fieldConfExtDOList[0]
           : convertArrayToObject(JSON.parse(JSON.stringify(dataSource.fieldConfExtDOList))))
       : { ...defaultFieldConfExt }
-
     Object.assign(form, dataSource, { fieldConfExt })
   }
 
