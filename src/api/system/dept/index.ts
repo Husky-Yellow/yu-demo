@@ -1,20 +1,43 @@
 import request from '@/config/axios'
 
-export interface DeptFormData {
-  /** 部门名称 */
-  name: string;
-  /** 父部门ID，0表示根部门 */
-  parentId: number;
-  /** 显示排序 */
-  sort: number;
-  /** 部门状态：0-正常，1-停用 */
-  status: 0 | 1;
-  /** 部门标题（可选） */
-  title?: string;
-  /** 部门ID（创建时不存在，更新时存在） */
-  id?: number;
+/** 基础实体 */
+export interface BaseEntity {
+  id: number | string;
+  createTime?: string;
+  updateTime?: string;
 }
 
+/** 部门类型枚举 */
+export enum DeptType {
+  DEPARTMENT = 0,  // 部门
+  POSITION = 1     // 岗位
+}
+
+/** 部门状态枚举 */
+export enum DeptStatus {
+  NORMAL = 0,      // 正常
+  DISABLED = 1     // 停用
+}
+
+/** 部门节点 */
+export interface DeptNode extends BaseEntity {
+  name: string;
+  parentId: number | null;
+  type: DeptType;
+  status: DeptStatus;
+  sort: number;
+  children?: DeptNode[] | null;
+
+  // 部门特有字段
+  title?: string;
+
+  // 岗位特有字段
+  deptId?: number;  // 所属部门ID
+}
+
+/** 部门表单数据 */
+export type DeptFormData = Omit<Partial<DeptNode>, 'id'> &
+  Required<Pick<DeptNode, 'name' | 'parentId' | 'type' | 'status' | 'sort'>>;
 
 /**
  * 创建新部门
@@ -69,6 +92,13 @@ export const getAllSimpleDeptList = async (): Promise<DeptFormData[]> => {
   return await request.get({ url: '/system/dept/list-all-simple' })
 }
 
-
-
-
+/**
+ * 获得部门树携带岗位信息
+ *
+ * @see https://app.apifox.com/link/project/6505154/apis/api-315974149
+ * @returns {Promise<DeptFormData[]>} 包含部门树的Promise
+ * @throws {AxiosError} 当请求失败时抛出
+ */
+export const getDeptTreeWithPost = async (): Promise<DeptNode[]> => {
+  return await request.get({ url: '/system/dept/tree-with-post' })
+}

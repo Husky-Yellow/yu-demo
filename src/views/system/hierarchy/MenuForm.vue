@@ -39,10 +39,20 @@
       </el-form-item>
       <!-- manageId -->
       <el-form-item label="路径地址" prop="manageId" v-if="formData.type !== 3">
-        <el-select v-model="formData.manageId" placeholder="请选择路径地址">
-          <el-option v-for="item in labelList" :key="item.id" :label="item.name" :value="item.id" />
-        </el-select>
-        <!-- <el-input v-model="formData.manageId" clearable placeholder="请输入管理ID" /> -->
+        <el-tree-select
+          v-model="formData.manageId"
+          :data="labelList"
+          :props="{
+            ...defaultProps,
+            label: 'name',
+            children: 'childList',
+            value: 'id'
+          }"
+          empty-text="加载中，请稍后"
+          node-key="id"
+          :check-strictly="true"
+          style="width: 100%"
+        />
       </el-form-item>
       <el-form-item v-if="formData.type !== 3" label="菜单图标">
         <IconSelect v-model="formData.icon" clearable />
@@ -274,7 +284,7 @@ const labelList = ref<any[]>([])
 const getLabelList = async () => {
   try {
     const data = await LabelApi.getLabelManageTree()
-    labelList.value = handleTree2(data)
+    labelList.value = data
   } finally {
   }
 }

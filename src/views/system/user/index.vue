@@ -206,7 +206,6 @@ import UserForm from './UserForm.vue'
 import UserImportForm from './UserImportForm.vue'
 import UserAssignRoleForm from './UserAssignRoleForm.vue'
 import DeptTree from './DeptTree.vue'
-import { CommonStatusEnum } from '@/utils/constants'
 
 defineOptions({ name: 'SystemUser' })
 

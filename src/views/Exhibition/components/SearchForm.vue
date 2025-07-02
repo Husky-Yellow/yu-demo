@@ -39,6 +39,7 @@ interface SearchField {
 
 const props = defineProps<{ fields: SearchField[] }>()
 const form = reactive<Record<string, any>>({})
+const emit = defineEmits(['search'])
 
 function getKey(field: SearchField) {
   return field.fieldCodes || field.id || field.hint
@@ -83,6 +84,7 @@ function getComponentProps(field: SearchField) {
 function handleSearch() {
   // 实际项目中可 emit('search', { ...form })
   console.log('搜索参数', { ...form })
+  emit('search', { ...form })
 }
 
 function handleReset() {

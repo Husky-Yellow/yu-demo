@@ -1,21 +1,53 @@
 <template>
   <Dialog v-model="dialogVisible" title="选择岗位" append-to-body>
-    <el-input
-      v-model="filterText"
-      class="w-60 mb-2"
-      placeholder="Filter keyword"
-    />
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <el-input
+          v-model="filterTreeText"
+           class="w-60 mb-2"
+          placeholder="请输入岗位"
+        >
+          <template #append>
+            <el-button :icon="Search" />
+          </template>
+        </el-input>
+        <el-tree
+          style="max-width: 600px"
+          ref="treeRef"
+          :data="deptTree"
+          :props="{
+            ...defaultProps,
+            label: 'name',
+            children: 'children'
+          }"
+          node-key="id"
+          @node-click="handleNodeClick"
+           :filter-node-method="filterNode"
+          default-expand-all
+        />
+      </el-col>
+      <el-col :span="12">
+        <el-input
+          v-model="filterTableText"
+           class="w-60 mb-2"
+          placeholder="请输入用户"
+        >
+          <template #append>
+            <el-button :icon="Search" />
+          </template>
+        </el-input>
+        <el-table ref="tableRef" :data="tableData" style="width: 100%" height="400" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="nickname" label="用户名" />
+        </el-table>
+        <div class="flex gap-2">
+          <el-tag v-for="tag in formData.postIds" :key="tag.id" closable :type="tag.type" @close="handleClose(tag)">
+            {{ tag.nickname }}
+          </el-tag>
+        </div>
+      </el-col>
+    </el-row>
 
-    <el-tree
-      ref="treeRef"
-      style="max-width: 600px"
-      :data="data"
-      :props="defaultProps"
-      default-expand-all
-      :filter-node-method="filterNode"
-      show-checkbox
-      @check-change="handleCheckChange"
-    />
     <template #footer>
       <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -24,118 +56,82 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { Search } from '@element-plus/icons-vue'
 import type { TreeInstance } from 'element-plus'
-import { handleTree } from '@/utils/tree'
-import * as PostApi from '@/api/system/post'
+import { defaultProps, treeToList } from '@/utils/tree'
 import * as DeptApi from '@/api/system/dept'
-import * as JobApi from '@/api/system/job'
+import * as UserApi from '@/api/system/user'
 
 defineOptions({ name: 'SystemSubscriberSubPositionForm' })
 
 defineProps({
-  jobList: {
-    type: Array as PropType<JobApi.JobDetailData[]>,
+  postIds: {
+    type: Array as PropType<number[]>,
     required: true
   }
 })
 
-// 定义树节点的数据结构
-interface Tree {
-  [key: string]: any
-}
-
-// 定义响应式变量
-const filterText = ref('')
+const emit = defineEmits(['success'])
+// 树形结构数据示例
+const dialogVisible = ref<boolean>(false)
+const filterTreeText = ref('') //
+const filterTableText = ref('') //
+const postIdsMap = ref<Map<string, DeptApi.DeptNode>>(new Map())
+const deptTree = ref<DeptApi.DeptNode[]>([])
+const deptId = ref<string | undefined>(undefined)
 const treeRef = ref<TreeInstance>()
-const dialogVisible = ref(false)
+const tableRef = ref()
+const tableData = ref<UserApi.UserResp[]>([])
+
 const formLoading = ref(false)
-const formData = ref({
+
+type UserWithDeptId = Omit<UserApi.UserResp, 'deptId'> & { deptId: string }
+
+const formData = ref<{
+  postIds: UserWithDeptId[]
+}>({
   postIds: []
 })
-const formRef = ref()
-const deptList = ref<Tree[]>([])
-const postList = ref([] as PostApi.PostVO[])
 
-// 树节点属性配置
-const defaultProps = {
-  children: 'children',
-  label: 'label'
-}
-
-// 树形结构数据示例
-const data: Tree[] = [
-  {
-    id: 1,
-    label: 'Level one 1',
-    children: [
-      {
-        id: 4,
-        label: 'Level two 1-1',
-        children: [
-          {
-            id: 9,
-            label: 'Level three 1-1-1'
-          },
-          {
-            id: 10,
-            label: 'Level three 1-1-2'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    label: 'Level one 2',
-    children: [
-      {
-        id: 5,
-        label: 'Level two 2-1'
-      },
-      {
-        id: 6,
-        label: 'Level two 2-2'
-      }
-    ]
-  },
-  {
-    id: 3,
-    label: 'Level one 3',
-    children: [
-      {
-        id: 7,
-        label: 'Level two 3-1'
-      },
-      {
-        id: 8,
-        label: 'Level two 3-2'
-      }
-    ]
-  }
-]
-// 监听搜索框输入，过滤树节点
-watch(filterText, (val) => {
+watch(filterTreeText, (val) => {
   treeRef.value!.filter(val)
 })
 
-// 树节点过滤方法
-const filterNode = (value: string, data: Tree) => {
+const filterNode = (value: string, data: DeptApi.DeptNode) => {
   if (!value) return true
-  return data.label.includes(value)
+  return data.name.includes(value)
 }
 
-// 树节点选中状态改变时的处理方法
-const handleCheckChange = (
-  data: Tree,
-  checked: boolean,
-  indeterminate: boolean
-) => {
-  formData.value.postIds.push(data as unknown as never)
-  // formData.value.postIds = []
-  // data.forEach((key) => {
-  //   formData.value.postIds.push(key as never)
-  // })
+const handleNodeClick = async (data: DeptApi.DeptNode) => {
+  const { id, type } = data
+  if (type !== DeptApi.DeptType.POSITION) return
+  deptId.value = undefined
+  tableRef.value?.clearSelection()
+  const userList = await UserApi.getUserListByPostId(Number(id))
+  deptId.value = String(id)
+  tableData.value = userList
+}
+
+const handleSelectionChange = (selection: UserApi.UserResp[]) => {
+  if (!deptId.value) return
+  formData.value.postIds = selection.map(item => ({
+    ...item,
+    deptId: deptId.value!
+  }))
+}
+
+const handleClose = (tag: UserApi.UserResp) => {
+  // 从 formData.value.postIds 中删除 tag
+  const index = formData.value.postIds.findIndex(item => item.id === tag.id)
+  if (index > -1) {
+    formData.value.postIds.splice(index, 1)
+  }
+
+  // 从 tableData.value 中删除 tag
+  const rowIndex = tableData.value.findIndex(item => item.id === tag.id)
+  if (rowIndex > -1) {
+    tableRef.value?.toggleRowSelection(tableData.value[rowIndex], false)
+  }
 }
 
 // 打开弹窗的方法
@@ -146,15 +142,18 @@ const open = async () => {
   // if (id) {
   formLoading.value = true
   try {
-    // formData.value = await UserApi.getUser(id)
+    const deptTreeData = await DeptApi.getDeptTreeWithPost()
+    deptTree.value = deptTreeData
+      const postMap = new Map(
+        (treeToList(deptTreeData) as DeptApi.DeptNode[])
+          .map(item => [String(item.id), item])
+      )
+    postIdsMap.value = postMap
   } finally {
     formLoading.value = false
   }
-  // }
-  // 加载部门树
-  deptList.value = handleTree(await DeptApi.getSimpleDeptList())
-  // 加载岗位列表
-  postList.value = await PostApi.getSimplePostList()
+
+
 }
 
 // 重置表单的方法
@@ -162,28 +161,26 @@ const resetForm = () => {
   formData.value = {
     postIds: []
   }
-  formRef.value?.resetFields()
 }
 
 // 提交表单的方法
-const emit = defineEmits(['success'])
+
 const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    // const data = formData.value as unknown as UserApi.UserVO
-    // if (formType.value === 'create') {
-    //   // await UserApi.createUser(data)
-    //   message.success('新增成功')
-    // } else {
-    //   await UserApi.updateUser(data)
-    //   message.success('修改成功')
-    // }
-    dialogVisible.value = false
-    console.log('formData.value', formData.value);
+    const postIds = formData.value.postIds.map(item => ({
+      ...item,
+      id: item.id,
+      deptId: Number(item.deptId),
+      detail: postIdsMap.value.get(String(item.deptId))
+    }))
+    console.log('postIds', postIds)
+    // dialogVisible.value = false
+    // console.log('formData.value', formData.value)
 
     // 发送操作成功的事件
-    emit('success', formData.value)
+    // emit('success', formData.value)
   } finally {
     formLoading.value = false
   }

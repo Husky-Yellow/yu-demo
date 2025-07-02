@@ -139,14 +139,12 @@ const queryParams = reactive({
   createTime: []
 })
 const queryFormRef = ref<FormInstance>() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
 
 /** 查询角色列表 */
 const getList = async () => {
   loading.value = true
   try {
     const data = await RoleApi.getRolePage(queryParams)
-    console.log(data)
     list.value = data.list
     total.value = data.total
   } finally {

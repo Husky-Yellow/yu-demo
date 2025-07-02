@@ -2,14 +2,23 @@ import request from '@/config/axios'
 
 /**
  * 检索条件项（用于业务数据筛选）
- * @property fieldCode 字段编码
- * @property fieldType 字段类型（0-文本，1-单选，2-多选，3-时间区间）
- * @property fieldValue 检索值，时间区间以逗号隔开
+ * @property code 检索项
+ * @property type 字段类型（0-文本，1-单选，2-多选，3-时间区间）
+ * @property value 检索值，时间区间以逗号隔开
  */
-export interface BusinessDataSearchItem {
-  fieldCode?: string;
-  fieldType?: number;
-  fieldValue?: string;
+export interface SearchCondition {
+  /**
+   * 检索项
+   */
+  code: string
+  /**
+   * 类型 0-文本1-单选2-多选3-时间区间
+   */
+  type: number
+  /**
+   * 检索数据 时间区间以逗号隔开
+   */
+  value: string
 }
 
 /**
@@ -20,11 +29,23 @@ export interface BusinessDataSearchItem {
  * @property filters 筛选条件数组
  */
 export interface BusinessDataListRequest extends PageParam {
-  labelManageId?: string | number;
-  labelIds?: string;
-  keyword?: string;
-  filters?: BusinessDataSearchItem[];
-  [property: string]: any;
+  /**
+   * 标签管理ID
+   */
+  manageId?: number
+  /**
+   * 标签ID集合,多个以逗号隔开
+   */
+  manageIds?: string
+  /**
+   * 检索项
+   */
+  search?: string
+  /**
+   * 搜索条件列表
+   */
+  searchList?: SearchCondition[]
+  [property: string]: any
 }
 
 /**
@@ -32,8 +53,8 @@ export interface BusinessDataListRequest extends PageParam {
  * @property members 字段成员映射
  */
 export interface BusinessData {
-  members?: LinkedTreeMapJsonElement;
-  [property: string]: any;
+  members?: LinkedTreeMapJsonElement
+  [property: string]: any
 }
 
 /**
@@ -41,8 +62,8 @@ export interface BusinessData {
  * @property key 字段键值对对象
  */
 export interface LinkedTreeMapJsonElement {
-  key?: { [key: string]: any };
-  [property: string]: any;
+  key?: { [key: string]: any }
+  [property: string]: any
 }
 
 /**

@@ -80,7 +80,8 @@ const tableData = ref([
 
 function onSearch(params: any) {
   // 这里可以根据params进行过滤或请求
-  console.log('搜索参数', params)
+  console.log('搜索参数', params, queryConfig.value)
+  console.log('搜索参数', queryConfig.value)
 }
 
 function onAction(action: string, row: any) {
@@ -96,7 +97,7 @@ const getList = async () => {
       manageId,
       ...queryParams
     })
-    console.log(data)
+    console.log('getBusinessDataPage', data)
   } finally {
     loading.value = false
   }
