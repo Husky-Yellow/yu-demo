@@ -43,6 +43,7 @@ import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 defineOptions({ name: 'ExhibitionList' })
 
 const route = useRoute()
+const router = useRouter()
 
 const countConfigDate = ref<any[]>([]) // 统计数据
 const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
@@ -122,6 +123,12 @@ function onSearch(params: any) {
 function onAction(action: string, row: any) {
   // 这里处理表格操作
   console.log('操作', action, row)
+  router.push({
+    path: '/exhibition/detail',
+    query: {
+      id: row.id
+    }
+  })
 }
 
 const getList = async () => {
@@ -130,6 +137,10 @@ const getList = async () => {
     tableData.value = []
     const data = await BusinessDataApi.getBusinessDataPage({
       ...queryParams,
+    })
+    // tableData.value = data.list as any[]
+    tableData.value.push({
+      name: '1'
     })
     console.log('getBusinessDataPage', data)
   } finally {

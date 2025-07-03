@@ -7,7 +7,6 @@
       :label="col.name"
     />
     <el-table-column
-      v-if="actions && actions.length"
       label="操作"
       fixed="right"
       width="180"

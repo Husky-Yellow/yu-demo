@@ -40,9 +40,10 @@ import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDe
 import { OperateTypeEnum } from '@/utils/constants'
 import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 
-defineOptions({ name: 'ExhibitionList' })
+defineOptions({ name: 'ExhibitionPeople' })
 
 const route = useRoute()
+
 
 const countConfigDate = ref<any[]>([]) // 统计数据
 const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
