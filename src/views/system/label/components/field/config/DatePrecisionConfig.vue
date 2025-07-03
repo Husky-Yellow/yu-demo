@@ -60,7 +60,7 @@ const convertFormForSubmission = () => {
     type: typeMap[item.name as keyof typeof typeMap],
     optionsJson: JSON.stringify(
       Object.fromEntries(
-        (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, `${item.label} ${item.example}`])
+        (optionsJsonMap[item.name as keyof typeof optionsJsonMap] || []).map((item, index) => [index, `${item.label}例：${item.example}`])
       )
       )
   }

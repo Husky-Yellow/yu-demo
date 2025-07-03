@@ -3,7 +3,7 @@
     <el-form :model="form" label-width="0px">
       <el-row :gutter="16">
         <el-col v-for="field in fields" :key="field.id || field.fieldCodes" :span="8">
-          <el-form-item :prop="field.fieldCodes || field.id || field.hint">
+          <el-form-item :prop="field.fieldCodes">
             <component
               :is="getComponent(field.queryType)"
               v-model="form[field.fieldCodes || field.id || field.hint]"
@@ -17,15 +17,20 @@
           <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
           <el-button v-if="fields.length > 2" @click="handleReset">更多搜索</el-button>
-          <el-button v-for="item in operateConfigList" :key="item.operateType" @click="handleReset">{{ item.operateName }}</el-button>
+          <el-button v-for="item in operateConfigList" :key="item.operateType" :disabled="(item.operateType === 1 || item.operateType === 2) && !selectedRows.length" @click="handleOperate(item)">{{ item.operateName }}</el-button>
         </el-col>
       </el-row>
     </el-form>
+    <CreateForm ref="createFormRef" />
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import { ElInput, ElSelect, ElDatePicker, ElButton } from 'element-plus'
+import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
+import CreateForm from './CreateForm.vue'
+
+
 
 interface SearchField {
   id?: string
@@ -40,19 +45,13 @@ interface SearchField {
   options?: { label: string; value: string | number }[]
 }
 
-const props = defineProps<{ fields: SearchField[], operateConfigList: any[] }>()
+const props = defineProps<{ fields: SearchField[], operateConfigList: ExhibitionOperate[], selectedRows: any[] }>()
 const form = reactive<Record<string, any>>({})
 const emit = defineEmits(['search'])
 
-function getKey(field: SearchField) {
-  return field.fieldCodes || field.id || field.hint
-}
+const createFormRef = ref<InstanceType<typeof CreateForm>>()
+const createFormType = ref<string>('')
 
-function initForm() {
-  props.fields.forEach(f => {
-    form[getKey(f)] = f.defaultValue ?? (f.queryType === 2 ? [] : '')
-  })
-}
 
 initForm()
 watch(() => props.fields, initForm, { deep: true })
@@ -68,25 +67,32 @@ function getComponent(queryType: number) {
   }
 }
 
+
+
 function getComponentProps(field: SearchField) {
-  if (field.queryType === 1) {
-    return { options: field.options }
-  }
-  if (field.queryType === 2) {
-    return { options: field.options, multiple: true }
-  }
-  if (field.queryType === 3) {
-    return { type: 'daterange', rangeSeparator: '至', startPlaceholder: '开始日期', endPlaceholder: '结束日期' }
-  }
-  if (field.queryType === 4) {
-    return { type: 'date' }
-  }
-  return {}
+  const queryTypePropsMap = {
+    0: () => ({ clearable: true }),
+    1: (field: SearchField) => ({ options: field.options }),
+    2: (field: SearchField) => ({ options: field.options, multiple: true }),
+    3: () => ({ type: 'daterange', rangeSeparator: '至', startPlaceholder: '开始日期', endPlaceholder: '结束日期' }),
+    4: () => ({ type: 'date' }),
+  };
+  const fn = queryTypePropsMap[field.queryType];
+  return fn ? fn(field) : { };
 }
 
+function getKey(field: SearchField) {
+  return field.fieldCodes || field.id || field.hint
+}
+
+function initForm() {
+  props.fields.forEach(f => {
+    form[getKey(f)] = f.defaultValue ?? (f.queryType === 2 ? [] : '')
+  })
+}
+
+
 function handleSearch() {
-  // 实际项目中可 emit('search', { ...form })
-  console.log('搜索参数', { ...form })
   emit('search', { ...form })
 }
 
@@ -96,5 +102,21 @@ function handleReset() {
   })
   // 实际项目中可 emit('search', { ...form })
   console.log('重置参数', { ...form })
+}
+
+function handleOperate(item: ExhibitionOperate) {
+  // 这里处理表格操作
+  if (item.operateType === 0) {
+    // 打开第一层弹窗
+    createFormRef.value?.open('people')
+  }
+  if (item.operateType === 1) {
+    // 打开编辑
+  }
+  // 删除的话，要判断表格中有没有选中的
+  if (item.operateType === 2) {
+    // 打开删除
+  }
+  console.log('操作', item)
 }
 </script>
