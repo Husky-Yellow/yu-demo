@@ -1,12 +1,11 @@
 <template>
-  <!-- 人口标签列表 07-03 新增，未与 index 同步 -->
   <ContentWrap>
     <!-- 统计卡片 -->
     <StatisticCards :config="countConfigDate" />
   </ContentWrap>
   <ContentWrap>
     <!-- 查询 -->
-    <SearchForm :fields="queryConfig" @search="onSearch" />
+    <SearchForm :fields="queryConfig" @search="onSearch" :operateConfigList="operateConfigList" :selectedRows="selectedRows" />
   </ContentWrap>
   <ContentWrap>
     <!-- 表格区 -->
@@ -15,10 +14,9 @@
       :columns="columns"
       :data="tableData"
       row-key="id"
-      :actions="actionList"
     >
       <template #actions="{ row }">
-        <TableActions :actions="operateConfigList" :row="row" @action="onAction" />
+        <el-button link type="primary" @click="onAction('view', row)">查看详情</el-button>
       </template>
     </DataTable>
 
@@ -38,51 +36,87 @@ import * as BusinessDataApi from '@/api/system/business-data'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
-import TableActions from './components/TableActions.vue'
 import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
 import { OperateTypeEnum } from '@/utils/constants'
+import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 
 defineOptions({ name: 'ExhibitionList' })
 
 const route = useRoute()
 
-const columns = ref<Partial<LabelFieldConfig>[]>([])
-const queryConfig = ref<QueryResItem[]>([])
-const formModel = reactive<{ [key: string]: any }>({})
-const operateConfigList = ref<any[]>([]) // 表格操作列表
+const countConfigDate = ref<any[]>([]) // 统计数据
+const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
+const queryConfig = ref<QueryResItem[]>([]) // 搜索表单，
+const tableData = ref([]) // 表格数据
+const columns = ref<Partial<LabelFieldConfig>[]>([]) // 表格列配置
+const selectedRows = ref<any[]>([]) // 表格选中行 用于删除
+
+
+const formModel = reactive<{ [key: string]: any }>({}) // 搜索表单数据
 const loading = ref(true) // 列表的加载中
-const queryParams = reactive({
+const queryParams = reactive<BusinessDataApi.BusinessDataListRequest>({
   pageNo: 1,
-  pageSize: 10
+  pageSize: 10,
+  manageId: '',
+  searchList: []
 })
 const total = ref(0) // 列表的总页数
 
-const countConfigDate = ref<any[]>([])
+/**
+ * 数据转换函数（增强版）
+ * @param filterData 过滤数据对象
+ * @param metadataList 元数据列表
+ * @param separator 字段分隔符，默认为逗号
+ * @returns 转换后的 searchList 数组
+ */
+ function transformToSearchList(
+  filterData: Record<string, string>,
+  metadataList: Array<{
+    fieldCodes: string;
+    queryType: number;
+  }>,
+  separator: string = ','
+): Array<{ code: string; type: number; value: string }> {
+  return metadataList.flatMap(item => {
+    // 检查 filterData 中是否存在该字段
+    if (!(item.fieldCodes in filterData)) {
+      return [];
+    }
 
-const actionList = [
-  { label: '查看详情', action: 'view', type: 'primary' },
-  { label: '编辑', action: 'edit', type: 'success' },
-  { label: '删除', action: 'delete', type: 'danger' }
-]
+    const fieldValues = filterData[item.fieldCodes].trim() || '';
+    const codes = item.fieldCodes.split(separator).map(code => code.trim());
 
-const tableData = ref([
-  {
-    id: 1,
-    name: '张三',
-    idCard: '3303************11',
-    gender: '男',
-    nation: '汉',
-    grid: 'xx镇/xx村/xxx网格',
-    address: 'xx县/xx镇/xx村/xx小区/xx幢',
-    location: 'xx省/xx市/xx区',
-    updateTime: '2023/1/1 11:00:00'
-  }
-])
+    // 处理字段拆分
+    if (codes.length === 1) {
+      return [{
+        code: codes[0],
+        type: item.queryType,
+        value: fieldValues
+      }];
+    }
+
+    // 拆分值（处理空值情况）
+    const values = fieldValues.split(separator)
+      .map(val => val.trim())
+      .filter(val => val !== ''); // 过滤空字符串
+
+    // 生成结果（值不足时重复使用最后一个值）
+    return codes.map((code, index) => ({
+      code,
+      type: item.queryType,
+      value: values[index] || (values[values.length - 1] || '')
+    }));
+  });
+}
+
 
 function onSearch(params: any) {
-  // 这里可以根据params进行过滤或请求
+  // 这里可以根据params进行过滤或请求， 要处理数据
   console.log('搜索参数', params, queryConfig.value)
-  console.log('搜索参数', queryConfig.value)
+  const searchList = transformToSearchList(params, queryConfig.value as any).filter(item => item.value)
+  console.log('searchList', searchList)
+  queryParams.searchList = searchList
+  getList()
 }
 
 function onAction(action: string, row: any) {
@@ -90,12 +124,12 @@ function onAction(action: string, row: any) {
   console.log('操作', action, row)
 }
 
-const getList = async (manageId: string) => {
+const getList = async () => {
   loading.value = true
   try {
+    tableData.value = []
     const data = await BusinessDataApi.getBusinessDataPage({
-      manageId,
-      ...queryParams
+      ...queryParams,
     })
     console.log('getBusinessDataPage', data)
   } finally {
@@ -114,7 +148,19 @@ async function fetchFieldConfig(manageId: string) {
 
 async function fetchQueryConf(manageId: string) {
   try {
-    return await LabelApi.getQueryConfList({ manageId })
+    const queryConfList =  await LabelApi.getQueryConfList({ manageId })
+      queryConfList.forEach((field) => {
+    const ids = (field.fieldIds || '').split(',').filter(Boolean)
+    const matchedFields = columns.value.filter((r) => ids.includes(r.id))
+    if (matchedFields.length) {
+      field.fieldNames = matchedFields.map((f) => f.name).join(',')
+      field.fieldName = matchedFields[0].name
+      field.fieldId = matchedFields[0].id
+    }
+    formModel[field.fieldCodes] = field.defaultValue
+  })
+  queryConfig.value = queryConfList
+  console.log('queryConfig', queryConfig.value)
   } catch (e) {
     console.error('查询配置获取失败', e)
     return []
@@ -124,13 +170,11 @@ async function fetchQueryConf(manageId: string) {
 const getCountConfigList = async (manageId) => {
   const countConfigList = await LabelApi.getCountConfigList({ manageId })
 
-  console.log('获取统计配置列表', countConfigList)
+  // console.log('获取统计配置列表', countConfigList)
   const countData = [{ name: '牡蛎', value: 651 }]
 
-  // 将 countData 转换为 Map，提升查找性能 O(1) vs O(n)
   const countDataMap = new Map(countData.map((item) => [item.name, item.value]))
 
-  // 使用 Map 查找，避免重复遍历
   countConfigDate.value = countConfigList.map((item) => ({
     ...item,
     name: item.name || '',
@@ -140,10 +184,10 @@ const getCountConfigList = async (manageId) => {
 
 const getDataFieldConfListByManageId = async (manageId: string) => {
   const res = await LabelApi.getOperateConfigList({ manageId })
-  operateConfigList.value = res.map((item) => ({
+  operateConfigList.value = res.filter((item) => item.showFlag === 1).map((item) => ({
     ...item,
     type: OperateTypeEnum[item.operateType]
-  }))
+  })) as unknown as ExhibitionOperate[]
 }
 
 const getQueryConfList = async (manageId: string) => {
@@ -154,29 +198,18 @@ const getQueryConfList = async (manageId: string) => {
 const init = async () => {
   // const manageId = (route.meta.manageId as string) || '1938148839818596353'
   const manageId = '1938148839818596353'
+  queryParams.manageId = manageId
   // 获取字段配置
   const res = await fetchFieldConfig(manageId)
   columns.value = res.filter((item: LabelFieldConfig) => item.pcViewFlag === 1)
 
-  // const queryConfList = await fetchQueryConf(manageId)
-  // // 过滤下是否展示，
-  // queryConfList.forEach((field) => {
-  //   const ids = (field.fieldIds || '').split(',').filter(Boolean)
-  //   const matchedFields = res.filter((r) => ids.includes(r.id))
-  //   if (matchedFields.length) {
-  //     field.fieldNames = matchedFields.map((f) => f.name).join(',')
-  //     field.fieldName = matchedFields[0].name
-  //     field.fieldId = matchedFields[0].id
-  //   }
-  //   formModel[field.fieldCodes] = field.defaultValue
-  // })
-  // queryConfig.value = queryConfList
+  await fetchQueryConf(manageId)
 
   // 获取配置数据
   await getCountConfigList(manageId)
   await getDataFieldConfListByManageId(manageId)
   await getQueryConfList(manageId)
-  await getList(manageId)
+  await getList()
 
 
 }
