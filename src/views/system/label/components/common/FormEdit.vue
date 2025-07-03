@@ -355,6 +355,7 @@ const submitForm = async () => {
     if (!formData.value?.id) {
       const id = await LabelApi.createViewFormConf(params)
       formData.value.id = id
+      fetchFormData()
     } else {
       await LabelApi.updateViewFormConf({ ...params, id: formData.value.id as string })
     }
@@ -381,7 +382,7 @@ const fetchFormData = async () => {
   const formConfData = await LabelApi.getViewFormConf({
     manageId: query.manageId as string,
     formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
-    id: query.lableId as string
+    // id: query.lableId as string
   })
   let filteredRes = res
   if (props.tab.name === 'formEdit') {

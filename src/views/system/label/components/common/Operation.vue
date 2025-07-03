@@ -18,7 +18,7 @@ import type { TableColumn } from '@/components/Draggable/sortTable.vue'
 import type { OperateConfig } from '@/config/constants/enums/fieldDefault'
 import { OperateTypeText } from '@/config/constants/enums/fieldDefault'
 import { BooleanEnum } from '@/config/constants/enums/label'
-import { generateOperationMock } from '@/utils/label'
+import { generateOperationMock } from '@/utils/constants'
 
 const { query } = useRoute()
 const tableData = ref<OperateConfig[]>([])

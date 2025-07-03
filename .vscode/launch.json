@@ -7,10 +7,10 @@
     {
       "type": "msedge",
       "request": "launch",
-      "name": "Launch Edge against localhost",
-      "url": "http://localhost:4173/",
+      "name": "Edge 本地调试",
+      "url": "http://localhost:80/",
       "webRoot": "${workspaceFolder}/src",
-      "sourceMaps": true
+      "sourceMaps": true,
     }
   ]
 }

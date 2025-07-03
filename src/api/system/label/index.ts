@@ -172,7 +172,7 @@ export const getFieldConfigList = async (params: { manageId: string }): Promise<
  * @returns {Promise<any>} 操作配置列表
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076044
  */
-export const getOperateConfigList = async (params: { manageId: string }) => {
+export const getOperateConfigList = async (params: { manageId: string }): Promise<OperateConfig[]> => {
   return await request.get({ url: '/data/operate-conf/list', params })
 }
 
@@ -209,7 +209,7 @@ export const getFieldConfigDetail = async (params: {
  * @returns {Promise<any>} 表单配置
  * @see https://app.apifox.com/link/project/6505154/apis/api-305076041
  */
-export const getViewFormConf = async (params: { id: string, manageId: string, formType: number }) => {
+export const getViewFormConf = async (params: { id?: string, manageId: string, formType: number }) => {
   return await request.get({ url: '/data/view-form-conf/get', params })
 }
 

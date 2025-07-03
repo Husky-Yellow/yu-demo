@@ -32,7 +32,7 @@ export interface BusinessDataListRequest extends PageParam {
   /**
    * 标签管理ID
    */
-  manageId?: number
+  manageId?: string
   /**
    * 标签ID集合,多个以逗号隔开
    */

@@ -1,8 +1,9 @@
 <template>
-    <el-form :model="form" label-width="120px">
+  <!-- 超出两个有更多搜索 -->
+    <el-form :model="form" label-width="0px">
       <el-row :gutter="16">
         <el-col v-for="field in fields" :key="field.id || field.fieldCodes" :span="8">
-          <el-form-item :label="field.fieldName" :prop="field.fieldCodes || field.id || field.hint">
+          <el-form-item :prop="field.fieldCodes || field.id || field.hint">
             <component
               :is="getComponent(field.queryType)"
               v-model="form[field.fieldCodes || field.id || field.hint]"
@@ -15,6 +16,8 @@
         <el-col :span="24" style="text-align:right; margin-top: 12px;">
           <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
+          <el-button v-if="fields.length > 2" @click="handleReset">更多搜索</el-button>
+          <el-button v-for="item in operateConfigList" :key="item.operateType" @click="handleReset">{{ item.operateName }}</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -37,7 +40,7 @@ interface SearchField {
   options?: { label: string; value: string | number }[]
 }
 
-const props = defineProps<{ fields: SearchField[] }>()
+const props = defineProps<{ fields: SearchField[], operateConfigList: any[] }>()
 const form = reactive<Record<string, any>>({})
 const emit = defineEmits(['search'])
 

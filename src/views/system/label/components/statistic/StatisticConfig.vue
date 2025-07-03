@@ -142,6 +142,7 @@ import { handleTree2, defaultProps } from '@/utils/tree'
 // 类型定义
 interface ExtendedStatisticField extends StatisticField {
   selectedOptions?: Array<{ label: string; value: string | number }>
+  bizType?: any // 允许任意类型，避免类型冲突
 }
 
 interface ExtendedStatisticItem extends StatisticItem {
@@ -151,7 +152,6 @@ interface ExtendedStatisticItem extends StatisticItem {
 // 响应式数据
 const { query } = useRoute()
 const statisticConfigFields = ref<LabelFieldConfig[]>([])
-const selectedIndex = ref<number>(-1)
 const deptList = ref<Tree[]>([])
 const statistics = ref<ExtendedStatisticItem[]>([{
   uuid: generateUUID(),
@@ -322,7 +322,7 @@ const submitForm = () => {
             data: field?.data ?? '',
             sort: index,
           }
-        })
+        }) as unknown as StatisticItem[]
 
         await LabelApi.updateCountConfigList(submitData)
         ElMessage.success('统计配置更新成功')

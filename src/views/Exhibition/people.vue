@@ -1,11 +1,12 @@
 <template>
+  <!-- 人口标签列表 07-03 新增，未与 index 同步 -->
   <ContentWrap>
     <!-- 统计卡片 -->
     <StatisticCards :config="countConfigDate" />
   </ContentWrap>
   <ContentWrap>
     <!-- 查询 -->
-    <SearchForm :fields="queryConfig" @search="onSearch" :operateConfigList="operateConfigList" />
+    <SearchForm :fields="queryConfig" @search="onSearch" />
   </ContentWrap>
   <ContentWrap>
     <!-- 表格区 -->
@@ -14,9 +15,10 @@
       :columns="columns"
       :data="tableData"
       row-key="id"
+      :actions="actionList"
     >
       <template #actions="{ row }">
-        <el-button link type="primary" @click="onAction('view', row)">查看详情</el-button>
+        <TableActions :actions="operateConfigList" :row="row" @action="onAction" />
       </template>
     </DataTable>
 
@@ -36,6 +38,7 @@ import * as BusinessDataApi from '@/api/system/business-data'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
+import TableActions from './components/TableActions.vue'
 import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
 import { OperateTypeEnum } from '@/utils/constants'
 
@@ -43,14 +46,10 @@ defineOptions({ name: 'ExhibitionList' })
 
 const route = useRoute()
 
-const countConfigDate = ref<any[]>([]) // 统计数据
-const operateConfigList = ref<any[]>([]) // 搜索表单操作列表
-const queryConfig = ref<QueryResItem[]>([]) // 搜索表单，
-const tableData = ref([]) // 表格数据
-const columns = ref<Partial<LabelFieldConfig>[]>([]) // 表格列配置
-
-
-const formModel = reactive<{ [key: string]: any }>({}) // 搜索表单数据
+const columns = ref<Partial<LabelFieldConfig>[]>([])
+const queryConfig = ref<QueryResItem[]>([])
+const formModel = reactive<{ [key: string]: any }>({})
+const operateConfigList = ref<any[]>([]) // 表格操作列表
 const loading = ref(true) // 列表的加载中
 const queryParams = reactive({
   pageNo: 1,
@@ -58,8 +57,30 @@ const queryParams = reactive({
 })
 const total = ref(0) // 列表的总页数
 
+const countConfigDate = ref<any[]>([])
+
+const actionList = [
+  { label: '查看详情', action: 'view', type: 'primary' },
+  { label: '编辑', action: 'edit', type: 'success' },
+  { label: '删除', action: 'delete', type: 'danger' }
+]
+
+const tableData = ref([
+  {
+    id: 1,
+    name: '张三',
+    idCard: '3303************11',
+    gender: '男',
+    nation: '汉',
+    grid: 'xx镇/xx村/xxx网格',
+    address: 'xx县/xx镇/xx村/xx小区/xx幢',
+    location: 'xx省/xx市/xx区',
+    updateTime: '2023/1/1 11:00:00'
+  }
+])
+
 function onSearch(params: any) {
-  // 这里可以根据params进行过滤或请求， 要处理数据
+  // 这里可以根据params进行过滤或请求
   console.log('搜索参数', params, queryConfig.value)
   console.log('搜索参数', queryConfig.value)
 }
@@ -106,8 +127,10 @@ const getCountConfigList = async (manageId) => {
   console.log('获取统计配置列表', countConfigList)
   const countData = [{ name: '牡蛎', value: 651 }]
 
+  // 将 countData 转换为 Map，提升查找性能 O(1) vs O(n)
   const countDataMap = new Map(countData.map((item) => [item.name, item.value]))
 
+  // 使用 Map 查找，避免重复遍历
   countConfigDate.value = countConfigList.map((item) => ({
     ...item,
     name: item.name || '',

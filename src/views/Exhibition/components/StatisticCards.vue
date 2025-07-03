@@ -1,40 +1,27 @@
 <template>
-  <el-row :gutter="16">
-    <el-col
-      v-for="(item, idx) in stats"
-      :key="idx"
-      :span="6"
-    >
-      <el-card shadow="hover" class="stat-card">
-        <div class="stat-label">{{ item.label }}</div>
-        <div class="stat-value">{{ item.value }}</div>
-      </el-card>
-    </el-col>
-  </el-row>
+  <div class="overflow-x-auto">
+    <div class="flex gap-4 min-w-max">
+      <div
+        v-for="(item, idx) in config"
+        :key="idx"
+        class="w-60 flex-shrink-0"
+      >
+        <el-card shadow="hover" class="text-center">
+          <div class="text-gray-500 text-sm">{{ item.name }}</div>
+          <div class="text-2xl font-bold mt-1">{{ item.value }}</div>
+        </el-card>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
 
-interface StatItem {
-  label: string
-  value: number | string
+interface StatisticItem {
+  name: string
+  value: number
 }
 
-defineProps<{ stats: StatItem[] }>()
+defineProps<{ config: StatisticItem[] }>()
 </script>
-
-<style scoped>
-.stat-card {
-  text-align: center;
-}
-.stat-label {
-  color: #888;
-  font-size: 14px;
-}
-.stat-value {
-  font-size: 22px;
-  font-weight: bold;
-  margin-top: 4px;
-}
-</style> 
