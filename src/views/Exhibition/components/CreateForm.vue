@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="dialogVisible" :title="dialogTitle" width="70%" @close="handleClose">
-    <el-form ref="fieldForm" :model="formData" label-width="100px" :rules="rules">
+  <Dialog v-model="dialogVisible" :title="dialogTitle" width="30%" @close="handleClose">
+    <el-form ref="fieldForm" :model="formData" label-width="100px" :rules="formRules">
       <el-form-item label="证件类型" prop="type">
         <!-- 下拉框 -->
         <el-select v-if="dialogType === 'people'" v-model="formData.type" placeholder="请选择证件类型">
@@ -35,11 +35,15 @@
 </template>
 
 <script setup lang="ts">
+import { FormRules } from 'element-plus'
+
+const emit = defineEmits(['submit'])
 
 const dialogVisible = ref(false) // 弹窗显示状态
 const dialogTitle = ref('') // 弹窗标题
 const dialogType = ref<'people' | 'house' | 'check' | undefined>(undefined) // 弹窗类型
 const fieldForm = ref<any>(null) // 表单引用
+const isStored = ref(false) // 是否入库
 const formData = ref<any>({
   type: '', // 证件类型
   idCard: '', // 证件号码
@@ -54,44 +58,40 @@ const titleMap = {
   house: '校验证件'
 }
 
-const validateIdCard = async (rule, value, callback) => {
+const validateIdCard = (_rule: any, value: any, callback: any) => {
   if (!value) {
     return callback(new Error('请输入证件号码'))
   }
   // 这里调用你的接口
-  try {
-    const res = await apiCheckIdCard(value) // 你自己的接口
+  apiCheckIdCard(value).then(res => {
     if (res.valid) {
       callback()
+      isStored.value = true
     } else {
       callback(new Error(res.message || '证件号码校验失败'))
+      isStored.value = false
     }
-  } catch (e) {
+  }).catch(e => {
     callback(new Error('校验接口异常'))
-  }
+  })
 }
 
-async function apiCheckIdCard(idCard) {
+async function apiCheckIdCard(idCard: string) {
   // 这里用伪代码，实际用你的请求方法
   // return await axios.post('/api/check-idcard', { idCard })
   // 假设返回 { valid: true/false, message: 'xxx' }
+  return { valid: true, message: '' }
 }
 
 
 
-const formRules = reactive({
-  name: [{ required: true, message: '组名不能为空', trigger: 'blur' }],
-  description: [{ required: true, message: '描述不能为空', trigger: 'blur' }],
-  userIds: [{ required: true, message: '成员不能为空', trigger: 'blur' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }]
-})
-
-const rules = reactive({
+const formRules = reactive<FormRules>({
   idCard: [
     { required: true, message: '请输入证件号码', trigger: 'blur' },
     { validator: validateIdCard, trigger: 'blur' }
   ]
 })
+
 
 
 // 重置表单
@@ -108,6 +108,17 @@ const handleClose = () => {
 
 const handleSubmit = () => {
   console.log('提交')
+  fieldForm.value.validate((valid: boolean) => {
+    if (valid) {
+      console.log('表单数据', formData.value)
+      emit('submit', {
+        type: dialogType.value,
+        data: formData.value
+      })
+    } else {
+      console.log('表单验证失败')
+    }
+  })
 }
 
 // 打开弹窗（支持回显）
@@ -116,6 +127,7 @@ const open = async (type: 'people' | 'house' | 'check', row?: any) => {
   dialogTitle.value = titleMap[type]
   dialogType.value = type
   dialogVisible.value = true
+  // todo zhaokun 这里好像要调接口获取下数据
 }
 
 defineExpose({ open })

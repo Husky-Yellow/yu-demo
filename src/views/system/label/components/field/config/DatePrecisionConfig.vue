@@ -1,6 +1,6 @@
 <template>
   <el-form :model="form" :rules="rules" ref="formRef" label-width="120px">
-    <el-form-item label="Code2" required v-show="type === FieldType.DATE_RANGE" prop="code2">
+    <el-form-item label="Code2" required v-if="type === FieldType.DATE_RANGE" prop="code2">
       <el-input v-model="form.code2" />
     </el-form-item>
     <el-form-item label="日期精度" required>

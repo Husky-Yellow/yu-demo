@@ -40,10 +40,10 @@ import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDe
 import { OperateTypeEnum } from '@/utils/constants'
 import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 
-defineOptions({ name: 'ExhibitionPeople' })
+defineOptions({ name: 'ExhibitionList' })
 
 const route = useRoute()
-
+const router = useRouter()
 
 const countConfigDate = ref<any[]>([]) // 统计数据
 const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
@@ -123,6 +123,12 @@ function onSearch(params: any) {
 function onAction(action: string, row: any) {
   // 这里处理表格操作
   console.log('操作', action, row)
+  router.push({
+    path: '/basic/people/detail',
+    query: {
+      id: row.id
+    }
+  })
 }
 
 const getList = async () => {
@@ -131,6 +137,10 @@ const getList = async () => {
     tableData.value = []
     const data = await BusinessDataApi.getBusinessDataPage({
       ...queryParams,
+    })
+    // tableData.value = data.list as any[]
+    tableData.value.push({
+      name: '1'
     })
     console.log('getBusinessDataPage', data)
   } finally {
@@ -197,8 +207,8 @@ const getQueryConfList = async (manageId: string) => {
 }
 
 const init = async () => {
-  // const manageId = (route.meta.manageId as string) || '1938148839818596353'
-  const manageId = '1938148839818596353'
+  const manageId = (route.meta.manageId as string) || '1938148839818596353'
+  // const manageId = '1938148839818596353'
   queryParams.manageId = manageId
   // 获取字段配置
   const res = await fetchFieldConfig(manageId)
