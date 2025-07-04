@@ -2,26 +2,26 @@
   <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
     <el-form-item label="文本类型" prop="textType" >
       <el-radio-group v-model="form.textType">
-        <el-radio v-for="(item, index) in TextTypeOptions" :key="item.value" :value="index">{{
+        <el-radio v-for="(item, index) in TextTypeOptions" :key="item.value" :value="`${index}`">{{
           item.label
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="是否进行查重校验" prop="duplicateCheck" >
       <el-radio-group v-model="form.duplicateCheck">
-        <el-radio v-for="(item, index) in DuplicateCheckOptions" :key="item.value" :value="index">{{
+        <el-radio v-for="(item, index) in DuplicateCheckOptions" :key="item.value" :value="`${index}`">{{
           item.label
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="数据校验" prop="dataValidation" >
       <el-radio-group v-model="form.dataValidation">
-        <el-radio v-for="(item, index) in DataValidationOptions" :key="index" :value="index">{{
+        <el-radio v-for="(item, index) in DataValidationOptions" :key="index" :value="`${index}`">{{
           item.label
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
-    <template v-if="form.dataValidation === 2">
+    <template v-if="form.dataValidation === '2'">
       <el-form-item label="输入正则代码" prop="regex" >
         <el-input
           v-model="form.regex"
@@ -29,7 +29,7 @@
         />
       </el-form-item>
     </template>
-    <template v-if="form.dataValidation !== 0">
+    <template v-if="form.dataValidation !== '0'">
       <el-form-item label="触发提示" prop="prompt" >
         <el-input v-model="form.prompt" :placeholder="promptMap[form.dataValidation]" />
       </el-form-item>
@@ -63,9 +63,9 @@ const props = defineProps<{
 
 const form = reactive<TextFieldForm>({
   ...defaultTextFieldForm,
-  ...(props.modelValue ? Object.fromEntries(
-    Object.keys(defaultTextFieldForm).map(key => [key, props.modelValue?.[key as keyof TextFieldForm] ?? defaultTextFieldForm[key as keyof TextFieldForm]])
-  ) : {})
+  ...Object.fromEntries(
+    Object.entries(props.modelValue ?? {}).filter(([_, v]) => v !== undefined)
+  )
 })
 const formRef = ref<FormInstance>()
 
@@ -78,7 +78,7 @@ const rules: FormRules = {
     { required: true, message: '请输入正则表达式', trigger: 'blur' },
     {
       validator: (_rule, value, callback) => {
-        if (form.dataValidation === 2 && value) {
+        if (form.dataValidation === '2' && value) {
           try {
             new RegExp(value)
             callback()
@@ -98,7 +98,7 @@ const rules: FormRules = {
       message: '请输入触发提示',
       trigger: 'blur',
       validator: (_rule, value, callback) => {
-        if (form.dataValidation !== 0 && !value) {
+        if (form.dataValidation !== '0' && !value) {
           callback(new Error('请输入触发提示'))
         } else {
           callback()

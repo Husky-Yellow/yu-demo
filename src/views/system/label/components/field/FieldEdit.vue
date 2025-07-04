@@ -326,12 +326,17 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
     : row
   if (dataSource) {
     const isRadioOrCheckbox = dataSource.fieldType === FieldType.RADIO || dataSource.fieldType === FieldType.CHECKBOX
+    console.log('dataSource', dataSource)
+
     const fieldConfExt = dataSource?.fieldConfExtDOList?.length
       ? (isRadioOrCheckbox
           ? dataSource.fieldConfExtDOList[0]
           : convertArrayToObject(JSON.parse(JSON.stringify(dataSource.fieldConfExtDOList))))
       : { ...defaultFieldConfExt }
+
+    console.log('fieldConfExt', fieldConfExt)
     Object.assign(form, dataSource, { fieldConfExt })
+    console.log('form', form)
   }
 
   dialogVisible.value = true

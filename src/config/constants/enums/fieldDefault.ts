@@ -8,11 +8,11 @@ import { BooleanEnum, OperateType } from '@/config/constants/enums/label'
  */
 export const defaultTextFieldForm = {
   /** 文本类型 */
-  textType: 0,
+  textType: '0',
   /** 重复检查 */
-  duplicateCheck: 0,
+  duplicateCheck: '0',
   /** 数据验证 */
-  dataValidation: 0,
+  dataValidation: '0',
   /** 正则表达式 */
   regex: '',
   /** 提示信息 */
@@ -25,9 +25,9 @@ export const defaultTextFieldForm = {
  */
 export const defaultNumberFieldForm = {
   /** 数字类型 */
-  numberType: 0,
+  numberType: '0',
   /** 重复检查 */
-  duplicateCheck: 0,
+  duplicateCheck: '0',
   /** 小数位数 */
   decimalPlaces: 0
 }
@@ -38,7 +38,7 @@ export const defaultNumberFieldForm = {
  */
 export const defaultDatePrecisionForm = {
   /** 日期精度 */
-  datePrecision: 0,
+  datePrecision: '0',
   /** Code2 */
   code2: ''
 }
