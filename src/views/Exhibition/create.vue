@@ -10,7 +10,7 @@
             <el-col
               v-for="field in fieldGroup.fields"
               :key="field.id"
-              :span="getFieldSpan(field)"
+              :span="getFieldSpan(fieldGroup)"
               v-show="isFieldVisible(field)"
             >
               <el-form-item :label="field.name" :prop="field.code" :required="field.required">
@@ -42,8 +42,8 @@
                   range-separator="至"
                   start-placeholder="开始时间"
                   end-placeholder="结束时间"
-                  format="YYYY-MM-DD HH:mm:ss"
-                  value-format="YYYY-MM-DD HH:mm:ss"
+                 :format="getTimePickerFormat(field)"
+                  :value-format="getTimePickerFormat(field)"
                   :placeholder="field.placeholder || `请选择${field.name}`"
                 />
                 <!-- 单个时间选择器 -->
@@ -53,7 +53,7 @@
                   v-model="formData[field.code]"
                   :type="getTimePickerType(field)"
                   :format="getTimePickerFormat(field)"
-                  :value-format="getTimePickerValueFormat(field)"
+                  :value-format="getTimePickerFormat(field)"
                   :placeholder="field.placeholder || `请选择${field.name}`"
                 />
               </el-form-item>
@@ -132,27 +132,6 @@ const getTimePickerFormat = (field: any) => {
   }
 }
 
-// 获取时间选择器值格式
-const getTimePickerValueFormat = (field: any) => {
-  const datePrecision = getFieldConfigValue(field, 'datePrecision')
-  switch (datePrecision) {
-    case '0':
-      return 'YYYY'
-    case '1':
-      return 'YYYY/MM'
-    case '2':
-      return 'YYYY/MM/DD'
-    case '3':
-      return 'YYYY/MM/DD HH:00'
-    case '4':
-      return 'YYYY/MM/DD HH:mm'
-    case '5':
-      return 'YYYY/MM/DD HH:mm:ss'
-    default:
-      return 'YYYY/MM/DD HH:mm:ss'
-  }
-}
-
 // 获取字段配置值
 const getFieldConfigValue = (field: any, configName: string) => {
   if (!field.fieldConfExtDOList) return ''
@@ -161,9 +140,14 @@ const getFieldConfigValue = (field: any, configName: string) => {
 }
 
 // 获取字段占用的列数
-const getFieldSpan = (field: any) => {
+const getFieldSpan = (fieldGroup: any) => {
   // 所有字段都占用12列，一行显示2个字段
-  return 12
+  const fields = fieldGroup.fields.length
+  if (fields === 1) {
+    return 24
+  } else {
+    return 12
+  }
 }
 
 // 判断字段是否应该显示
