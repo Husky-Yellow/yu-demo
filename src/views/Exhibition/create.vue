@@ -85,8 +85,34 @@ const formData = ref<any>({})
 const formRules = reactive<FormRules>({})
 
 // 获取字段选项
-const getFieldOptions = (field: any) => {
-  // 根据字段配置返回选项，暂时返回空数组
+const getFieldOptions = (field: any): Array<{ label: string; value: string | number }> => {
+  // 根据字段配置返回选项
+  if (field.code === 'gender') {
+    return [
+      { label: '男', value: 'male' },
+      { label: '女', value: 'female' },
+      { label: '其他', value: 'other' }
+    ]
+  }
+  if (field.code === 'education') {
+    return [
+      { label: '小学', value: 'primary' },
+      { label: '初中', value: 'junior' },
+      { label: '高中', value: 'senior' },
+      { label: '大专', value: 'college' },
+      { label: '本科', value: 'bachelor' },
+      { label: '硕士', value: 'master' },
+      { label: '博士', value: 'doctor' }
+    ]
+  }
+  if (field.code === 'status') {
+    return [
+      { label: '在职', value: 'active' },
+      { label: '离职', value: 'inactive' },
+      { label: '实习', value: 'intern' }
+    ]
+  }
+  // 默认返回空数组
   return []
 }
 
@@ -360,6 +386,37 @@ const init = async () => {
               optionsJson: '{}'
             }
           ]
+        },
+        {
+          id: '1940674274209079299',
+          code: 'gender',
+          name: '性别',
+          sort: 9,
+          length: 10,
+          remark: '选择性别',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: true,
+          fieldType: 2,
+          createTime: 1751527778000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: { value: '0' },
+          fieldConfExtDOList: []
         }
       ],
       showPlaceholder: false
@@ -489,6 +546,37 @@ const init = async () => {
               optionsJson: '{}'
             }
           ]
+        },
+        {
+          id: '1940687680404234242',
+          code: 'education',
+          name: '学历',
+          sort: 10,
+          length: 10,
+          remark: '选择学历',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: false,
+          fieldType: 2,
+          createTime: 1751530974000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: { value: '0' },
+          fieldConfExtDOList: []
         }
       ],
       showPlaceholder: false
@@ -559,9 +647,9 @@ const init = async () => {
           required: false,
           placeholder: '',
           linkage: {
-            enabled: false,
-            targetFieldId: null,
-            targetFieldValue: null,
+            enabled: true,
+            targetFieldId: '1940687680404234242',
+            targetFieldValue: 'primary',
             effect: 'show',
             condition: 'equals'
           }
@@ -585,6 +673,37 @@ const init = async () => {
             effect: 'show',
             condition: 'equals'
           }
+        },
+        {
+          id: '1940700568388911107',
+          code: 'status',
+          name: '状态',
+          sort: 12,
+          length: 10,
+          remark: '选择状态',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: false,
+          fieldType: 2,
+          createTime: 1751597983000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: { value: '0' },
+          fieldConfExtDOList: []
         }
       ],
       showPlaceholder: false

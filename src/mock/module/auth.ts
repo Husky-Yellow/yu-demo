@@ -317,6 +317,32 @@ export default [
                                     "keepAlive": true,
                                     "alwaysShow": true,
                                     "children": null
+                                },
+                                {
+                                    "id": "1939892414574071809",
+                                    "parentId": "1939892075393290241",
+                                    "name": "实有人口创建",
+                                    "path": "create",
+                                    "component": "Exhibition/create",
+                                    "componentName": "ExhibitionCreate",
+                                    "icon": "ep:add-location",
+                                    "visible": true,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                                {
+                                    "id": "1939892414574071809",
+                                    "parentId": "1939892075393290241",
+                                    "name": "实有人口详情",
+                                    "path": "detail",
+                                    "component": "Exhibition/detail",
+                                    "componentName": "ExhibitionDetail",
+                                    "icon": "ep:add-location",
+                                    "visible": true,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
                                 }
                             ]
                         }

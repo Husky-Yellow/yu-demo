@@ -17,6 +17,7 @@
         <el-button type="primary" @click="handleSearch">搜索</el-button>
         <el-button @click="handleReset">重置</el-button>
         <el-button v-if="fields.length > 2" @click="handleReset">更多搜索</el-button>
+        <el-button type="primary" @click="handleCreate">新建</el-button>
         <el-button
           v-for="item in operateConfigList"
           :key="item.operateType"
@@ -135,6 +136,10 @@ function handleOperate(item: ExhibitionOperate) {
     // 打开删除
   }
   console.log('操作', item)
+}
+
+function handleCreate() {
+  createFormRef.value?.open('people')
 }
 
 function handleSubmit(data: any) {
