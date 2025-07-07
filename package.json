@@ -131,16 +131,6 @@
     "vue-eslint-parser": "^9.3.2",
     "vue-tsc": "^1.8.27"
   },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://gitee.com/yudaocode/yudao-ui-admin-vue3"
-  },
-  "bugs": {
-    "url": "https://gitee.com/yudaocode/yudao-ui-admin-vue3/issues"
-  },
-  "homepage": "https://gitee.com/yudaocode/yudao-ui-admin-vue3",
-  "web-types": "./web-types.json",
   "engines": {
     "node": ">= 22.0.0",
     "pnpm": ">= 10.11.0"

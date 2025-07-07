@@ -1,0 +1,15 @@
+---
+description: TypeScript coding standards
+globs: **/*.ts,**/*.tsx
+priority: 1
+---
+# TypeScript Coding Standards
+## 基本规范
+- 使用 `const` 而不是 `let` 来声明常量
+- 使用 `const` 而不是 `let` 来声明变量
+- 使用2个空格缩进
+- 显式声明函数返回类型
+- 使用单引号
+- 使用箭头函数
+- 使用解构赋值
+- 避免使用 `any` 类型

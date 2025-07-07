@@ -17,7 +17,6 @@
         <el-button type="primary" @click="handleSearch">搜索</el-button>
         <el-button @click="handleReset">重置</el-button>
         <el-button v-if="fields.length > 2" @click="handleReset">更多搜索</el-button>
-        <el-button type="primary" @click="handleCreate">新建</el-button>
         <el-button
           v-for="item in operateConfigList"
           :key="item.operateType"
@@ -61,7 +60,6 @@ const form = reactive<Record<string, any>>({})
 const emit = defineEmits(['search'])
 
 const createFormRef = ref<InstanceType<typeof CreateForm>>()
-const createFormType = ref<string>('')
 
 initForm()
 watch(() => props.fields, initForm, { deep: true })
@@ -136,10 +134,6 @@ function handleOperate(item: ExhibitionOperate) {
     // 打开删除
   }
   console.log('操作', item)
-}
-
-function handleCreate() {
-  createFormRef.value?.open('people')
 }
 
 function handleSubmit(data: any) {
