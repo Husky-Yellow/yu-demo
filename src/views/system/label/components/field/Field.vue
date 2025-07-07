@@ -10,17 +10,18 @@
         />
       </el-col>
       <el-col :span="6" :offset="8">
-        <el-button @click="openForm">添加基础字段</el-button>
-        <el-button :disabled="multipleSelection.length !== 1" type="primary" @click="handleEdit"
+        <el-button :disabled="isLoading" @click="openForm">添加基础字段</el-button>
+        <el-button :disabled="multipleSelection.length !== 1 || isLoading" type="primary" @click="handleEdit"
           >编辑</el-button
         >
         <!-- 长度为1 且 id 为空 才可以删除 -->
-        <el-button :disabled="!(multipleSelection.length === 1 && !multipleSelection[0].id)" type="success" @click="handleDelete"
+        <el-button :disabled="!(multipleSelection.length === 1 && !multipleSelection[0].id) || isLoading" type="success" @click="handleDelete"
           >删除</el-button
         >
       </el-col>
     </el-row>
     <el-table
+      v-loading="isLoading"
       ref="tableRef"
       :data="tableData.filter(item => item.parentCode === '0')"
       stripe
@@ -127,7 +128,8 @@ const tableRef = ref<TableInstance | null>(null)
 const multipleSelection = ref<LabelFieldConfig[]>([])
 const sortable = ref(null)
 const tableData = ref<LabelFieldConfig[]>([])
-const selectable = (row: LabelFieldConfig) => ![BooleanEnum.TRUE].includes(row.bizType)
+const selectable = (row: LabelFieldConfig) => ![BooleanEnum.TRUE].includes(row.bizType) // 系统标签不能选中
+const isLoading = ref(false) // 是否加载中
 
 // 初始化 Sortable
 const initSortable = () => {
@@ -170,15 +172,22 @@ const handleRowClick = (row: LabelFieldConfig) => {
 }
 
 const getDataFieldConfListByManageId = async () => {
-  const res = await LabelApi.getFieldConfigList({
-    manageId: query.manageId as string
-  })
-  tableData.value = (res || []).map(item => {
+  isLoading.value = true
+  try {
+    const res = await LabelApi.getFieldConfigList({
+      manageId: query.manageId as string
+    })
+    tableData.value = (res || []).map(item => {
     return {
       ...item,
       uuid: item.id ? item.id : generateUUID()
     }
   })
+  } catch (error) {
+    message.error('获取数据失败，请稍后重试')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // 生命周期钩子
@@ -251,6 +260,7 @@ const handleViewFlag = (row: LabelFieldConfig, flag: string) => {
 }
 
 const saveTableData = async () => {
+  isLoading.value = true
   const data = tableData.value.map((item, index) => omit({
     ...item,
     sort: index + 1
@@ -261,6 +271,8 @@ const saveTableData = async () => {
     getDataFieldConfListByManageId()
   }).catch(() => {
     message.error('保存失败，请稍后重试')
+  }).finally(() => {
+    isLoading.value = false
   })
 }
 
