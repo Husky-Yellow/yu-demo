@@ -546,9 +546,9 @@ export const subString = (str: string, start: number, end: number) => {
  * @property {'string'|'number'|'boolean'|'array'} [type] - 值的类型（可选）
  */
 interface ArrayItem {
-  optionsJson: readonly [{ readonly label: "单行文本"; readonly value: "single" }, { readonly label: "多行文本"; readonly value: "multi" }] | readonly [{ readonly label: "校验"; readonly value: "check" }, { readonly label: "不校验"; readonly value: "noCheck" }] | readonly [{ readonly label: "不校验"; readonly value: "none" }, { readonly label: "自定义正则代码"; readonly value: "custom" }, { readonly label: "身份证校验"; readonly value: "idCard" }, { readonly label: "统一社会信用代码校验"; readonly value: "creditCode" }, { readonly label: "手机号校验"; readonly value: "mobile" }, { readonly label: "电话号码校验"; readonly value: "phone" }]
   name: string;
   value: string | number | boolean | string[];
+  type?: 'string' | 'number' | 'boolean' | 'array';
 }
 
 /**
@@ -620,4 +620,70 @@ export const convertArrayToObject = (
     }
     return acc;
   }, {} as Record<string, any>);
+}
+
+
+/**
+ * 开发环境下的日志输出函数
+ * @param value - 要输出的值
+ * @param label - 可选的标签，用于标识日志来源
+ * @param type - 日志类型，默认为 'log'
+ */
+export const consoleLog = <T>(
+  value: T,
+  label?: string,
+  type: 'log' | 'warn' | 'error' | 'info' = 'log'
+): void => {
+  if (import.meta.env.DEV) {
+    const prefix = label ? `[${label}]` : ''
+    const message = prefix ? `${prefix} ${value}` : value
+
+    switch (type) {
+      case 'warn':
+        console.warn(message)
+        break
+      case 'error':
+        console.error(message)
+        break
+      case 'info':
+        console.info(message)
+        break
+      default:
+        console.log(message)
+    }
+  }
+}
+
+/**
+ * 开发环境下的对象日志输出函数
+ * @param obj - 要输出的对象
+ * @param label - 可选的标签
+ */
+export const consoleLogObject = <T extends Record<string, unknown>>(
+  obj: T,
+  label?: string
+): void => {
+  if (import.meta.env.DEV) {
+    const prefix = label ? `[${label}]` : ''
+    console.group(prefix || 'Object Log')
+    console.log(obj)
+    console.groupEnd()
+  }
+}
+
+/**
+ * 开发环境下的表格日志输出函数
+ * @param data - 要输出的表格数据
+ * @param label - 可选的标签
+ */
+export const consoleLogTable = <T>(
+  data: T[],
+  label?: string
+): void => {
+  if (import.meta.env.DEV) {
+    const prefix = label ? `[${label}]` : ''
+    console.group(prefix || 'Table Log')
+    console.table(data)
+    console.groupEnd()
+  }
 }

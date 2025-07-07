@@ -1,9 +1,10 @@
 import { Ref, ComputedRef, markRaw } from 'vue'
 import { ElInput, ElSelect, ElDatePicker, ElUpload, ElInputNumber } from 'element-plus'
-import { FieldType } from '@/config/constants/enums/field'
+import { FieldType, TextTypeOptions } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import * as LabelApi from '@/api/system/label'
-import * as DictTypeApi from '@/api/system/dict/dict.type'
+import { convertArrayToObject } from '@/utils'
+
 
 export interface Placeholder {
   id: string
@@ -71,7 +72,7 @@ export function useFormEditHandlers({
     const field = availableFields.value.find((f) => f.id === fieldId)
     // 获取字段详情
     const detail = await LabelApi.getFieldConfigDetail({ 'id': fieldId as string })
-    // 如果是单选、多选、则需要特殊处理 再调词典查询接口
+    // todo zhaokun 如果是单选、多选、则需要特殊处理 再调词典查询接口
     if (detail.fieldType === FieldType.RADIO || detail.fieldType === FieldType.CHECKBOX) {
       // const data = await DictTypeApi.getDictDataPage({
       //   pageNo: 1,
@@ -80,18 +81,15 @@ export function useFormEditHandlers({
       // })
       // console.log('res', data)
     }
-    console.log('field detail',field,  detail)
 
     if (field && !isFieldUsed(fieldId)) {
 
-      const fieldConfExtObj = detail.fieldConfExtDOList.find(item => item.name === "textType")?.value
+      const fieldConfExtObj = convertArrayToObject(detail.fieldConfExtDOList)
 
       const newField = cloneField({
         ...detail,
         ...field,
-        fieldConfExtObj: {
-          value: fieldConfExtObj,
-        }
+        fieldConfExtObj
       }) as LabelDragField
       formRows.value.push({
         id: field.id,
@@ -235,47 +233,40 @@ export function useFormEditHandlers({
   }
 
   /**
-   * 获取字段组件类型
-   * @param field 字段
-   * @returns 字段组件类型
+   * 根据字段类型返回表单组件配置
+   * @param field - 字段对象
    */
   const getFieldComponentType = (field: LabelDragField) => {
-    // console.log('getFieldComponentType', field)
-
+    const baseConfig = { disabled: true }
     switch (field.fieldType) {
-      case FieldType.TEXT:
-        if (field.fieldConfExtObj?.value === 'multi') {
-          return {
-            type: 'textarea',
-            rows: 2,
-            disabled: true,
-          }
-        }
-        return null
+      case FieldType.TEXT: {
+        const isTextarea = field.fieldConfExtObj?.value === TextTypeOptions[1].value
+        return isTextarea
+          ? { ...baseConfig, type: 'textarea', rows: 2 }
+          : { ...baseConfig }
+      }
       case FieldType.DATE_RANGE:
         return {
+          ...baseConfig,
           type: 'daterange',
           rangeSeparator: '至',
           startPlaceholder: '开始日期',
           endPlaceholder: '结束日期',
-          disabled: true,
         }
       case FieldType.ATTACHMENT:
         return {
+          ...baseConfig,
           'list-type': 'picture-card',
           accept: 'image/*',
           limit: 1,
           multiple: false,
-          disabled: true,
           drag: true,
           showFileList: false,
           action: '/mock-upload',
           style: 'width: 100%',
         }
       default:
-        return {
-          disabled: true,
-        }
+        return { ...baseConfig }
     }
   }
 

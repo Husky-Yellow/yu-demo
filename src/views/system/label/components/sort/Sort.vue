@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-3 h-full">
+  <div class="flex gap-3 h-full p-2">
     <!-- 左侧选择排序字段区域 -->
     <div class="bg-white rounded-[6px] shadow-[0_2px_8px_#f0f1f2] p-4 w-[240px]">
       <div class="font-bold mb-16px">选择排序字段</div>

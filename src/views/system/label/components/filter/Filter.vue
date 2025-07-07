@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-3 h-full">
+  <div class="flex gap-3 h-full p-2">
     <!-- 左侧选择筛选字段区域 -->
     <div class="bg-white rounded-2 shadow p-6 w-60">
       <div class="font-bold mb-16px">选择筛选字段</div>

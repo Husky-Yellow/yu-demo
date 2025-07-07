@@ -2,7 +2,7 @@
   <ContentWrap>
     <div class="relative h-[calc(100vh-160px)]">
       <div class="absolute right-36px z-2">
-        <el-button type="primary" @click="save">保存</el-button>
+        <el-button type="primary" @click="save" :loading="saveLoading">保存</el-button>
       </div>
       <el-tabs v-model="activeName">
         <el-tab-pane
@@ -16,6 +16,7 @@
             :is="tab.component"
             :ref="(el) => setComponentRef(el, tab.name)"
             :tab="tab"
+            @update:tab="updateTab"
           />
         </el-tab-pane>
       </el-tabs>
@@ -37,6 +38,8 @@ interface TabConfig {
   component: Component
   saveMethod?: keyof SaveableComponent
 }
+
+const saveLoading = ref(false)
 
 const tabsConfig: readonly TabConfig[] = [
   { name: 'field', label: '字段配置', component: defineAsyncComponent(() => import('../../components/field/Field.vue')), saveMethod: 'saveTableData' },
@@ -74,11 +77,16 @@ const save = () => {
   const saveMethod = componentInstance?.[tab.saveMethod]
 
   if (typeof saveMethod === 'function') {
+    saveLoading.value = true
     saveMethod()
   } else {
     console.error(
       `Save method '${tab.saveMethod}' not found on component for tab '${tab.name}'.`
     )
   }
+}
+
+const updateTab = () => {
+  saveLoading.value = false
 }
 </script>

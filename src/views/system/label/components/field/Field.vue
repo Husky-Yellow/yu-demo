@@ -122,7 +122,7 @@ const props = defineProps({
 })
 const { query } = useRoute() // 查询参数
 const message = useMessage() // 消息弹窗
-const emits = defineEmits(['edit', 'delete'])
+const emits = defineEmits(['update:tab'])
 
 const tableRef = ref<TableInstance | null>(null)
 const multipleSelection = ref<LabelFieldConfig[]>([])
@@ -260,12 +260,12 @@ const handleViewFlag = (row: LabelFieldConfig, flag: string) => {
 }
 
 const saveTableData = async () => {
-  isLoading.value = true
   const data = tableData.value.map((item, index) => omit({
     ...item,
     sort: index + 1
   }, ['uuid']))
   handleSelectionChange([])
+  isLoading.value = true
   await LabelApi.updateFieldConfigList(data).then(() => {
     message.success('保存成功')
     getDataFieldConfListByManageId()
@@ -273,6 +273,7 @@ const saveTableData = async () => {
     message.error('保存失败，请稍后重试')
   }).finally(() => {
     isLoading.value = false
+    emits('update:tab', true)
   })
 }
 

@@ -21,7 +21,7 @@
         }}</el-radio>
       </el-radio-group>
     </el-form-item>
-    <template v-if="form.dataValidation === '2'">
+    <template v-if="form.dataValidation === '1'">
       <el-form-item label="输入正则代码" prop="regex" >
         <el-input
           v-model="form.regex"
@@ -31,7 +31,7 @@
     </template>
     <template v-if="form.dataValidation !== '0'">
       <el-form-item label="触发提示" prop="prompt" >
-        <el-input v-model="form.prompt" :placeholder="promptMap[form.dataValidation]" />
+        <el-input v-model="form.prompt" :placeholder="promptMap[form.dataValidation] || '请输入触发提示'" />
       </el-form-item>
     </template>
   </el-form>
@@ -54,6 +54,7 @@ const promptMap = {
   'email': '请输入正确的邮箱',
   'custom': '请输入正确的正则表达式',
   'phone': '请输入正确的手机号',
+  '1': '请输入正确的正则表达式',
 }
 
 

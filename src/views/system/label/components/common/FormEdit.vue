@@ -1,161 +1,163 @@
 <template>
-  <el-radio-group v-show="tab.name === 'formEdit'" v-model="activeMode" @change="fetchFormData">
-    <el-radio-button :value="1">新增表单</el-radio-button>
-    <el-radio-button :value="2">编辑表单</el-radio-button>
-  </el-radio-group>
-  <div v-loading="loading" class="flex gap-2 h-[calc(100vh-260px)] bg-gray-100 p-2 mt-2">
-    <div class="w-60 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
-      <h3 class="text-base font-semibold border-b border-gray-100 pb-[10px]">数据字段</h3>
-      <div class="flex flex-col">
-        <FieldPoolItem
-          v-for="element in availableFields"
-          :key="element.id"
-          :draggable="!isFieldUsed(element.id!)"
-          @dragstart="handleDragStart($event, element)"
-          @dragend="handleDragEnd"
-          :hasKeyString="'id'"
-          :element="element"
-          :isFieldUsed="isFieldUsed"
-        />
-      </div>
-    </div>
-
-    <!-- Center Panel: Form Canvas -->
-    <div class="bg-white rounded shadow-sm p-4 h-full overflow-y-auto flex-grow flex flex-col">
-      <div class="mb-4 flex-shrink-0">
-        <el-button type="success" link @click="oneClickLayout">一键布局</el-button>
-        <el-button type="primary" v-show="tab.name === 'formEdit'" link @click="viewLinkage">查看关联关系</el-button>
-      </div>
-      <div class="flex-grow flex flex-col" @dragover.prevent @drop="handleDropOnCanvas">
-        <draggable
-          v-if="formRows.length > 0"
-          v-model="formRows"
-          class="flex-grow min-h-[calc(100%-16px)] p-2 rounded"
-          group="rows-group"
-          handle=".row-drag-handle"
-          item-key="id"
-          :disabled="isDraggingNewField"
-        >
-          <template #item="{ element: row, index: rowIndex }">
-            <div
-              v-if="row.fields"
-              class="form-row-wrapper"
-              :class="{ 'active-row': isRowSelected(row) }"
-            >
-              <div class="row-actions">
-                <el-icon
-                  v-if="row.fields.length === 1 && !row.showPlaceholder"
-                  title="添加新列"
-                  class="row-action-icon"
-                  @click="addColumn(row)"
-                >
-                  <Plus />
-                </el-icon>
-                <el-icon title="拖拽整行" class="row-action-icon row-drag-handle">
-                  <Rank />
-                </el-icon>
-                <el-icon
-                  title="删除整行"
-                  class="row-action-icon row-delete-icon"
-                  @click="deleteRow(rowIndex)"
-                >
-                  <Delete />
-                </el-icon>
-              </div>
-              <div class="field-drop-container">
-                <draggable
-                  v-model="row.fields"
-                  class="field-drop-zone"
-                  group="fields-group"
-                  item-key="id"
-                >
-                  <template #item="{ element: field }">
-                    <div class="form-field-col">
-                      <div
-                        class="form-field-wrapper"
-                        :class="{ active: selectedField?.id === field.id }"
-                        @click="selectField(field)"
-                      >
-                        <div class="field-actions">
-                          <el-icon
-                            title="删除字段"
-                            class="delete-icon"
-                            @click.stop="deleteField(row, field)"
-                          >
-                            <Delete />
-                          </el-icon>
-                        </div>
-                        <el-form-item :label="field.name" :required="field.required">
-                          <!-- 上传组件 -->
-                          <template v-if="field.fieldType === FieldType.ATTACHMENT">
-                            <el-upload
-                              v-bind="getFieldComponentType(field)"
-                              v-model:file-list="field.fileList"
-                            >
-                              <el-icon><Plus /></el-icon>
-                              <template #tip>
-                                <div class="el-upload__tip">
-                                  (请上传不超过5M文件，最多上传1个文件，支持上传jpeg、bmp、jpg、png、pdf等格式文件)
-                                </div>
-                              </template>
-                            </el-upload>
-                          </template>
-                          <!-- 其他组件 -->
-                          <template v-else>
-                            <component
-                              :is="getFieldComponent(field.fieldType)"
-                              v-bind="getFieldComponentType(field)"
-                              :placeholder="field.placeholder"
-                              style="width: 100%"
-                            />
-                          </template>
-                        </el-form-item>
-                      </div>
-                    </div>
-                  </template>
-                </draggable>
-                <div
-                  v-if="row.showPlaceholder"
-                  class="placeholder-drop-zone form-field-col"
-                  @dragover.prevent
-                  @drop.stop="handleDropOnPlaceholder(row, $event)"
-                >
-                  <el-icon>
-                    <Plus />
-                  </el-icon>
-                  <span>将字段拖到此处</span>
-                </div>
-              </div>
-            </div>
-          </template>
-        </draggable>
-        <div
-          v-else
-          class="empty-canvas-placeholder flex-grow flex flex-col justify-center items-center h-full border-2 border-dashed border-gray-300 rounded text-gray-500 text-sm"
-        >
-          <el-icon>
-            <Plus />
-          </el-icon>
-          <span>将左侧字段拖到此处创建新行</span>
+  <div v-loading="loading">
+    <el-radio-group v-show="tab.name === 'formEdit'" v-model="activeMode" @change="fetchFormData">
+      <el-radio-button :value="1">新增表单</el-radio-button>
+      <el-radio-button :value="2">编辑表单</el-radio-button>
+    </el-radio-group>
+    <div v-loading="loading" class="flex gap-2 h-[calc(100vh-260px)] bg-gray-100 p-2 mt-2">
+      <div class="w-60 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
+        <h3 class="text-base font-semibold border-b border-gray-100 pb-[10px]">数据字段</h3>
+        <div class="flex flex-col">
+          <FieldPoolItem
+            v-for="element in availableFields"
+            :key="element.id"
+            :draggable="!isFieldUsed(element.id!)"
+            @dragstart="handleDragStart($event, element)"
+            @dragend="handleDragEnd"
+            :hasKeyString="'id'"
+            :element="element"
+            :isFieldUsed="isFieldUsed"
+          />
         </div>
       </div>
-    </div>
 
-    <div
-      v-show="tab.name === 'formEdit'"
-      class="w-[320px] flex-shrink-0 bg-white rounded shadow-sm p-4  h-full overflow-y-auto"
-    >
-      <h3 class="text-base font-semibold mb-4 border-b border-gray-100 pb-[10px]">字段配置</h3>
-      <div v-if="selectedField">
-        <FieldPropertyForm
-          :field="selectedField"
-          :other-fields="otherFields"
-          :linked-field-options="linkedFieldOptions"
-          @update:field="updateField"
-        />
+      <!-- Center Panel: Form Canvas -->
+      <div class="bg-white rounded shadow-sm p-4 h-full overflow-y-auto flex-grow flex flex-col">
+        <div class="mb-4 flex-shrink-0">
+          <el-button type="success" link @click="oneClickLayout">一键布局</el-button>
+          <el-button type="primary" v-show="tab.name === 'formEdit'" link @click="viewLinkage">查看关联关系</el-button>
+        </div>
+        <div class="flex-grow flex flex-col" @dragover.prevent @drop="handleDropOnCanvas">
+          <draggable
+            v-if="formRows.length > 0"
+            v-model="formRows"
+            class="flex-grow min-h-[calc(100%-16px)] p-2 rounded"
+            group="rows-group"
+            handle=".row-drag-handle"
+            item-key="id"
+            :disabled="isDraggingNewField"
+          >
+            <template #item="{ element: row, index: rowIndex }">
+              <div
+                v-if="row.fields"
+                class="form-row-wrapper"
+                :class="{ 'active-row': isRowSelected(row) }"
+              >
+                <div class="row-actions">
+                  <el-icon
+                    v-if="row.fields.length === 1 && !row.showPlaceholder"
+                    title="添加新列"
+                    class="row-action-icon"
+                    @click="addColumn(row)"
+                  >
+                    <Plus />
+                  </el-icon>
+                  <el-icon title="拖拽整行" class="row-action-icon row-drag-handle">
+                    <Rank />
+                  </el-icon>
+                  <el-icon
+                    title="删除整行"
+                    class="row-action-icon row-delete-icon"
+                    @click="deleteRow(rowIndex)"
+                  >
+                    <Delete />
+                  </el-icon>
+                </div>
+                <div class="field-drop-container">
+                  <draggable
+                    v-model="row.fields"
+                    class="field-drop-zone"
+                    group="fields-group"
+                    item-key="id"
+                  >
+                    <template #item="{ element: field }">
+                      <div class="form-field-col">
+                        <div
+                          class="form-field-wrapper"
+                          :class="{ active: selectedField?.id === field.id }"
+                          @click="selectField(field)"
+                        >
+                          <div class="field-actions">
+                            <el-icon
+                              title="删除字段"
+                              class="delete-icon"
+                              @click.stop="deleteField(row, field)"
+                            >
+                              <Delete />
+                            </el-icon>
+                          </div>
+                          <el-form-item :label="field.name" :required="field.required">
+                            <!-- 上传组件 -->
+                            <template v-if="field.fieldType === FieldType.ATTACHMENT">
+                              <el-upload
+                                v-bind="getFieldComponentType(field)"
+                                v-model:file-list="field.fileList"
+                              >
+                                <el-icon><Plus /></el-icon>
+                                <template #tip>
+                                  <div class="el-upload__tip">
+                                    (请上传不超过5M文件，最多上传1个文件，支持上传jpeg、bmp、jpg、png、pdf等格式文件)
+                                  </div>
+                                </template>
+                              </el-upload>
+                            </template>
+                            <!-- 其他组件 -->
+                            <template v-else>
+                              <component
+                                :is="getFieldComponent(field.fieldType)"
+                                v-bind="getFieldComponentType(field)"
+                                :placeholder="field.placeholder"
+                                style="width: 100%"
+                              />
+                            </template>
+                          </el-form-item>
+                        </div>
+                      </div>
+                    </template>
+                  </draggable>
+                  <div
+                    v-if="row.showPlaceholder"
+                    class="placeholder-drop-zone form-field-col"
+                    @dragover.prevent
+                    @drop.stop="handleDropOnPlaceholder(row, $event)"
+                  >
+                    <el-icon>
+                      <Plus />
+                    </el-icon>
+                    <span>将字段拖到此处</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </draggable>
+          <div
+            v-else
+            class="empty-canvas-placeholder flex-grow flex flex-col justify-center items-center h-full border-2 border-dashed border-gray-300 rounded text-gray-500 text-sm"
+          >
+            <el-icon>
+              <Plus />
+            </el-icon>
+            <span>将左侧字段拖到此处创建新行</span>
+          </div>
+        </div>
       </div>
-      <div v-else class="flex justify-center items-center h-[calc(100vh-372px)] text-gray-400 text-center">
-        <p>请选择一个字段进行配置</p>
+
+      <div
+        v-show="tab.name === 'formEdit'"
+        class="w-[320px] flex-shrink-0 bg-white rounded shadow-sm p-4  h-full overflow-y-auto"
+      >
+        <h3 class="text-base font-semibold mb-4 border-b border-gray-100 pb-[10px]">字段配置</h3>
+        <div v-if="selectedField">
+          <FieldPropertyForm
+            :field="selectedField"
+            :other-fields="otherFields"
+            :linked-field-options="linkedFieldOptions"
+            @update:field="updateField"
+          />
+        </div>
+        <div v-else class="flex justify-center items-center h-[calc(100vh-372px)] text-gray-400 text-center">
+          <p>请选择一个字段进行配置</p>
+        </div>
       </div>
     </div>
   </div>
@@ -183,6 +185,7 @@ const props = defineProps({
     required: true
   }
 })
+const emits = defineEmits(['update:tab'])
 
 const { query } = useRoute() // 查询参数
 const activeMode = ref<0| 1 | 2>(1) // 0 编辑 1 为新增 2 为详情
@@ -313,9 +316,9 @@ const oneClickLayout = async () => {
 }
 
 const getLayoutData = (): FormRow[] => {
+  console.log('getLayoutData  ', formRows.value)
   return JSON.parse(JSON.stringify(formRows.value))
 }
-
 
 const setLayoutData = (data: FormRow[]) => {
   if (!data || !Array.isArray(data)) {
@@ -363,6 +366,7 @@ const submitForm = async () => {
     console.error(err)
   } finally {
     loading.value = false
+    emits('update:tab', true)
   }
 }
 

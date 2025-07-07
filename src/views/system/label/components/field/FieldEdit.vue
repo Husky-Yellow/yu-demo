@@ -276,7 +276,6 @@ const handleSubmit = async () => {
   const valid = await (fieldForm.value as any).validate?.()
   if (!valid) return
 
-
   const submitData = { ...form, fieldConfExtDOList }
   emits('update:data', omit(submitData, 'fieldConfExt'))
   if (isRadioOrCheckbox) {

@@ -22,6 +22,7 @@ import { generateOperationMock } from '@/utils/constants'
 
 const { query } = useRoute()
 const tableData = ref<OperateConfig[]>([])
+const emits = defineEmits(['update:tab'])
 
 // 名称输入组件
 const NameInputComponent = markRaw(defineComponent({
@@ -94,7 +95,7 @@ const updateRowData = (updatedRow: OperateConfig) => {
 // 获取数据
 const getDataFieldConfListByManageId = async () => {
   const res = await LabelApi.getOperateConfigList({ manageId: query.manageId as string })
-  tableData.value = res.length ? res : generateOperationMock(query.manageId as string)
+  tableData.value = res.length ? res : (generateOperationMock(query.manageId as string) as unknown as OperateConfig[])
 }
 
 // 提交表单
@@ -112,7 +113,9 @@ const submitForm = () => {
 
   LabelApi.updateOperateConfigList(submitData)
     .then(() => ElMessage.success('配置已保存'))
-    .catch(() => ElMessage.error('保存失败'))
+    .catch(() => ElMessage.error('保存失败')).finally(() => {
+      emits('update:tab', true)
+    })
 }
 
 defineExpose({ submitForm, getTableData: () => tableData.value })
