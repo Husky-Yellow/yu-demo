@@ -86,7 +86,7 @@
                               <Delete />
                             </el-icon>
                           </div>
-                          <el-form-item :label="field.name" :required="field.required">
+                          <el-form-item :label="field.name" :required="field.required" label-width="100px">
                             <!-- 上传组件 -->
                             <template v-if="field.fieldType === FieldType.ATTACHMENT">
                               <el-upload
@@ -400,7 +400,28 @@ const fetchFormData = async () => {
   if (formConfData) {
     formData.value = formConfData
     if (formConfData.formJson) {
-      setLayoutData(JSON.parse(formConfData.formJson))
+      const rawData = JSON.parse(formConfData.formJson)
+      const allowedIds = filteredRes.map((item: any) => item.id)
+
+      const filteredData = Array.isArray(rawData)
+        ? rawData
+            .map((group: any) => {
+              // 过滤 fields
+              const filteredFields = Array.isArray(group.fields)
+                ? group.fields.filter((field: any) => allowedIds.includes(field.id))
+                : []
+              // 返回新分组对象
+              return {
+                ...group,
+                fields: filteredFields,
+                singleRow: filteredFields.length === 1 // 标记单行
+              }
+            })
+            // 只保留 fields 不为空的分组
+            .filter((group: any) => group.fields.length > 0)
+        : rawData
+
+      setLayoutData(filteredData)
     }
   }
   loading.value = false

@@ -44,7 +44,7 @@
                   range-separator="至"
                   start-placeholder="开始时间"
                   end-placeholder="结束时间"
-                 :format="getTimePickerFormat(field)"
+                  :format="getTimePickerFormat(field)"
                   :value-format="getTimePickerFormat(field)"
                   :placeholder="field.placeholder || `请选择${field.name}`"
                 />
@@ -76,6 +76,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExhibitionCreate' })
 import * as LabelApi from '@/api/system/label'
+import * as DataApi from '@/api/system/data'
 import { FormRules } from 'element-plus'
 
 const route = useRoute()
@@ -225,41 +226,34 @@ const isFieldVisible = (field: any) => {
 }
 
 // 生成表单验证规则
-const generateFormRules = (fields: any[]) => {
+const generateFormRules = (fields: any[]): FormRules => {
   const rules: FormRules = {}
   fields.forEach((field) => {
-    const baseRule = field.required
-      ? [{ required: true, message: `请输入${field.name}`, trigger: 'blur' }]
-      : []
-
+    const ruleArr: any[] = []
+    if (field.required) {
+      ruleArr.push({ required: true, message: `请输入${field.name}`, trigger: 'blur' })
+    }
     // 文本类型+自定义正则校验
     if (
       field.fieldType === 1 &&
       field.fieldConfExtObj?.dataValidation === '1' &&
       field.fieldConfExtObj?.regex
     ) {
-      const regex = field.fieldConfExtObj.regex
-      const prompt = field.fieldConfExtObj.prompt || `格式不正确`
-      baseRule.push({
+      const { regex, prompt = '格式不正确' } = field.fieldConfExtObj
+      ruleArr.push({
         validator: (_rule: any, value: string, callback: (msg?: string) => void) => {
           if (!value) return callback()
           try {
-            const reg = new RegExp(regex)
-            if (!reg.test(value)) {
-              callback(prompt)
-            } else {
-              callback()
-            }
-          } catch (e) {
+            if (!new RegExp(regex).test(value)) return callback(prompt)
+            callback()
+          } catch {
             callback('正则表达式有误')
           }
         },
-        trigger: 'blur',
+        trigger: 'blur'
       } as any)
     }
-    if (baseRule.length > 0) {
-      rules[field.code] = baseRule
-    }
+    if (ruleArr.length) rules[field.code] = ruleArr
   })
   return rules
 }
@@ -268,7 +262,32 @@ const generateFormRules = (fields: any[]) => {
 const handleSubmit = () => {
   formRef.value?.validate((valid: boolean) => {
     if (valid) {
+      const manageId = '1938148839818596353'
       console.log('表单数据:', formData.value)
+      // 处理时间范围字段
+      fieldGroups.value.forEach(group => {
+        group.fields.forEach((field: any) => {
+          if (field.fieldType === 6) {
+            const val = formData.value[field.code]
+            if (Array.isArray(val) && val.length === 2) {
+              // code 存第一个时间
+              formData.value[field.code] = val[0]
+              // code2 存第二个时间
+              formData.value[`${field.code}2`] = val[1]
+            }
+          }
+        })
+      })
+      DataApi.createBusinessData({
+        businessJson: formData.value,
+        manageId
+      })
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
       // 这里处理提交逻辑
     } else {
       console.log('表单验证失败')
@@ -285,6 +304,15 @@ const init = async () => {
   // const manageId = (route.meta.manageId as string) || '1938148839818596353'
   const manageId = '1938148839818596353'
   const formType = route.query.type === 'people' ? 1 : 2
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId
+  })
+  let filteredRes = res
+  if (formType === 1) {
+    filteredRes = res.filter((item) => item.addFlag)
+  } else {
+    filteredRes = res.filter((item) => item.editFlag)
+  }
   const formConfData = await LabelApi.getViewFormConf({
     manageId,
     formType: formType
@@ -293,902 +321,927 @@ const init = async () => {
   // const formJson = JSON.parse(formConfData.formJson)
   const formJson = [
     {
-        "id": "1940674274209079298",
-        "fields": [
+      id: '1940674274209079298',
+      fields: [
+        {
+          id: '1940674274209079298',
+          code: 'name',
+          name: '姓名',
+          sort: 8,
+          length: 10,
+          remark: '输入姓名',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: true,
+          fieldType: 1,
+          createTime: 1751527778000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: {
+            value: '0'
+          },
+          fieldConfExtDOList: [
             {
-                "id": "1940674274209079298",
-                "code": "name",
-                "name": "姓名",
-                "sort": 8,
-                "length": 10,
-                "remark": "输入姓名",
-                "addFlag": 1,
-                "bizType": "0",
-                "encFlag": 0,
-                "encType": 0,
-                "linkage": {
-                    "effect": "show",
-                    "enabled": false,
-                    "condition": "equals",
-                    "targetFieldId": null,
-                    "targetFieldValue": null
-                },
-                "version": null,
-                "editFlag": 1,
-                "manageId": "1938148839818596353",
-                "required": true,
-                "fieldType": 1,
-                "createTime": 1751527778000,
-                "parentCode": "0",
-                "pcViewFlag": 1,
-                "appViewFlag": 1,
-                "placeholder": "",
-                "fieldConfExtObj": {
-                    "value": "0"
-                },
-                "fieldConfExtDOList": [
-                    {
-                        "id": "1940674278269165569",
-                        "code": null,
-                        "name": "textType",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940674274209079298",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751527779000,
-                        "updateTime": 1751527779000,
-                        "optionsJson": "{\"0\": \"single\", \"1\": \"multi\"}"
-                    },
-                    {
-                        "id": "1940674278336274434",
-                        "code": null,
-                        "name": "duplicateCheck",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940674274209079298",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751527779000,
-                        "updateTime": 1751527779000,
-                        "optionsJson": "{\"0\": \"check\", \"1\": \"noCheck\"}"
-                    },
-                    {
-                        "id": "1940674278336274435",
-                        "code": null,
-                        "name": "dataValidation",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940674274209079298",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751527779000,
-                        "updateTime": 1751527779000,
-                        "optionsJson": "{\"0\": \"none\", \"1\": \"custom\", \"2\": \"idCard\", \"3\": \"creditCode\", \"4\": \"mobile\", \"5\": \"phone\"}"
-                    },
-                    {
-                        "id": "1940674278336274436",
-                        "code": null,
-                        "name": "regex",
-                        "type": 1,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940674274209079298",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751527779000,
-                        "updateTime": 1751527779000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1940674278336274437",
-                        "code": null,
-                        "name": "prompt",
-                        "type": 1,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940674274209079298",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751527779000,
-                        "updateTime": 1751527779000,
-                        "optionsJson": "{}"
-                    }
-                ]
-            }
-        ],
-        "showPlaceholder": false
-    },
-    {
-        "id": "1940687680404234241",
-        "fields": [
-            {
-                "id": "1940687680404234241",
-                "code": "Idcard",
-                "name": "身份证",
-                "sort": 9,
-                "length": 20,
-                "remark": "身份证号",
-                "addFlag": 1,
-                "bizType": "0",
-                "encFlag": 0,
-                "encType": 0,
-                "linkage": {
-                    "effect": "show",
-                    "enabled": false,
-                    "condition": "equals",
-                    "targetFieldId": null,
-                    "targetFieldValue": null
-                },
-                "version": null,
-                "editFlag": 1,
-                "manageId": "1938148839818596353",
-                "required": false,
-                "fieldType": 1,
-                "createTime": 1751530974000,
-                "parentCode": "0",
-                "pcViewFlag": 1,
-                "appViewFlag": 1,
-                "placeholder": "",
-                "fieldConfExtObj": {
-                    "value": "0"
-                },
-                "fieldConfExtDOList": [
-                    {
-                        "id": "1940687684137164801",
-                        "code": null,
-                        "name": "textType",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940687680404234241",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751530975000,
-                        "updateTime": 1751530975000,
-                        "optionsJson": "{\"0\": \"single\", \"1\": \"multi\"}"
-                    },
-                    {
-                        "id": "1940687684137164802",
-                        "code": null,
-                        "name": "duplicateCheck",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940687680404234241",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751530975000,
-                        "updateTime": 1751530975000,
-                        "optionsJson": "{\"0\": \"check\", \"1\": \"noCheck\"}"
-                    },
-                    {
-                        "id": "1940687684137164803",
-                        "code": null,
-                        "name": "dataValidation",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940687680404234241",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751530975000,
-                        "updateTime": 1751530975000,
-                        "optionsJson": "{\"0\": \"none\", \"1\": \"custom\", \"2\": \"idCard\", \"3\": \"creditCode\", \"4\": \"mobile\", \"5\": \"phone\"}"
-                    },
-                    {
-                        "id": "1940687684137164804",
-                        "code": null,
-                        "name": "regex",
-                        "type": 1,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940687680404234241",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751530975000,
-                        "updateTime": 1751530975000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1940687684137164805",
-                        "code": null,
-                        "name": "prompt",
-                        "type": 1,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940687680404234241",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751530975000,
-                        "updateTime": 1751530975000,
-                        "optionsJson": "{}"
-                    }
-                ]
-            }
-        ],
-        "showPlaceholder": false
-    },
-    {
-        "id": "1940968735346536450",
-        "fields": [
-            {
-                "id": "1940968735346536450",
-                "code": "time",
-                "name": "时间",
-                "sort": 11,
-                "length": 11,
-                "remark": "时间",
-                "addFlag": 1,
-                "bizType": "0",
-                "encFlag": 0,
-                "encType": 0,
-                "linkage": {
-                    "effect": "show",
-                    "enabled": false,
-                    "condition": "equals",
-                    "targetFieldId": null,
-                    "targetFieldValue": null
-                },
-                "version": null,
-                "editFlag": 1,
-                "manageId": "1938148839818596353",
-                "required": false,
-                "fieldType": 5,
-                "createTime": 1751597983000,
-                "parentCode": "0",
-                "pcViewFlag": 1,
-                "appViewFlag": 1,
-                "placeholder": "",
-                "fieldConfExtObj": {},
-                "fieldConfExtDOList": [
-                    {
-                        "id": "1940968739465342978",
-                        "code": null,
-                        "name": "datePrecision",
-                        "type": 2,
-                        "value": "2",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940968735346536450",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 5,
-                        "createTime": 1751597984000,
-                        "updateTime": 1751597984000,
-                        "optionsJson": "\"{\\\"0\\\":\\\"选至年例：YYYY\\\",\\\"1\\\":\\\"选至月例：YYYY/MM\\\",\\\"2\\\":\\\"选至日例：YYYY/MM/DD\\\",\\\"3\\\":\\\"选至时例：YYYY/MM/DD HH:00\\\",\\\"4\\\":\\\"选至分例：YYYY/MM/DD HH:mm\\\",\\\"5\\\":\\\"选至秒例：YYYY/MM/DD HH:mm:ss\\\"}\""
-                    },
-                    {
-                        "id": "1940968739465342979",
-                        "code": null,
-                        "name": "code2",
-                        "type": 1,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1940968735346536450",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 5,
-                        "createTime": 1751597984000,
-                        "updateTime": 1751597984000,
-                        "optionsJson": "\"{\\\"0\\\":\\\"选至年例：YYYY\\\",\\\"1\\\":\\\"选至月例：YYYY/MM\\\",\\\"2\\\":\\\"选至日例：YYYY/MM/DD\\\",\\\"3\\\":\\\"选至时例：YYYY/MM/DD HH:00\\\",\\\"4\\\":\\\"选至分例：YYYY/MM/DD HH:mm\\\",\\\"5\\\":\\\"选至秒例：YYYY/MM/DD HH:mm:ss\\\"}\""
-                    }
-                ]
+              id: '1940674278269165569',
+              code: null,
+              name: 'textType',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940674274209079298',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751527779000,
+              updateTime: 1751527779000,
+              optionsJson: '{"0": "single", "1": "multi"}'
             },
             {
-                "id": "1940700568388911106",
-                "code": "timearea",
-                "name": "时间段",
-                "addFlag": 1,
-                "bizType": "0",
-                "linkage": {
-                    "effect": "show",
-                    "enabled": false,
-                    "condition": "equals",
-                    "targetFieldId": null,
-                    "targetFieldValue": null
-                },
-                "editFlag": 1,
-                "manageId": "1938148839818596353",
-                "required": false,
-                "fieldType": 6,
-                "pcViewFlag": 1,
-                "placeholder": ""
+              id: '1940674278336274434',
+              code: null,
+              name: 'duplicateCheck',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940674274209079298',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751527779000,
+              updateTime: 1751527779000,
+              optionsJson: '{"0": "check", "1": "noCheck"}'
+            },
+            {
+              id: '1940674278336274435',
+              code: null,
+              name: 'dataValidation',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940674274209079298',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751527779000,
+              updateTime: 1751527779000,
+              optionsJson:
+                '{"0": "none", "1": "custom", "2": "idCard", "3": "creditCode", "4": "mobile", "5": "phone"}'
+            },
+            {
+              id: '1940674278336274436',
+              code: null,
+              name: 'regex',
+              type: 1,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940674274209079298',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751527779000,
+              updateTime: 1751527779000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1940674278336274437',
+              code: null,
+              name: 'prompt',
+              type: 1,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940674274209079298',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751527779000,
+              updateTime: 1751527779000,
+              optionsJson: '{}'
             }
-        ],
-        "showPlaceholder": false
+          ]
+        }
+      ],
+      showPlaceholder: false
     },
     {
-        "id": "1942099392298754049",
-        "fields": [
+      id: '1940687680404234241',
+      fields: [
+        {
+          id: '1940687680404234241',
+          code: 'Idcard',
+          name: '身份证',
+          sort: 9,
+          length: 20,
+          remark: '身份证号',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: false,
+          fieldType: 1,
+          createTime: 1751530974000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: {
+            value: '0'
+          },
+          fieldConfExtDOList: [
             {
-                "id": "1942099392298754049",
-                "code": "textarea",
-                "name": "多行文本",
-                "sort": 13,
-                "length": 20,
-                "remark": "多行文本",
-                "addFlag": 1,
-                "bizType": "0",
-                "encFlag": 0,
-                "encType": 0,
-                "linkage": {
-                    "effect": "show",
-                    "enabled": false,
-                    "condition": "equals",
-                    "targetFieldId": null,
-                    "targetFieldValue": null
-                },
-                "version": null,
-                "editFlag": 1,
-                "manageId": "1938148839818596353",
-                "required": false,
-                "fieldType": 1,
-                "createTime": 1751867552000,
-                "parentCode": "0",
-                "pcViewFlag": 1,
-                "appViewFlag": 1,
-                "placeholder": "",
-                "fieldConfExtObj": {
-                    "value": "1"
-                },
-                "fieldConfExtDOList": [
-                    {
-                        "id": "1942099394257494018",
-                        "code": null,
-                        "name": "textType",
-                        "type": 2,
-                        "value": "1",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{\"0\": \"single\", \"1\": \"multi\"}"
-                    },
-                    {
-                        "id": "1942099394257494019",
-                        "code": null,
-                        "name": "duplicateCheck",
-                        "type": 2,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{\"0\": \"check\", \"1\": \"noCheck\"}"
-                    },
-                    {
-                        "id": "1942099394324602882",
-                        "code": null,
-                        "name": "dataValidation",
-                        "type": 2,
-                        "value": "4",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{\"0\": \"none\", \"1\": \"custom\", \"2\": \"idCard\", \"3\": \"creditCode\", \"4\": \"mobile\", \"5\": \"phone\"}"
-                    },
-                    {
-                        "id": "1942099394324602883",
-                        "code": null,
-                        "name": "regex",
-                        "type": 1,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394324602884",
-                        "code": null,
-                        "name": "prompt",
-                        "type": 1,
-                        "value": "手机号不符合规范",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394324602885",
-                        "code": null,
-                        "name": "numberType",
-                        "type": null,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394324602886",
-                        "code": null,
-                        "name": "decimalPlaces",
-                        "type": null,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394324602887",
-                        "code": null,
-                        "name": "datePrecision",
-                        "type": null,
-                        "value": "0",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394324602888",
-                        "code": null,
-                        "name": "code2",
-                        "type": null,
-                        "value": "",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394324602889",
-                        "code": null,
-                        "name": "sizeLimit",
-                        "type": null,
-                        "value": "1",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394412683265",
-                        "code": null,
-                        "name": "countLimit",
-                        "type": null,
-                        "value": "1",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    },
-                    {
-                        "id": "1942099394412683266",
-                        "code": null,
-                        "name": "allowedTypes",
-                        "type": null,
-                        "value": "jpeg,bmp,jpg,png,pdf",
-                        "creator": "1",
-                        "deleted": false,
-                        "fieldId": "1942099392298754049",
-                        "updater": "1",
-                        "parentId": null,
-                        "tenantId": 1,
-                        "checkType": null,
-                        "fieldType": 1,
-                        "createTime": 1751867553000,
-                        "updateTime": 1751867553000,
-                        "optionsJson": "{}"
-                    }
-                ]
+              id: '1940687684137164801',
+              code: null,
+              name: 'textType',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940687680404234241',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751530975000,
+              updateTime: 1751530975000,
+              optionsJson: '{"0": "single", "1": "multi"}'
+            },
+            {
+              id: '1940687684137164802',
+              code: null,
+              name: 'duplicateCheck',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940687680404234241',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751530975000,
+              updateTime: 1751530975000,
+              optionsJson: '{"0": "check", "1": "noCheck"}'
+            },
+            {
+              id: '1940687684137164803',
+              code: null,
+              name: 'dataValidation',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940687680404234241',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751530975000,
+              updateTime: 1751530975000,
+              optionsJson:
+                '{"0": "none", "1": "custom", "2": "idCard", "3": "creditCode", "4": "mobile", "5": "phone"}'
+            },
+            {
+              id: '1940687684137164804',
+              code: null,
+              name: 'regex',
+              type: 1,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940687680404234241',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751530975000,
+              updateTime: 1751530975000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1940687684137164805',
+              code: null,
+              name: 'prompt',
+              type: 1,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940687680404234241',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751530975000,
+              updateTime: 1751530975000,
+              optionsJson: '{}'
             }
-        ],
-        "showPlaceholder": false
+          ]
+        }
+      ],
+      showPlaceholder: false
     },
     {
-        "id": "1942127082166820866",
-        "fields": [
+      id: '1940968735346536450',
+      fields: [
+        {
+          id: '1940968735346536450',
+          code: 'time',
+          name: '时间',
+          sort: 11,
+          length: 11,
+          remark: '时间',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: false,
+          fieldType: 5,
+          createTime: 1751597983000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: {},
+          fieldConfExtDOList: [
             {
-                "id": "1942127082166820866",
-                "manageId": "1938148839818596353",
-                "code": "zhengzhe",
-                "name": "正则2",
-                "remark": "正则2",
-                "fieldType": 1,
-                "bizType": "0",
-                "encType": 0,
-                "length": 20,
-                "encFlag": 0,
-                "addFlag": 1,
-                "editFlag": 1,
-                "appViewFlag": 1,
-                "pcViewFlag": 1,
-                "sort": 15,
-                "version": null,
-                "createTime": 1751874154000,
-                "parentCode": "0",
-                "fieldConfExtDOList": [
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086650531842",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "textType",
-                        "value": "0",
-                        "type": 2,
-                        "optionsJson": "{\"0\": \"single\", \"1\": \"multi\"}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086650531843",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "duplicateCheck",
-                        "value": "0",
-                        "type": 2,
-                        "optionsJson": "{\"0\": \"check\", \"1\": \"noCheck\"}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086650531844",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "dataValidation",
-                        "value": "1",
-                        "type": 2,
-                        "optionsJson": "{\"0\": \"none\", \"1\": \"custom\", \"2\": \"idCard\", \"3\": \"creditCode\", \"4\": \"mobile\", \"5\": \"phone\"}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086650531845",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "regex",
-                        "value": "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$",
-                        "type": 1,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086650531846",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "prompt",
-                        "value": "写的不对",
-                        "type": 1,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086650531847",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "numberType",
-                        "value": "0",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086717640705",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "decimalPlaces",
-                        "value": "0",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086717640706",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "datePrecision",
-                        "value": "0",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086717640707",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "code2",
-                        "value": "",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086717640708",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "sizeLimit",
-                        "value": "1",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086717640709",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "countLimit",
-                        "value": "1",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    },
-                    {
-                        "createTime": 1751874155000,
-                        "updateTime": 1751874155000,
-                        "creator": "1",
-                        "updater": "1",
-                        "deleted": false,
-                        "tenantId": 1,
-                        "id": "1942127086717640710",
-                        "fieldId": "1942127082166820866",
-                        "fieldType": 1,
-                        "parentId": null,
-                        "code": null,
-                        "name": "allowedTypes",
-                        "value": "jpeg,bmp,jpg,png,pdf",
-                        "type": null,
-                        "optionsJson": "{}",
-                        "checkType": null
-                    }
-                ],
-                "fieldConfExtObj": {
-                    "textType": "0",
-                    "duplicateCheck": "0",
-                    "dataValidation": "1",
-                    "regex": "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$",
-                    "prompt": "写的不对",
-                    "numberType": "0",
-                    "decimalPlaces": "0",
-                    "datePrecision": "0",
-                    "code2": "",
-                    "sizeLimit": "1",
-                    "countLimit": "1",
-                    "allowedTypes": "jpeg,bmp,jpg,png,pdf"
-                },
-                "required": false,
-                "placeholder": "",
-                "linkage": {
-                    "enabled": false,
-                    "targetFieldId": null,
-                    "targetFieldValue": null,
-                    "effect": "show",
-                    "condition": "equals"
-                }
+              id: '1940968739465342978',
+              code: null,
+              name: 'datePrecision',
+              type: 2,
+              value: '2',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940968735346536450',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 5,
+              createTime: 1751597984000,
+              updateTime: 1751597984000,
+              optionsJson:
+                '"{\\"0\\":\\"选至年例：YYYY\\",\\"1\\":\\"选至月例：YYYY/MM\\",\\"2\\":\\"选至日例：YYYY/MM/DD\\",\\"3\\":\\"选至时例：YYYY/MM/DD HH:00\\",\\"4\\":\\"选至分例：YYYY/MM/DD HH:mm\\",\\"5\\":\\"选至秒例：YYYY/MM/DD HH:mm:ss\\"}"'
+            },
+            {
+              id: '1940968739465342979',
+              code: null,
+              name: 'code2',
+              type: 1,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1940968735346536450',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 5,
+              createTime: 1751597984000,
+              updateTime: 1751597984000,
+              optionsJson:
+                '"{\\"0\\":\\"选至年例：YYYY\\",\\"1\\":\\"选至月例：YYYY/MM\\",\\"2\\":\\"选至日例：YYYY/MM/DD\\",\\"3\\":\\"选至时例：YYYY/MM/DD HH:00\\",\\"4\\":\\"选至分例：YYYY/MM/DD HH:mm\\",\\"5\\":\\"选至秒例：YYYY/MM/DD HH:mm:ss\\"}"'
             }
-        ],
-        "showPlaceholder": false
+          ]
+        },
+        {
+          id: '1940700568388911106',
+          code: 'timearea',
+          name: '时间段',
+          addFlag: 1,
+          bizType: '0',
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: false,
+          fieldType: 6,
+          pcViewFlag: 1,
+          placeholder: ''
+        }
+      ],
+      showPlaceholder: false
+    },
+    {
+      id: '1942099392298754049',
+      fields: [
+        {
+          id: '1942099392298754049',
+          code: 'textarea',
+          name: '多行文本',
+          sort: 13,
+          length: 20,
+          remark: '多行文本',
+          addFlag: 1,
+          bizType: '0',
+          encFlag: 0,
+          encType: 0,
+          linkage: {
+            effect: 'show',
+            enabled: false,
+            condition: 'equals',
+            targetFieldId: null,
+            targetFieldValue: null
+          },
+          version: null,
+          editFlag: 1,
+          manageId: '1938148839818596353',
+          required: false,
+          fieldType: 1,
+          createTime: 1751867552000,
+          parentCode: '0',
+          pcViewFlag: 1,
+          appViewFlag: 1,
+          placeholder: '',
+          fieldConfExtObj: {
+            value: '1'
+          },
+          fieldConfExtDOList: [
+            {
+              id: '1942099394257494018',
+              code: null,
+              name: 'textType',
+              type: 2,
+              value: '1',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{"0": "single", "1": "multi"}'
+            },
+            {
+              id: '1942099394257494019',
+              code: null,
+              name: 'duplicateCheck',
+              type: 2,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{"0": "check", "1": "noCheck"}'
+            },
+            {
+              id: '1942099394324602882',
+              code: null,
+              name: 'dataValidation',
+              type: 2,
+              value: '4',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson:
+                '{"0": "none", "1": "custom", "2": "idCard", "3": "creditCode", "4": "mobile", "5": "phone"}'
+            },
+            {
+              id: '1942099394324602883',
+              code: null,
+              name: 'regex',
+              type: 1,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394324602884',
+              code: null,
+              name: 'prompt',
+              type: 1,
+              value: '手机号不符合规范',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394324602885',
+              code: null,
+              name: 'numberType',
+              type: null,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394324602886',
+              code: null,
+              name: 'decimalPlaces',
+              type: null,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394324602887',
+              code: null,
+              name: 'datePrecision',
+              type: null,
+              value: '0',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394324602888',
+              code: null,
+              name: 'code2',
+              type: null,
+              value: '',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394324602889',
+              code: null,
+              name: 'sizeLimit',
+              type: null,
+              value: '1',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394412683265',
+              code: null,
+              name: 'countLimit',
+              type: null,
+              value: '1',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            },
+            {
+              id: '1942099394412683266',
+              code: null,
+              name: 'allowedTypes',
+              type: null,
+              value: 'jpeg,bmp,jpg,png,pdf',
+              creator: '1',
+              deleted: false,
+              fieldId: '1942099392298754049',
+              updater: '1',
+              parentId: null,
+              tenantId: 1,
+              checkType: null,
+              fieldType: 1,
+              createTime: 1751867553000,
+              updateTime: 1751867553000,
+              optionsJson: '{}'
+            }
+          ]
+        }
+      ],
+      showPlaceholder: false
+    },
+    {
+      id: '1942127082166820866',
+      fields: [
+        {
+          id: '1942127082166820866',
+          manageId: '1938148839818596353',
+          code: 'zhengzhe',
+          name: '正则2',
+          remark: '正则2',
+          fieldType: 1,
+          bizType: '0',
+          encType: 0,
+          length: 20,
+          encFlag: 0,
+          addFlag: 1,
+          editFlag: 1,
+          appViewFlag: 1,
+          pcViewFlag: 1,
+          sort: 15,
+          version: null,
+          createTime: 1751874154000,
+          parentCode: '0',
+          fieldConfExtDOList: [
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086650531842',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'textType',
+              value: '0',
+              type: 2,
+              optionsJson: '{"0": "single", "1": "multi"}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086650531843',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'duplicateCheck',
+              value: '0',
+              type: 2,
+              optionsJson: '{"0": "check", "1": "noCheck"}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086650531844',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'dataValidation',
+              value: '1',
+              type: 2,
+              optionsJson:
+                '{"0": "none", "1": "custom", "2": "idCard", "3": "creditCode", "4": "mobile", "5": "phone"}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086650531845',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'regex',
+              value: '^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$',
+              type: 1,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086650531846',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'prompt',
+              value: '写的不对',
+              type: 1,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086650531847',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'numberType',
+              value: '0',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086717640705',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'decimalPlaces',
+              value: '0',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086717640706',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'datePrecision',
+              value: '0',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086717640707',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'code2',
+              value: '',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086717640708',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'sizeLimit',
+              value: '1',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086717640709',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'countLimit',
+              value: '1',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            },
+            {
+              createTime: 1751874155000,
+              updateTime: 1751874155000,
+              creator: '1',
+              updater: '1',
+              deleted: false,
+              tenantId: 1,
+              id: '1942127086717640710',
+              fieldId: '1942127082166820866',
+              fieldType: 1,
+              parentId: null,
+              code: null,
+              name: 'allowedTypes',
+              value: 'jpeg,bmp,jpg,png,pdf',
+              type: null,
+              optionsJson: '{}',
+              checkType: null
+            }
+          ],
+          fieldConfExtObj: {
+            textType: '0',
+            duplicateCheck: '0',
+            dataValidation: '1',
+            regex: '^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$',
+            prompt: '写的不对',
+            numberType: '0',
+            decimalPlaces: '0',
+            datePrecision: '0',
+            code2: '',
+            sizeLimit: '1',
+            countLimit: '1',
+            allowedTypes: 'jpeg,bmp,jpg,png,pdf'
+          },
+          required: false,
+          placeholder: '',
+          linkage: {
+            enabled: false,
+            targetFieldId: null,
+            targetFieldValue: null,
+            effect: 'show',
+            condition: 'equals'
+          }
+        }
+      ],
+      showPlaceholder: false
     }
   ]
+  const rawData = JSON.parse(formConfData.formJson)
+  const allowedIds = filteredRes.map((item: any) => item.id)
+  const filteredData = Array.isArray(rawData)
+    ? rawData
+        .map((group: any) => {
+          // 过滤 fields
+          const filteredFields = Array.isArray(group.fields)
+            ? group.fields.filter((field: any) => allowedIds.includes(field.id))
+            : []
+          // 返回新分组对象
+          return {
+            ...group,
+            fields: filteredFields,
+            singleRow: filteredFields.length === 1 // 标记单行
+          }
+        })
+        // 只保留 fields 不为空的分组
+        .filter((group: any) => group.fields.length > 0)
+    : rawData
 
   console.log('表单配置数据:', formJson)
 
   // 设置字段组数据
-  if (formJson && Array.isArray(formJson)) {
+  if (filteredData && Array.isArray(filteredData)) {
     // 修正 fieldConfExtDOList 的 type 字段类型
-    formJson.forEach((group) => {
+    filteredData.forEach((group) => {
       group.fields.forEach((field: any) => {
         if (Array.isArray(field.fieldConfExtDOList)) {
           field.fieldConfExtDOList.forEach((item: any) => {
-            if (item.type === null || item.type === undefined) item.type = 0
+            item.type = item.type == null ? 0 : Number(item.type)
           })
         }
       })
     })
-    fieldGroups.value = formJson
+    fieldGroups.value = filteredData as unknown as any
     // 初始化表单数据
     formData.value = {}
-    formJson.forEach((group) => {
+    filteredData.forEach((group) => {
       group.fields.forEach((field: any) => {
         formData.value[field.code] = ''
       })

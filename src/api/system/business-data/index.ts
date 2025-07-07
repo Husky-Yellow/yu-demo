@@ -75,5 +75,5 @@ export interface LinkedTreeMapJsonElement {
 export const getBusinessDataPage = async (
   params: BusinessDataListRequest
 ): Promise<PageResult<BusinessData[]>> => {
-  return await request.get({ url: '/data/business-data/page', params })
+  return await request.post({ url: '/data/business-data/page', data: params })
 }
