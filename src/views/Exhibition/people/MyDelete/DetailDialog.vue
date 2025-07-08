@@ -1,11 +1,11 @@
 <template>
   <el-dialog v-model="dialogVisible" :title="currentLabel + '详情'" width="60%" @close="$emit('update:visible', false)">
-    <component :is="currentDetailComponent" :detail="detail" />
+    <!-- <component :is="currentDetailComponent" :detail="detail" /> -->
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, watch, ref } from 'vue'
+import { computed, watch, ref } from 'vue'
 import type { PropType } from 'vue'
 defineOptions({ name: 'ExhibitionPeopleMyDeleteDetailDialog' })
 const props = defineProps({
@@ -29,11 +29,11 @@ const currentLabel = computed(() => {
   return typeList.find(item => item.value === props.type)?.label || ''
 })
 
-const componentMap = {
-  hukou: defineAsyncComponent(() => import('./components/HukouDetail.vue')),
-  xinfang: defineAsyncComponent(() => import('./components/XinfangDetail.vue')),
-  xidu: defineAsyncComponent(() => import('./components/XiduDetail.vue')),
-  kunjing: defineAsyncComponent(() => import('./components/KunjingDetail.vue'))
-}
-const currentDetailComponent = computed(() => componentMap[props.type || 'hukou'])
+// const componentMap = {
+//   hukou: defineAsyncComponent(() => import('./components/HukouDetail.vue')),
+//   xinfang: defineAsyncComponent(() => import('./components/XinfangDetail.vue')),
+//   xidu: defineAsyncComponent(() => import('./components/XiduDetail.vue')),
+//   kunjing: defineAsyncComponent(() => import('./components/KunjingDetail.vue'))
+// }
+// const currentDetailComponent = computed(() => componentMap[props.type || 'hukou'])
 </script>
