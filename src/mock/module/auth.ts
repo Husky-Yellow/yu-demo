@@ -1,9 +1,22 @@
 export default [
   {
+    url: '/admin-api/system/auth/login',
+    type: 'post',
+    response: {
+      code: 0,
+      data: {
+        userId: 1,
+        accessToken: 'f70daeafac574fff93a4471985db593b',
+        refreshToken: '7deba5e9919f487c954bf40ea952a43b',
+        expiresTime: 1748225442769
+      },
+      msg: ''
+    }
+  },
+  {
     url: '/admin-api/system/auth/get-permission-info',
     type: 'get',
-    response: () => {
-      return {
+    response: {
         "code": 0,
         "data": {
             "user": {
@@ -306,6 +319,19 @@ export default [
                             "alwaysShow": true,
                             "children": [
                                 {
+                                    "id": "1940957454371733505",
+                                    "parentId": "1939892075393290241",
+                                    "name": "编辑",
+                                    "path": "create",
+                                    "component": "Exhibition/create",
+                                    "componentName": "ExhibitionCreate",
+                                    "icon": "ep:caret-right",
+                                    "visible": false,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                                {
                                     "id": "1939892414574071809",
                                     "parentId": "1939892075393290241",
                                     "name": "实有人口",
@@ -319,26 +345,52 @@ export default [
                                     "children": null
                                 },
                                 {
-                                    "id": "1939892414574071809",
+                                    "id": "1939979306553389057",
                                     "parentId": "1939892075393290241",
-                                    "name": "实有人口创建",
-                                    "path": "create",
-                                    "component": "Exhibition/create",
-                                    "componentName": "ExhibitionCreate",
-                                    "icon": "ep:add-location",
+                                    "name": "详情",
+                                    "path": "detail",
+                                    "component": "Exhibition/detail",
+                                    "componentName": "ExhibitionDetail",
+                                    "icon": "ep:calendar",
+                                    "visible": false,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                                {
+                                    "id": "1942514868976377857",
+                                    "parentId": "1939892075393290241",
+                                    "name": "我的新增",
+                                    "path": "myAdd",
+                                    "component": "Exhibition/people/MyAdd/index",
+                                    "componentName": "ExhibitionPeopleMyAdd",
+                                    "icon": "ep:apple",
                                     "visible": true,
                                     "keepAlive": true,
                                     "alwaysShow": true,
                                     "children": null
                                 },
                                 {
-                                    "id": "1939892414574071809",
+                                    "id": "1942515793719746561",
                                     "parentId": "1939892075393290241",
-                                    "name": "实有人口详情",
-                                    "path": "detail",
-                                    "component": "Exhibition/detail",
-                                    "componentName": "ExhibitionDetail",
-                                    "icon": "ep:add-location",
+                                    "name": "我的删除",
+                                    "path": "myDelete",
+                                    "component": "Exhibition/people/MyDelete/index",
+                                    "componentName": "ExhibitionPeopleMyDelete",
+                                    "icon": "ep:apple",
+                                    "visible": true,
+                                    "keepAlive": true,
+                                    "alwaysShow": true,
+                                    "children": null
+                                },
+                                {
+                                    "id": "1942516074079608833",
+                                    "parentId": "1939892075393290241",
+                                    "name": "删除人员",
+                                    "path": "userDelete",
+                                    "component": "Exhibition/people/UserDelete/index",
+                                    "componentName": "ExhibitionPeopleUserDelete",
+                                    "icon": "ep:apple",
                                     "visible": true,
                                     "keepAlive": true,
                                     "alwaysShow": true,
@@ -352,20 +404,5 @@ export default [
         },
         "msg": ""
     }
-    }
-  },
-  {
-    url: '/admin-api/system/auth/login',
-    type: 'post',
-    response: {
-      code: 0,
-      data: {
-        userId: 1,
-        accessToken: 'f70daeafac574fff93a4471985db593b',
-        refreshToken: '7deba5e9919f487c954bf40ea952a43b',
-        expiresTime: 1748225442769
-      },
-      msg: ''
-    }
-  },
+  }
 ]
