@@ -97,7 +97,6 @@ const formRules = reactive<FormRules>({
 // 重置表单
 const resetForm = () => {
   ;(fieldForm.value as any)?.resetFields()
-  formData.value = null
 }
 
 // 关闭弹窗
@@ -123,7 +122,7 @@ const handleSubmit = () => {
 
 // 打开弹窗（支持回显）
 const open = async (type: 'people' | 'house' | 'check', row?: any) => {
-  console.log('打开弹窗', type, row)
+  // console.log('打开弹窗', type, row)
   dialogTitle.value = titleMap[type]
   dialogType.value = type
   dialogVisible.value = true

@@ -48,8 +48,8 @@ const router = useRouter()
 const countConfigDate = ref<any[]>([]) // 统计数据
 const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
 const queryConfig = ref<QueryResItem[]>([]) // 搜索表单，
-const tableData = ref([]) // 表格数据
-const columns = ref<Partial<LabelFieldConfig>[]>([]) // 表格列配置
+const tableData = ref<any[]>([]) // 表格数据
+const columns = ref<LabelFieldConfig[]>([]) // 表格列配置
 const selectedRows = ref<any[]>([]) // 表格选中行 用于删除
 
 
@@ -138,11 +138,8 @@ const getList = async () => {
     const data = await BusinessDataApi.getBusinessDataPage({
       ...queryParams,
     })
-    // tableData.value = data.list as any[]
-    tableData.value.push({
-      name: '1'
-    })
-    console.log('getBusinessDataPage', data)
+    tableData.value = data.list as any[]
+    // console.log('getBusinessDataPage', data)
   } finally {
     loading.value = false
   }
@@ -159,19 +156,49 @@ async function fetchFieldConfig(manageId: string) {
 
 async function fetchQueryConf(manageId: string) {
   try {
-    const queryConfList =  await LabelApi.getQueryConfList({ manageId })
-      queryConfList.forEach((field) => {
-    const ids = (field.fieldIds || '').split(',').filter(Boolean)
-    const matchedFields = columns.value.filter((r) => ids.includes(r.id))
-    if (matchedFields.length) {
-      field.fieldNames = matchedFields.map((f) => f.name).join(',')
-      field.fieldName = matchedFields[0].name
-      field.fieldId = matchedFields[0].id
+    const queryConfList = await LabelApi.getQueryConfList({ manageId })
+
+    // 预构建字段映射和批量处理
+    const fieldMap = new Map<string, LabelFieldConfig>()
+    const validColumns = columns.value.filter(field => field.id)
+
+    // 一次性构建映射，避免重复遍历
+    for (const field of validColumns) {
+      fieldMap.set(field.id!, field)
     }
-    formModel[field.fieldCodes] = field.defaultValue
-  })
-  queryConfig.value = queryConfList
-  console.log('queryConfig', queryConfig.value)
+
+    // 批量处理查询配置
+    const processedQueryList = queryConfList.map((field) => {
+      const processedField = { ...field } as any
+
+      // 处理字段匹配 - 使用Set提高查找效率
+      if (field.fieldIds) {
+        const idSet = new Set(field.fieldIds.split(',').filter(Boolean))
+        const matchedFields: LabelFieldConfig[] = []
+
+        // 直接遍历Map的entries，避免重复查找
+        for (const [id, config] of fieldMap) {
+          if (idSet.has(id)) {
+            matchedFields.push(config)
+          }
+        }
+
+        if (matchedFields.length > 0) {
+          processedField.fieldNames = matchedFields.map(f => f.name).join(',')
+          processedField.fieldName = matchedFields[0].name
+          processedField.fieldId = matchedFields[0].id
+        }
+      }
+
+      // 设置默认值
+      if (field.fieldCodes) {
+        formModel[field.fieldCodes] = field.defaultValue
+      }
+
+      return processedField
+    })
+
+    queryConfig.value = processedQueryList
   } catch (e) {
     console.error('查询配置获取失败', e)
     return []
@@ -201,11 +228,6 @@ const getDataFieldConfListByManageId = async (manageId: string) => {
   })) as unknown as ExhibitionOperate[]
 }
 
-const getQueryConfList = async (manageId: string) => {
-  const res = await LabelApi.getQueryConfList({ manageId })
-  console.log('获取查询配置列表', res)
-}
-
 const init = async () => {
   const manageId = (route.meta.manageId as string) || '1938148839818596353'
   // const manageId = '1938148839818596353'
@@ -219,7 +241,6 @@ const init = async () => {
   // 获取配置数据
   await getCountConfigList(manageId)
   await getDataFieldConfListByManageId(manageId)
-  await getQueryConfList(manageId)
   await getList()
 
 

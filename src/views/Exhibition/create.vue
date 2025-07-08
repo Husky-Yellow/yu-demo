@@ -1,76 +1,73 @@
 <template>
-  <div>
-    <h1>创建</h1>
-    <ContentWrap>
-      <!-- 动态表单 -->
-      <el-form ref="formRef" :model="formData" label-width="100px" :rules="formRules">
-        <template v-for="fieldGroup in fieldGroups" :key="fieldGroup.id">
-          <!-- 使用行布局，每行最多显示2个字段 -->
-          <el-row :gutter="20">
-            <el-col
-              v-for="field in fieldGroup.fields"
-              :key="field.id"
-              :span="getFieldSpan(fieldGroup)"
-              v-show="isFieldVisible(field)"
-            >
-              <el-form-item :label="field.name" :prop="field.code" :required="field.required">
-                <!-- 输入框 -->
-                <el-input
-                  v-if="field.fieldType === 1"
-                  v-model="formData[field.code]"
-                  :placeholder="field.placeholder || `请输入${field.name}`"
-                  :maxlength="field.length"
-                  :type="field.fieldConfExtDOList[0].value === '1' ? 'textarea' : 'text'"
-                  :rows="field.fieldConfExtDOList[0].value === '1' ? 2 : 1"
+  <ContentWrap>
+    <!-- 动态表单 -->
+    <el-form ref="formRef" :model="formData" label-width="100px" :rules="formRules">
+      <template v-for="fieldGroup in fieldGroups" :key="fieldGroup.id">
+        <!-- 使用行布局，每行最多显示2个字段 -->
+        <el-row :gutter="20">
+          <el-col
+            v-for="field in fieldGroup.fields"
+            :key="field.id"
+            :span="getFieldSpan(fieldGroup)"
+            v-show="isFieldVisible(field)"
+          >
+            <el-form-item :label="field.name" :prop="field.code" :required="field.required">
+              <!-- 输入框 -->
+              <el-input
+                v-if="field.fieldType === 1"
+                v-model="formData[field.code]"
+                :placeholder="field.placeholder || `请输入${field.name}`"
+                :maxlength="field.length"
+                :type="field.fieldConfExtDOList[0].value === '1' ? 'textarea' : 'text'"
+                :rows="field.fieldConfExtDOList[0].value === '1' ? 2 : 1"
+              />
+              <!-- 下拉框 -->
+              <el-select
+                v-else-if="field.fieldType === 2"
+                v-model="formData[field.code]"
+                :placeholder="`请选择${field.name}`"
+              >
+                <el-option
+                  v-for="option in getFieldOptions(field)"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="option.value"
                 />
-                <!-- 下拉框 -->
-                <el-select
-                  v-else-if="field.fieldType === 2"
-                  v-model="formData[field.code]"
-                  :placeholder="`请选择${field.name}`"
-                >
-                  <el-option
-                    v-for="option in getFieldOptions(field)"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </el-select>
-                <!-- 时间选择器 -->
-                <el-date-picker
-                  v-else-if="field.fieldType === 6"
-                  v-model="formData[field.code]"
-                  type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间"
-                  :format="getTimePickerFormat(field)"
-                  :value-format="getTimePickerFormat(field)"
-                  :placeholder="field.placeholder || `请选择${field.name}`"
-                />
-                <!-- 单个时间选择器 -->
-                <el-date-picker
-                  class="w-full"
-                  v-else-if="field.fieldType === 5"
-                  v-model="formData[field.code]"
-                  :type="getTimePickerType(field)"
-                  :format="getTimePickerFormat(field)"
-                  :value-format="getTimePickerFormat(field)"
-                  :placeholder="field.placeholder || `请选择${field.name}`"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </template>
+              </el-select>
+              <!-- 时间选择器 -->
+              <el-date-picker
+                v-else-if="field.fieldType === 6"
+                v-model="formData[field.code]"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                :format="getPickerFormat(field)"
+                :value-format="getPickerFormat(field)"
+                :placeholder="field.placeholder || `请选择${field.name}`"
+              />
+              <!-- 单个时间选择器 -->
+              <el-date-picker
+                class="w-full"
+                v-else-if="field.fieldType === 5"
+                v-model="formData[field.code]"
+                                  :type="getPickerType(field)"
+                  :format="getPickerFormat(field)"
+                  :value-format="getPickerFormat(field)"
+                :placeholder="field.placeholder || `请选择${field.name}`"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </template>
 
-        <!-- 提交按钮 -->
-        <el-form-item>
-          <el-button type="primary" @click="handleSubmit">提交</el-button>
-          <el-button @click="handleCancel">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </ContentWrap>
-  </div>
+      <!-- 提交按钮 -->
+      <el-form-item>
+        <el-button type="primary" @click="handleSubmit">提交</el-button>
+        <el-button @click="handleCancel">取消</el-button>
+      </el-form-item>
+    </el-form>
+  </ContentWrap>
 </template>
 
 <script setup lang="ts">
@@ -78,14 +75,20 @@ defineOptions({ name: 'ExhibitionCreate' })
 import * as LabelApi from '@/api/system/label'
 import * as DataApi from '@/api/system/data'
 import { FormRules } from 'element-plus'
+import { useDatePicker } from '@/hooks/useDatePicker'
 
 const route = useRoute()
 const router = useRouter()
+
+// 使用日期选择器 composable
+const { getPickerType, getPickerFormat } = useDatePicker()
 
 const formRef = ref()
 const fieldGroups = ref<any[]>([])
 const formData = ref<any>({})
 const formRules = reactive<FormRules>({})
+
+// 身份证不可以编辑
 
 // 获取字段选项
 const getFieldOptions = (field: any): Array<{ label: string; value: string | number }> => {
@@ -119,63 +122,31 @@ const getFieldOptions = (field: any): Array<{ label: string; value: string | num
   return []
 }
 
-// 获取时间选择器类型
-const getTimePickerType = (field: any) => {
-  const datePrecision = getFieldConfigValue(field, 'datePrecision')
-  switch (datePrecision) {
-    case '0':
-      return 'year'
-    case '1':
-      return 'month'
-    case '2':
-      return 'date'
-    case '3':
-      return 'datetime'
-    case '4':
-      return 'datetime'
-    case '5':
-      return 'datetime'
-    default:
-      return 'datetime'
-  }
-}
-
-// 获取时间选择器显示格式
-const getTimePickerFormat = (field: any) => {
-  const datePrecision = getFieldConfigValue(field, 'datePrecision')
-  switch (datePrecision) {
-    case '0':
-      return 'YYYY'
-    case '1':
-      return 'YYYY/MM'
-    case '2':
-      return 'YYYY/MM/DD'
-    case '3':
-      return 'YYYY/MM/DD HH:00'
-    case '4':
-      return 'YYYY/MM/DD HH:mm'
-    case '5':
-      return 'YYYY/MM/DD HH:mm:ss'
-    default:
-      return 'YYYY/MM/DD HH:mm:ss'
-  }
-}
-
-// 获取字段配置值
-const getFieldConfigValue = (field: any, configName: string) => {
-  if (!field.fieldConfExtDOList) return ''
-  const config = field.fieldConfExtDOList.find((item: any) => item.name === configName)
-  return config ? config.value : ''
-}
+// 布局配置常量
+const LAYOUT_CONFIG = {
+  FULL_WIDTH: 24,    // 占满整行
+  HALF_WIDTH: 12,    // 占半行
+  THIRD_WIDTH: 8,    // 占1/3行
+  QUARTER_WIDTH: 6   // 占1/4行
+} as const
 
 // 获取字段占用的列数
-const getFieldSpan = (fieldGroup: any) => {
-  // 所有字段都占用12列，一行显示2个字段
-  const fields = fieldGroup.fields.length
-  if (fields === 1) {
-    return 24
-  } else {
-    return 12
+const getFieldSpan = (fieldGroup: any): number => {
+  // 安全获取字段数量
+  const fieldCount = fieldGroup?.fields?.length || 0
+
+  // 布局规则：
+  // - 0个字段：不显示
+  // - 1个字段：占满整行
+  // - 2个字段：每行2个字段
+  // - 3个以上字段：每行2个字段
+  switch (fieldCount) {
+    case 0:
+      return 0
+    case 1:
+      return LAYOUT_CONFIG.FULL_WIDTH
+    default:
+      return LAYOUT_CONFIG.HALF_WIDTH
   }
 }
 
@@ -213,49 +184,53 @@ const isFieldVisible = (field: any) => {
     case 'notEquals':
       return targetValue !== targetFieldValue
     case 'contains':
-      return String(targetValue).includes(String(targetFieldValue))
     case 'notContains':
-      return !String(targetValue).includes(String(targetFieldValue))
     case 'startsWith':
-      return String(targetValue).startsWith(String(targetFieldValue))
     case 'endsWith':
-      return String(targetValue).endsWith(String(targetFieldValue))
+      return String(targetValue).includes(String(targetFieldValue))
     default:
       return true
   }
 }
 
+// 创建必填验证规则
+const createRequiredRule = (fieldName: string) => ({
+  required: true,
+  message: `请输入${fieldName}`,
+  trigger: 'blur'
+})
+
+// 创建正则验证规则
+const createRegexRule = (regex: string, prompt: string) => ({
+  validator: (_rule: any, value: string, callback: (msg?: string) => void) => {
+    if (!value) return callback()
+    try {
+      if (!new RegExp(regex).test(value)) return callback(prompt)
+      callback()
+    } catch {
+      callback('正则表达式有误')
+    }
+  },
+  trigger: 'blur'
+} as any)
+
 // 生成表单验证规则
 const generateFormRules = (fields: any[]): FormRules => {
-  const rules: FormRules = {}
-  fields.forEach((field) => {
+  return fields.reduce((rules: FormRules, field) => {
     const ruleArr: any[] = []
-    if (field.required) {
-      ruleArr.push({ required: true, message: `请输入${field.name}`, trigger: 'blur' })
-    }
-    // 文本类型+自定义正则校验
-    if (
-      field.fieldType === 1 &&
-      field.fieldConfExtObj?.dataValidation === '1' &&
-      field.fieldConfExtObj?.regex
-    ) {
+
+    // 必填验证
+    if (field.required) ruleArr.push(createRequiredRule(field.name))
+
+    // 自定义正则验证
+    if (field.fieldType === 1 && field.fieldConfExtObj?.dataValidation === '1' && field.fieldConfExtObj?.regex) {
       const { regex, prompt = '格式不正确' } = field.fieldConfExtObj
-      ruleArr.push({
-        validator: (_rule: any, value: string, callback: (msg?: string) => void) => {
-          if (!value) return callback()
-          try {
-            if (!new RegExp(regex).test(value)) return callback(prompt)
-            callback()
-          } catch {
-            callback('正则表达式有误')
-          }
-        },
-        trigger: 'blur'
-      } as any)
+      ruleArr.push(createRegexRule(regex, prompt))
     }
+
     if (ruleArr.length) rules[field.code] = ruleArr
-  })
-  return rules
+    return rules
+  }, {})
 }
 
 // 处理提交
@@ -1247,7 +1222,13 @@ const init = async () => {
       })
     })
     // 生成验证规则
-    const allFields = formJson.flatMap((group) => group.fields)
+    const allFields = formJson.flatMap((group: any) => group.fields).map((field: any) => ({
+      ...field,
+      fieldConfExtDOList: field.fieldConfExtDOList?.map((item: any) => ({
+        ...item,
+        type: item.type == null ? 0 : Number(item.type)
+      })) || []
+    }))
     Object.assign(formRules, generateFormRules(allFields))
   }
 }

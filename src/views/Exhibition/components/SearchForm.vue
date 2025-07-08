@@ -133,11 +133,11 @@ function handleOperate(item: ExhibitionOperate) {
   if (item.operateType === 2) {
     // 打开删除
   }
-  console.log('操作', item)
+  // console.log('操作', item)
 }
 
 function handleSubmit(data: any) {
-  console.log('提交', data)
+  // console.log('提交', data)
   // 跳转到编辑、新建页面
   router.push({
     path: '/basic/people/create',
