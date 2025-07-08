@@ -1,10 +1,13 @@
 <template>
   <div class="detail-page">
+    <!-- 这里还有 tag 循环 -->
+    <!-- 如果是敏感字段要展示 *** 点击输入名敏感密码后，打开弹窗输入密码，然后就可以展示敏感字段了 -->
     <div class="detail-main">
       <el-card>
         <div class="photo-block">
           <el-image :src="detailData.photo" style="width:100px;height:120px;" fit="cover" />
         </div>
+        <!-- 这里封装成公共组件，传入数据 -->
         <el-form label-width="100px" :model="detailData" class="detail-form">
           <el-row :gutter="20">
             <el-col
@@ -20,7 +23,11 @@
         </el-form>
       </el-card>
     </div>
-    <div class="detail-tabs">
+    <!-- 这里也做成组件，传入数据，增加点击回调 -->
+    <div class="detail-tabs" v-if="tabConfigs.length > 1">
+      <!-- 点击出现弹窗，弹窗显示对应 显示该人口数据的基础和业务标签（最后层级）
+点击标签，弹窗展示该标签对应的详情
+当只存在一个标签时候，不显示该标签栏 -->
       <el-button
         v-for="tab in tabConfigs"
         :key="tab.value"
@@ -36,7 +43,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import * as LabelApi from '@/api/system/label'
+import { filterAndMarkGroups } from '@/utils/formatter'
+import { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import { FormRow } from '@/hooks/web/useFormEditHandlers'
+
 defineOptions({ name: 'ExhibitionDetail' })
 const tabConfigs = [
   {
@@ -101,6 +112,52 @@ const detailData = ref({
 const activeTabConfig = computed(() =>
   tabConfigs.find(tab => tab.value === activeTab.value) || tabConfigs[0]
 )
+
+
+const formRows = ref<FormRow[]>([])
+const formData = ref<any>(null) // 接口返回来的表单配置 null 为需要调创建
+
+const setLayoutData = (data: FormRow[]) => {
+  if (!data || !Array.isArray(data)) {
+    console.error('加载布局失败：提供了无效的数据。')
+    return
+  }
+  formRows.value = JSON.parse(JSON.stringify(data))
+  let maxId = 0
+  data.forEach((row) => {
+    const rowIdNum = parseInt(row.id.split('-')[1])
+    if (rowIdNum > maxId) maxId = rowIdNum
+    row.fields.forEach((field) => {
+      const fieldIdNum = parseInt(field.id.split('-')[1])
+      if (fieldIdNum > maxId) maxId = fieldIdNum
+    })
+  })
+}
+
+// 获取对应标签的详情配置接口
+const getDetailConfig = async () => {
+    // const manageId = (route.meta.manageId as string) || '1942420981721182210'
+  const manageId = '1942420981721182210'
+  const res = await LabelApi.getFieldConfigListByManageId({
+    manageId
+  })
+  const formConfData = await LabelApi.getViewFormConf({
+    manageId,
+    formType: 2,
+  })
+  console.log(formConfData)
+  if (formConfData) {
+    formData.value = formConfData
+    if (formConfData.formJson) {
+      const rawData = JSON.parse(formConfData.formJson)
+      const allowedIds = res.map((item: LabelFieldConfig) => item.id as string).filter(Boolean)
+      const filteredData = filterAndMarkGroups(rawData, allowedIds)
+      setLayoutData(filteredData)
+    }
+  }
+}
+
+getDetailConfig()
 </script>
 
 <style scoped>

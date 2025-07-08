@@ -32,13 +32,30 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :page-sizes="[10, 20, 30, 40]"
+      :small="small"
+      :disabled="disabled"
+      :background="background"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 defineOptions({ name: 'ExhibitionPeopleMyAdd' })
 interface TableRow {
+  id: string
   name: string
   idType: string
   idNumber: string
@@ -50,6 +67,13 @@ interface TableRow {
 
 // 假设当前登录用户
 const currentUser = '张三'
+
+const currentPage = ref(1)
+const pageSize = ref(10)
+const small = ref(false)
+const background = ref(false)
+const disabled = ref(false)
+const total = ref(0)
 
 const query = ref({
   keyword: '',
@@ -111,9 +135,24 @@ function resetQuery() {
 }
 
 function viewDetail(row: TableRow) {
-  // 实现查看详情逻辑，比如弹窗或跳转
-  alert(`查看详情：${row.name}`)
+  router.push({
+    path: '/exhibition/people/my-add/detail',
+    query: {
+      id: row.id
+    }
+  })
 }
+
+function handleSizeChange(size: number) {
+  pageSize.value = size
+  fetchData()
+}
+
+function handleCurrentChange(page: number) {
+  currentPage.value = page
+  fetchData()
+}
+
 </script>
 
 <style scoped>
