@@ -244,7 +244,6 @@ function removeSelected() {
 }
 
 function onSelectionChange(rows: QueryTableRow[]) {
-  console.log('onSelectionChange', rows)
   selectedRowKeys.value = rows
 }
 

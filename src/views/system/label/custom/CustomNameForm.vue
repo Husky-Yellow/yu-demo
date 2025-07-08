@@ -44,7 +44,7 @@ const formData = ref({
   name: undefined,
   type: BooleanEnum.FALSE,
   parentId: 0,
-  labelId: query.lableId
+  labelId: query.lableId,
 })
 const formRules = reactive<FormRules>({
   name: [{ required: true, message: '部门名称不能为空', trigger: 'blur' }],

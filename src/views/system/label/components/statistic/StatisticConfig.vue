@@ -331,7 +331,7 @@ const submitForm = () => {
         ElMessage.error('统计配置更新失败')
       }
     } else {
-      console.log('表单验证失败')
+      console.error('表单验证失败')
     }
   })
 }

@@ -24,6 +24,7 @@
   </ContentWrap>
 </template>
 <script lang="ts" setup>
+import { debounce } from 'lodash-es';
 defineOptions({ name: 'SystemLabelCustomDetail' })
 
 interface SaveableComponent {
@@ -66,7 +67,8 @@ const setComponentRef = (el: any, name: string) => {
 
 const activeTabConfig = computed(() => tabsConfig.find(tab => tab.name === activeName.value))
 
-const save = () => {
+
+const save = debounce(() => {
   const tab = activeTabConfig.value
   if (!tab?.saveMethod) {
     console.warn(`Tab "${activeName.value}" has no save action defined.`)
@@ -84,7 +86,7 @@ const save = () => {
       `Save method '${tab.saveMethod}' not found on component for tab '${tab.name}'.`
     )
   }
-}
+}, 500);
 
 const updateTab = () => {
   saveLoading.value = false

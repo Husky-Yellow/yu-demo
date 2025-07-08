@@ -54,22 +54,22 @@
           {{ FieldTypeLabel[scope.row.fieldType] }}
         </template>
       </el-table-column>
-      <el-table-column prop="length" label="字段长度" align="center">
+      <el-table-column prop="length" label="字段长度" align="center" width="100">
         <template #default="scope">
           {{ scope.row.length }}
         </template>
       </el-table-column>
-      <el-table-column prop="encFlag" label="是否加密" align="center">
+      <el-table-column prop="encFlag" label="是否加密" align="center" width="100">
         <template #default="scope">
           {{ scope.row.encFlag ? '是' : '否' }}
         </template>
       </el-table-column>
-      <el-table-column prop="addFlag" label="新增表单" align="center">
+      <el-table-column prop="addFlag" label="新增表单" align="center" width="100">
         <template #default="scope">
           <el-checkbox v-model="scope.row.addFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
-      <el-table-column prop="editFlag" label="编辑表单" align="center">
+      <el-table-column prop="editFlag" label="编辑表单" align="center" width="100">
         <template #default="scope">
           <el-checkbox v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
         </template>
@@ -238,7 +238,6 @@ const handleDelete = () => {
 }
 
 const updateData = (data) => {
-  console.log('updateData', data)
   if (!data.uuid && !data.id) {
     data.uuid = generateUUID();
   }
@@ -258,6 +257,7 @@ const updateData = (data) => {
 const handleViewFlag = (row: LabelFieldConfig, flag: string) => {
   row[flag] = row[flag] === BooleanEnum.TRUE ? BooleanEnum.FALSE : BooleanEnum.TRUE
 }
+
 
 const saveTableData = async () => {
   const data = tableData.value.map((item, index) => omit({

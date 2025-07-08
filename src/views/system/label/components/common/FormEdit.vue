@@ -2,7 +2,7 @@
   <div v-loading="loading">
     <el-radio-group v-show="tab.name === 'formEdit'" v-model="activeMode" @change="fetchFormData">
       <el-radio-button :value="1">新增表单</el-radio-button>
-      <el-radio-button :value="2">编辑表单</el-radio-button>
+      <el-radio-button :value="0">编辑表单</el-radio-button>
     </el-radio-group>
     <div v-loading="loading" class="flex gap-2 h-[calc(100vh-260px)] bg-gray-100 p-2 mt-2">
       <div class="w-60 flex-shrink-0 bg-white rounded shadow-sm p-4 h-full overflow-y-auto">
@@ -86,7 +86,7 @@
                               <Delete />
                             </el-icon>
                           </div>
-                          <el-form-item :label="field.name" :required="field.required" label-width="100px">
+                          <el-form-item :label="field.name" :required="field.required" label-width="160px">
                             <!-- 上传组件 -->
                             <template v-if="field.fieldType === FieldType.ATTACHMENT">
                               <el-upload
@@ -178,6 +178,11 @@ import FieldPropertyForm from './FieldPropertyForm.vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import LinkageRelationDialog from './LinkageRelationDialog.vue'
 import { FieldType } from '@/config/constants/enums/field'
+import { consoleLogObject } from '@/utils/log'
+import { filterAndMarkGroups } from '@/utils/formatter'
+
+
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 const props = defineProps({
   tab: {
@@ -316,7 +321,7 @@ const oneClickLayout = async () => {
 }
 
 const getLayoutData = (): FormRow[] => {
-  console.log('getLayoutData  ', formRows.value)
+  consoleLogObject(formRows.value, 'getLayoutData')
   return JSON.parse(JSON.stringify(formRows.value))
 }
 
@@ -349,12 +354,19 @@ const submitForm = async () => {
   const layoutData = getLayoutData()
   ElMessage.success('布局已保存到控制台！')
   loading.value = true
+  const formType = props.tab.name === 'formEdit'
+  ? activeMode.value
+  : props.tab.name === 'detailEdit'
+    ? 2
+    : 0
   try {
     const params = {
       manageId: query.manageId as string,
-      formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
+      formType,
       formJson: JSON.stringify(layoutData)
     }
+    consoleLogObject(params, 'submitForm')
+    // 这里要区分编辑和新增
     if (!formData.value?.id) {
       const id = await LabelApi.createViewFormConf(params)
       formData.value.id = id
@@ -385,42 +397,16 @@ const fetchFormData = async () => {
   })
   const formConfData = await LabelApi.getViewFormConf({
     manageId: query.manageId as string,
-    formType: props.tab.name === 'formEdit' ? activeMode.value : 0,
-    // id: query.lableId as string
+    formType: props.tab.name === 'formEdit' ? activeMode.value : 2,
   })
-  let filteredRes = res
-  if (props.tab.name === 'formEdit') {
-    if (activeMode.value === 1) {
-      filteredRes = res.filter(item => item.addFlag)
-    } else {
-      filteredRes = res.filter(item => item.editFlag)
-    }
-  }
+  const filteredRes = props.tab.name === 'formEdit' ? res.filter(item => activeMode.value === 1 ? item.addFlag : item.editFlag) : res
   availableFields.value = filteredRes as unknown as LabelDragField[]
   if (formConfData) {
     formData.value = formConfData
     if (formConfData.formJson) {
       const rawData = JSON.parse(formConfData.formJson)
-      const allowedIds = filteredRes.map((item: any) => item.id)
-
-      const filteredData = Array.isArray(rawData)
-        ? rawData
-            .map((group: any) => {
-              // 过滤 fields
-              const filteredFields = Array.isArray(group.fields)
-                ? group.fields.filter((field: any) => allowedIds.includes(field.id))
-                : []
-              // 返回新分组对象
-              return {
-                ...group,
-                fields: filteredFields,
-                singleRow: filteredFields.length === 1 // 标记单行
-              }
-            })
-            // 只保留 fields 不为空的分组
-            .filter((group: any) => group.fields.length > 0)
-        : rawData
-
+      const allowedIds = filteredRes.map((item: LabelFieldConfig) => item.id as string).filter(Boolean)
+      const filteredData = filterAndMarkGroups(rawData, allowedIds)
       setLayoutData(filteredData)
     }
   }

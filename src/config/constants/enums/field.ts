@@ -35,26 +35,26 @@ export type TextType = typeof TextTypeOptions[number]['value'];
 
 // 查重校验
 export const DuplicateCheckOptions = [
-  { label: '校验', value: 'check' },
-  { label: '不校验', value: 'noCheck' }
+  { label: '校验', value: '0' },
+  { label: '不校验', value: '1' }
 ] as const;
 export type DuplicateCheck = typeof DuplicateCheckOptions[number]['value'];
 
 // 数据校验
 export const DataValidationOptions = [
-  { label: '不校验', value: 'none' },
-  { label: '自定义正则代码', value: 'custom' },
-  { label: '身份证校验', value: 'idCard' },
-  { label: '统一社会信用代码校验', value: 'creditCode' },
-  { label: '手机号校验', value: 'mobile' },
-  { label: '电话号码校验', value: 'phone' }
+  { label: '不校验', value: '0' },
+  { label: '自定义正则代码', value: '1' },
+  { label: '身份证校验', value: '2' },
+  { label: '统一社会信用代码校验', value: '3' },
+  { label: '手机号校验', value: '4' },
+  { label: '电话号码校验', value: '5' }
 ] as const;
 export type DataValidation = typeof DataValidationOptions[number]['value'];
 
 // 数字类型
 export const NumberTypeOptions = [
-  { label: '整数', value: 'integer' },
-  { label: '小数', value: 'decimal' }
+  { label: '整数', value: '0' },
+  { label: '小数', value: '1' }
 ] as const;
 export type NumberType = typeof NumberTypeOptions[number]['value'];
 
@@ -78,10 +78,10 @@ export const EncFlagOptions = [
 export type EncFlag = typeof EncFlagOptions[number]['value'];
 
 export const DecimalPlacesOptions = [
-  { label: '0', value: 0 },
-  { label: '1', value: 1 },
-  { label: '2', value: 2 },
-  { label: '3', value: 3 },
+  { label: '0', value: '0' },
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3', value: '3' },
 ] as const;
 export type DecimalPlaces = typeof DecimalPlacesOptions[number]['value'];
 

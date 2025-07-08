@@ -76,6 +76,7 @@ import * as LabelApi from '@/api/system/label'
 import * as DataApi from '@/api/system/data'
 import { FormRules } from 'element-plus'
 import { useDatePicker } from '@/hooks/useDatePicker'
+import { validatePatternMapNumber } from '@/utils/formRules'
 
 const route = useRoute()
 const router = useRouter()
@@ -223,9 +224,15 @@ const generateFormRules = (fields: any[]): FormRules => {
     if (field.required) ruleArr.push(createRequiredRule(field.name))
 
     // 自定义正则验证
-    if (field.fieldType === 1 && field.fieldConfExtObj?.dataValidation === '1' && field.fieldConfExtObj?.regex) {
-      const { regex, prompt = '格式不正确' } = field.fieldConfExtObj
-      ruleArr.push(createRegexRule(regex, prompt))
+    if(field.fieldType === 1){
+      if (field.fieldConfExtObj?.dataValidation === '1' && field.fieldConfExtObj?.regex) {
+        const { regex, prompt = '格式不正确' } = field.fieldConfExtObj
+        ruleArr.push(createRegexRule(regex, prompt))
+      }
+      else {
+        const regex = validatePatternMapNumber[field.fieldConfExtObj?.dataValidation]
+        ruleArr.push(createRegexRule(regex, '格式不正确'))
+      }
     }
 
     if (ruleArr.length) rules[field.code] = ruleArr

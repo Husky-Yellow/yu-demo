@@ -1,11 +1,11 @@
 <template>
-  <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
+  <el-form :model="form" :rules="NumberFieldConfigFormRules" ref="formRef" label-width="150px">
     <el-form-item label="数字类型" required>
       <el-radio-group v-model="form.numberType">
-        <el-radio v-for="(item, index) in NumberTypeOptions" :key="index" :value="index">{{ item.label }}</el-radio>
+        <el-radio v-for="(item, index) in NumberTypeOptions" :key="index" :value="`${item.value}`">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
-    <template v-if="form.numberType === 1">
+    <template v-if="form.numberType === '1'">
       <el-form-item label="小数位数" required>
         <el-select
         v-model="form.decimalPlaces"
@@ -16,14 +16,14 @@
             v-for="(item, index) in DecimalPlacesOptions"
             :key="index"
             :label="item.label"
-            :value="index"
+            :value="`${item.value}`"
           />
       </el-select>
       </el-form-item>
     </template>
     <el-form-item label="是否进行查重校验" required>
       <el-radio-group v-model="form.duplicateCheck">
-        <el-radio v-for="(item, index) in DuplicateCheckOptions" :key="index" :value="index">{{ item.label }}</el-radio>
+        <el-radio v-for="(item, index) in DuplicateCheckOptions" :key="index" :value="`${item.value}`">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
   </el-form>
@@ -37,8 +37,10 @@ import {
   DecimalPlacesOptions
 } from '@/config/constants/enums/field'
 import { defaultNumberFieldForm, NumberFieldForm } from '@/config/constants/enums/fieldDefault'
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { convertObjectToArray } from '@/utils'
+import { NumberFieldConfigFormRules } from '@/utils/formRules'
+
 defineOptions({ name: 'NumberFieldConfig' })
 
 const props = defineProps<{
@@ -54,12 +56,6 @@ const form = reactive<NumberFieldForm>({
 })
 
 const formRef = ref<FormInstance>()
-
-const rules: FormRules = {
-  numberType: [{ required: true, message: '请选择数字类型', trigger: 'change' }],
-  decimalPlaces: [{ required: true, message: '请选择小数位数', trigger: 'change' }],
-  duplicateCheck: [{ required: true, message: '请选择是否进行查重校验', trigger: 'change' }],
-}
 
 // 暴露验证方法
 const validate = async () => {

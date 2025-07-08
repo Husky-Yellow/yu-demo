@@ -36,7 +36,6 @@ const form = reactive<DatePrecisionForm>({
     Object.keys(defaultDatePrecisionForm).map(key => [key, props.modelValue?.[key as keyof DatePrecisionForm] ?? defaultDatePrecisionForm[key as keyof DatePrecisionForm]])
   ) : {})
 })
-console.log('form', form)
 
 const rules: FormRules = {
   code2: [{ required: true, message: '请输入code2', trigger: 'blur' }],

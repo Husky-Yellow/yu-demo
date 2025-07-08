@@ -91,7 +91,6 @@ function getPlaceholder(field: any) {
 }
 
 function getComponent(queryType: FieldType) {
-  console.log('getComponent queryType', queryType)
   switch (queryType) {
     case FieldType.TEXT:
     case FieldType.NUMBER:

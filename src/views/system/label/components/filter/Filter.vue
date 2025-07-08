@@ -342,7 +342,7 @@ const submitForm = () => {
         ElMessage.error('更新失败')
       })
     } else {
-      console.log('error submit!')
+      console.error('error submit!')
     }
   })
 }

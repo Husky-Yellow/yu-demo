@@ -41,3 +41,25 @@ export const handleConfigFlag = (flag: string, configName: string): boolean => {
 
   return paddedFlag[position] === '1';
 }
+
+/**
+ * 过滤和标记分组
+ * @param rawData 原始数据
+ * @param allowedIds 允许的ID列表
+ * @returns 过滤后的数据
+ */
+export const filterAndMarkGroups = (rawData: any, allowedIds: string[]) => {
+  if (!Array.isArray(rawData)) return rawData
+  return rawData
+    .map((group: any) => {
+      const filteredFields = Array.isArray(group.fields)
+        ? group.fields.filter((field: any) => allowedIds.includes(field.id))
+        : []
+      return {
+        ...group,
+        fields: filteredFields,
+        singleRow: filteredFields.length === 1
+      }
+    })
+    .filter((group: any) => group.fields.length > 0)
+}

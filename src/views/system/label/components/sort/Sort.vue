@@ -228,7 +228,7 @@ const submitForm = () => {
         ElMessage.error('排序配置更新失败')
       })
     } else {
-      console.log('error submit!')
+      console.error('error submit!')
     }
   })
 }

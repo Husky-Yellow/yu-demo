@@ -16,7 +16,7 @@
     </el-form-item>
     <el-form-item label="数据校验" prop="dataValidation" >
       <el-radio-group v-model="form.dataValidation">
-        <el-radio v-for="(item, index) in DataValidationOptions" :key="index" :value="`${index}`">{{
+        <el-radio v-for="(item, index) in DataValidationOptions" :key="index" :value="item.value">{{
           item.label
         }}</el-radio>
       </el-radio-group>
@@ -43,10 +43,11 @@ import {
   TextTypeOptions,
   DuplicateCheckOptions,
   DataValidationOptions,
-  FieldType
+  FieldType,
 } from '@/config/constants/enums/field'
 import { defaultTextFieldForm, TextFieldForm } from '@/config/constants/enums/fieldDefault'
 import { convertObjectToArray } from '@/utils'
+import { TextFieldConfigFormRules } from '@/utils/formRules'
 defineOptions({ name: 'TextFieldConfig' })
 const promptMap = {
   'none': '请输入正确的手机号',
@@ -72,9 +73,7 @@ const formRef = ref<FormInstance>()
 
 // 表单验证规则
 const rules: FormRules = {
-  textType: [{ required: true, message: '请选择文本类型', trigger: 'change' }],
-  duplicateCheck: [{ required: true, message: '请选择是否进行查重校验', trigger: 'change' }],
-  dataValidation: [{ required: true, message: '请选择数据校验', trigger: 'change' }],
+  ...TextFieldConfigFormRules,
   regex: [
     { required: true, message: '请输入正则表达式', trigger: 'blur' },
     {

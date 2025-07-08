@@ -1,4 +1,4 @@
-import type { FileSize, TextType, DuplicateCheck, DataValidation, NumberType, LableDatePrecision } from './field'
+import type { FileSize } from './field'
 import type { FieldType } from '@/config/constants/enums/field'
 import { BooleanEnum, OperateType } from '@/config/constants/enums/label'
 
@@ -29,7 +29,7 @@ export const defaultNumberFieldForm = {
   /** 重复检查 */
   duplicateCheck: '0',
   /** 小数位数 */
-  decimalPlaces: 0
+  decimalPlaces: '0'
 }
 
 /**
