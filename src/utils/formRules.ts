@@ -1,3 +1,9 @@
+// 必填项
+export const required = {
+  required: true,
+  message: '该项为必填项'
+}
+
 // 正则校验规则
 export const validatePatternMap = {
   uscc: /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/, // 统一社会信用代码

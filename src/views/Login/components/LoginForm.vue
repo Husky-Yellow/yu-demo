@@ -116,9 +116,8 @@
 import { ElLoading } from 'element-plus'
 import LoginFormTitle from './LoginFormTitle.vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-
+import { required } from '@/utils/formRules'
 import { useIcon } from '@/hooks/web/useIcon'
-
 import * as authUtil from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import * as LoginApi from '@/api/login'
