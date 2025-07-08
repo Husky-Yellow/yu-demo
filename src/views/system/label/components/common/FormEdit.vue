@@ -170,19 +170,16 @@
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
 import draggable from 'vuedraggable'
-import { ElIcon, ElButton, ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import { Rank, Delete, Plus } from '@element-plus/icons-vue'
 import { useFormEditHandlers, FormRow } from '@/hooks/web/useFormEditHandlers'
-import type { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import FieldPropertyForm from './FieldPropertyForm.vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import LinkageRelationDialog from './LinkageRelationDialog.vue'
 import { FieldType } from '@/config/constants/enums/field'
 import { consoleLogObject } from '@/utils/log'
-import { filterAndMarkGroups } from '@/utils/formatter'
-
-
-import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import { filterAndMarkGroups, getFieldComponent, getFieldComponentType } from '@/utils/formatter'
+import { LabelDragField, LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 
 const props = defineProps({
   tab: {
@@ -201,8 +198,13 @@ const formRows = ref<FormRow[]>([])
 const formData = ref<any>(null) // 接口返回来的表单配置 null 为需要调创建
 const linkageRelationDialogVisible = ref(false)
 const selectedField = ref<LabelDragField | null>(null)
-const isDraggingNewField = ref(false)
-const loading = ref(false)
+const isDraggingNewField = ref<boolean>(false)
+const loading = ref<boolean>(false)
+const idMap = ref<Record<string, string>>({
+  0:'',
+  1:'',
+  2:''
+})
 
 const usedFieldIds = computed(() => {
   return new Set(formRows.value.flatMap((row) => row.fields.map((field) => field.id)))
@@ -258,8 +260,6 @@ const {
   addColumn,
   deleteRow,
   deleteField,
-  getFieldComponent,
-  getFieldComponentType
 } = useFormEditHandlers({
   isDraggingNewField,
   availableFields,
@@ -352,7 +352,6 @@ const updateField = (field: LabelDragField) => {
 
 const submitForm = async () => {
   const layoutData = getLayoutData()
-  ElMessage.success('布局已保存到控制台！')
   loading.value = true
   const formType = props.tab.name === 'formEdit'
   ? activeMode.value
@@ -366,19 +365,22 @@ const submitForm = async () => {
       formJson: JSON.stringify(layoutData)
     }
     consoleLogObject(params, 'submitForm')
+    const id = idMap.value[formType]
     // 这里要区分编辑和新增
-    if (!formData.value?.id) {
+    if (!id) {
       const id = await LabelApi.createViewFormConf(params)
-      formData.value.id = id
+      idMap.value[formType] = id
+      ElMessage.success('布局已保存！')
       fetchFormData()
     } else {
-      await LabelApi.updateViewFormConf({ ...params, id: formData.value.id as string })
+      await LabelApi.updateViewFormConf({ ...params, id })
+      ElMessage.success('布局已保存！')
     }
   } catch (err) {
     console.error(err)
   } finally {
     loading.value = false
-    emits('update:tab', true)
+    emits('update:tab', false)
   }
 }
 
@@ -389,9 +391,8 @@ const fetchFormData = async () => {
   linkageRelationDialogVisible.value = false
   selectedField.value = null
   isDraggingNewField.value = false
-
-
   loading.value = true
+
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
@@ -399,8 +400,13 @@ const fetchFormData = async () => {
     manageId: query.manageId as string,
     formType: props.tab.name === 'formEdit' ? activeMode.value : 2,
   })
+  //  存储对应id
+  const key = props.tab.name === 'formEdit' ? activeMode.value : 2
+  idMap.value[key] = formConfData?.id as string
+
   const filteredRes = props.tab.name === 'formEdit' ? res.filter(item => activeMode.value === 1 ? item.addFlag : item.editFlag) : res
   availableFields.value = filteredRes as unknown as LabelDragField[]
+
   if (formConfData) {
     formData.value = formConfData
     if (formConfData.formJson) {

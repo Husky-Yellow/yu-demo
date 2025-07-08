@@ -1,11 +1,11 @@
 <template>
   <!-- 超出两个有更多搜索 -->
   <el-form :model="form" label-width="0px">
-    <el-row :gutter="16">
+    <el-row :gutter="16" flex>
       <el-col v-for="field in fields" :key="field.id || field.fieldCodes" :span="8">
         <el-form-item :prop="field.fieldCodes">
           <component
-            :is="getComponent(field.queryType)"
+            :is="getFieldComponent(field.queryType)"
             v-model="form[field.fieldCodes || field.id || field.hint]"
             :placeholder="field.hint"
             v-bind="getComponentProps(field)"
@@ -13,10 +13,16 @@
           />
         </el-form-item>
       </el-col>
+      <el-col :span="4">
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="handleReset">重置</el-button>
+          <el-button v-if="fields.length > 2" @click="handleReset">更多搜索</el-button>
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row v-if="operateConfigList.length">
       <el-col :span="24" style="text-align: right; margin-top: 12px">
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
-        <el-button @click="handleReset">重置</el-button>
-        <el-button v-if="fields.length > 2" @click="handleReset">更多搜索</el-button>
         <el-button
           v-for="item in operateConfigList"
           :key="item.operateType"
@@ -31,10 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, ref } from 'vue'
-import { ElInput, ElSelect, ElDatePicker, ElButton } from 'element-plus'
 import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 import CreateForm from './CreateForm.vue'
+import { getFieldComponent } from '@/utils/formatter'
 
 const router = useRouter()
 
@@ -63,23 +68,6 @@ const createFormRef = ref<InstanceType<typeof CreateForm>>()
 
 initForm()
 watch(() => props.fields, initForm, { deep: true })
-
-function getComponent(queryType: number) {
-  switch (queryType) {
-    case 0:
-      return ElInput
-    case 1:
-      return ElSelect
-    case 2:
-      return ElSelect
-    case 3:
-      return ElDatePicker
-    case 4:
-      return ElDatePicker
-    default:
-      return ElInput
-  }
-}
 
 function getComponentProps(field: SearchField) {
   const queryTypePropsMap = {
@@ -145,7 +133,6 @@ function handleSubmit(data: any) {
       ...data.data,
       type: data.type
     }
-
   })
 }
 </script>

@@ -273,7 +273,7 @@ const saveTableData = async () => {
     message.error('保存失败，请稍后重试')
   }).finally(() => {
     isLoading.value = false
-    emits('update:tab', true)
+    emits('update:tab', false)
   })
 }
 

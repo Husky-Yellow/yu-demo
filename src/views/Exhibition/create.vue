@@ -77,6 +77,7 @@ import * as DataApi from '@/api/system/data'
 import { FormRules } from 'element-plus'
 import { useDatePicker } from '@/hooks/useDatePicker'
 import { validatePatternMapNumber } from '@/utils/formRules'
+import { filterAndMarkGroups } from '@/utils/formatter'
 
 const route = useRoute()
 const router = useRouter()
@@ -244,7 +245,7 @@ const generateFormRules = (fields: any[]): FormRules => {
 const handleSubmit = () => {
   formRef.value?.validate((valid: boolean) => {
     if (valid) {
-      const manageId = '1938148839818596353'
+      const manageId = '1942420981721182210'
       console.log('表单数据:', formData.value)
       // 处理时间范围字段
       fieldGroups.value.forEach(group => {
@@ -283,8 +284,8 @@ const handleCancel = () => {
 }
 
 const init = async () => {
-  // const manageId = (route.meta.manageId as string) || '1938148839818596353'
-  const manageId = '1938148839818596353'
+  // const manageId = (route.meta.manageId as string) || '1942420981721182210'
+  const manageId = '1942420981721182210'
   const formType = route.query.type === 'people' ? 1 : 2
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId
@@ -325,7 +326,7 @@ const init = async () => {
           },
           version: null,
           editFlag: 1,
-          manageId: '1938148839818596353',
+          manageId: '1942420981721182210',
           required: true,
           fieldType: 1,
           createTime: 1751527778000,
@@ -456,7 +457,7 @@ const init = async () => {
           },
           version: null,
           editFlag: 1,
-          manageId: '1938148839818596353',
+          manageId: '1942420981721182210',
           required: false,
           fieldType: 1,
           createTime: 1751530974000,
@@ -587,7 +588,7 @@ const init = async () => {
           },
           version: null,
           editFlag: 1,
-          manageId: '1938148839818596353',
+          manageId: '1942420981721182210',
           required: false,
           fieldType: 5,
           createTime: 1751597983000,
@@ -651,7 +652,7 @@ const init = async () => {
             targetFieldValue: null
           },
           editFlag: 1,
-          manageId: '1938148839818596353',
+          manageId: '1942420981721182210',
           required: false,
           fieldType: 6,
           pcViewFlag: 1,
@@ -683,7 +684,7 @@ const init = async () => {
           },
           version: null,
           editFlag: 1,
-          manageId: '1938148839818596353',
+          manageId: '1942420981721182210',
           required: false,
           fieldType: 1,
           createTime: 1751867552000,
@@ -922,7 +923,7 @@ const init = async () => {
       fields: [
         {
           id: '1942127082166820866',
-          manageId: '1938148839818596353',
+          manageId: '1942420981721182210',
           code: 'zhengzhe',
           name: '正则2',
           remark: '正则2',
@@ -1187,24 +1188,8 @@ const init = async () => {
     }
   ]
   const rawData = JSON.parse(formConfData.formJson)
-  const allowedIds = filteredRes.map((item: any) => item.id)
-  const filteredData = Array.isArray(rawData)
-    ? rawData
-        .map((group: any) => {
-          // 过滤 fields
-          const filteredFields = Array.isArray(group.fields)
-            ? group.fields.filter((field: any) => allowedIds.includes(field.id))
-            : []
-          // 返回新分组对象
-          return {
-            ...group,
-            fields: filteredFields,
-            singleRow: filteredFields.length === 1 // 标记单行
-          }
-        })
-        // 只保留 fields 不为空的分组
-        .filter((group: any) => group.fields.length > 0)
-    : rawData
+  const allowedIds = rawData.map((item: any) => item.id)
+  const filteredData = filterAndMarkGroups(rawData, allowedIds)
 
   console.log('表单配置数据:', formJson)
 
@@ -1243,18 +1228,6 @@ const init = async () => {
 onMounted(() => {
   init()
 })
-
-// 监听表单数据变化，触发字段显示状态重新计算
-watch(
-  formData,
-  () => {
-    // 强制重新渲染，触发 isFieldVisible 重新计算
-    nextTick(() => {
-      // 这里可以添加额外的逻辑
-    })
-  },
-  { deep: true }
-)
 </script>
 
 <style scoped lang="scss"></style>

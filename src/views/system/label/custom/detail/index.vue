@@ -88,7 +88,7 @@ const save = debounce(() => {
   }
 }, 500);
 
-const updateTab = () => {
-  saveLoading.value = false
+const updateTab = (value: boolean) => {
+  saveLoading.value = value
 }
 </script>

@@ -114,7 +114,7 @@ const submitForm = () => {
   LabelApi.updateOperateConfigList(submitData)
     .then(() => ElMessage.success('配置已保存'))
     .catch(() => ElMessage.error('保存失败')).finally(() => {
-      emits('update:tab', true)
+      emits('update:tab', false)
     })
 }
 

@@ -1,9 +1,9 @@
-import { Ref, ComputedRef, markRaw } from 'vue'
-import { ElInput, ElSelect, ElDatePicker, ElUpload, ElInputNumber } from 'element-plus'
+import { Ref, ComputedRef } from 'vue'
 import { FieldType, TextTypeOptions } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
 import * as LabelApi from '@/api/system/label'
 import { convertArrayToObject } from '@/utils'
+
 
 
 export interface Placeholder {
@@ -208,68 +208,6 @@ export function useFormEditHandlers({
     }
   }
 
-  /**
-   * 获取字段组件
-   * @param type 字段类型
-   * @returns 字段组件
-   */
-  const getFieldComponent = (type: FieldType) => {
-    switch (type) {
-      case FieldType.TEXT:
-        return markRaw(ElInput)
-      case FieldType.NUMBER:
-        return markRaw(ElInputNumber)
-      case FieldType.RADIO:
-      case FieldType.CHECKBOX:
-        return markRaw(ElSelect)
-      case FieldType.DATE:
-      case FieldType.DATE_RANGE:
-        return markRaw(ElDatePicker)
-      case FieldType.ATTACHMENT:
-        return markRaw(ElUpload)
-      default:
-        return markRaw(ElInput)
-    }
-  }
-
-  /**
-   * 根据字段类型返回表单组件配置
-   * @param field - 字段对象
-   */
-  const getFieldComponentType = (field: LabelDragField) => {
-    const baseConfig = { disabled: true }
-    switch (field.fieldType) {
-      case FieldType.TEXT: {
-        const isTextarea = field.fieldConfExtObj?.value === TextTypeOptions[1].value
-        return isTextarea
-          ? { ...baseConfig, type: 'textarea', rows: 2 }
-          : { ...baseConfig }
-      }
-      case FieldType.DATE_RANGE:
-        return {
-          ...baseConfig,
-          type: 'daterange',
-          rangeSeparator: '至',
-          startPlaceholder: '开始日期',
-          endPlaceholder: '结束日期',
-        }
-      case FieldType.ATTACHMENT:
-        return {
-          ...baseConfig,
-          'list-type': 'picture-card',
-          accept: 'image/*',
-          limit: 1,
-          multiple: false,
-          drag: true,
-          showFileList: false,
-          action: '/mock-upload',
-          style: 'width: 100%',
-        }
-      default:
-        return { ...baseConfig }
-    }
-  }
-
   return {
     isDraggingNewField,
     handleDragStart,
@@ -283,7 +221,5 @@ export function useFormEditHandlers({
     addColumn,
     deleteRow,
     deleteField,
-    getFieldComponent,
-    getFieldComponentType
   }
 }

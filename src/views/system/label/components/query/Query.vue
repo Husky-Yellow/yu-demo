@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div  v-loading="isLoading">
     <div class="flex justify-end mb-2">
       <el-button type="primary" @click="showDialog = true">添加</el-button>
       <el-button type="danger" @click="removeSelected" :disabled="!selectedRowKeys.length"
@@ -174,6 +174,7 @@ const fieldTypeLabelMap = {
 }
 
 const { query } = useRoute() // 查询参数
+const emits = defineEmits(['update:tab'])
 // 所有字段
 const allFields = shallowRef<LabelFieldConfig[]>([])
 // 表格数据
@@ -186,7 +187,7 @@ const currentRow = ref<QueryTableRow | null>(null) // 当前行
 const selectedRowKeys = ref<QueryTableRow[]>([])
 const tableRef = ref<InstanceType<typeof ElTable>>()
 const sortable = ref(null)
-
+const isLoading = ref(false) // 是否加载中
 const subFieldExcludedKeys = computed(() => {
   // 只排除所有已在主表中的字段
   const mainKeys = tableData.value.map((i) => i.uuid).filter((id): id is string => id !== undefined)
@@ -221,6 +222,8 @@ function removeSelected() {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(() => {
+    isLoading.value = true
+    emits('update:tab', true)
     const ids = selectedRowKeys.value.map(r => r.id).filter(Boolean) as string[]
     const uuids = selectedRowKeys.value.map(r => r.uuid).filter(Boolean) as string[]
 
@@ -229,6 +232,8 @@ function removeSelected() {
         row => !uuids.includes(row.uuid!) && !ids.includes(row.id!)
       )
       selectedRowKeys.value = []
+      isLoading.value = false
+      emits('update:tab', false)
       ElMessage.success('删除成功')
     }
 
@@ -339,6 +344,8 @@ onMounted(() => {
 })
 
 const submitForm = async () => {
+  isLoading.value = true
+  emits('update:tab', true)
   const submitData: QueryResItem[] = tableData.value.map((row, index) => {
     return {
       fieldIds: row.field?.map(f => f.uuid!).join(',') || '',
@@ -356,6 +363,9 @@ const submitForm = async () => {
     fetchData()
   }).catch(() => {
     ElMessage.error('更新失败')
+  }).finally(() => {
+    isLoading.value = false
+    emits('update:tab', false)
   })
 }
 
