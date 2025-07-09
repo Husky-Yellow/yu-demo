@@ -151,6 +151,7 @@ interface ExtendedStatisticItem extends StatisticItem {
 
 // 响应式数据
 const { query } = useRoute()
+const emits = defineEmits(['update:tab'])
 const statisticConfigFields = ref<LabelFieldConfig[]>([])
 const deptList = ref<Tree[]>([])
 const statistics = ref<ExtendedStatisticItem[]>([{
@@ -327,8 +328,11 @@ const submitForm = () => {
         await LabelApi.updateCountConfigList(submitData)
         ElMessage.success('统计配置更新成功')
         await fetchData()
+
       } catch (error) {
         ElMessage.error('统计配置更新失败')
+      } finally {
+        emits('update:tab', false)
       }
     } else {
       console.error('表单验证失败')

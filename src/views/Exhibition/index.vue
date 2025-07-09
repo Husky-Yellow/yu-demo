@@ -229,8 +229,8 @@ const getDataFieldConfListByManageId = async (manageId: string) => {
 }
 
 const init = async () => {
-  const manageId = (route.meta.manageId as string) || '1942420981721182210'
-  // const manageId = '1942420981721182210'
+  // const manageId = (route.meta.manageId as string) || '1942420981721182210'
+  const manageId = '1942420981721182210'
   queryParams.manageId = manageId
   // 获取字段配置
   const res = await fetchFieldConfig(manageId)

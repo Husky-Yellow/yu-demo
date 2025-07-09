@@ -104,7 +104,7 @@
 <script setup lang="ts">
 import VueDraggable from 'vuedraggable'
 import type { FormInstance } from 'element-plus'
-import { ElButton, ElSelect, ElOption } from 'element-plus'
+import { Delete } from '@element-plus/icons-vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import * as LabelApi from '@/api/system/label'
 import * as DictDataApi from '@/api/system/dict/dict.data'
@@ -113,7 +113,9 @@ import { FieldType } from '@/config/constants/enums/field'
 import type { LabelFieldConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
 import { generateUUID } from '@/utils'
 import { handleTree2, defaultProps } from '@/utils/tree'
+
 const { query } = useRoute() // 查询参数
+const emits = defineEmits(['update:tab'])
 
 // 左侧可选字段
 const filterFields = ref<LabelFieldConfig[]>([])
@@ -134,8 +136,6 @@ const filterRules = ref<FilterRuleConfig[]>([
     ...defaultItem
   }
 ])
-
-
 // 当前拖拽的字段
 const draggedField = ref<LabelFieldConfig | null>(null)
 
@@ -212,7 +212,7 @@ const setClickIndex = (rule: FilterRuleConfig) => {
 }
 
 // 移除字段
-function removeField(ruleIndex: number) {
+const removeField = (ruleIndex: number) => {
   if (filterRules.value[ruleIndex]) {
     filterRules.value[ruleIndex].fieldId = null
   }
@@ -227,7 +227,7 @@ const getTree = async () => {
 }
 
 // 添加新规则
-function addRule() {
+const addRule = () => {
   filterRules.value.push({
     uuid: generateUUID(),
     fieldId: null,
@@ -238,7 +238,7 @@ function addRule() {
   })
 }
 
-function removeSelectedStatistic(index: number) {
+const removeSelectedStatistic = (index: number) => {
   const items = filterRules.value;
   if (items.length <= 1) return;
 
@@ -246,7 +246,7 @@ function removeSelectedStatistic(index: number) {
   const removeLast = () => items.pop();
 
   if (index !== -1 && items[index]?.uuid) {
-    LabelApi.deleteFilterConfList({ id: items[index].uuid as string })
+    LabelApi.deleteFilterConfList({ id: items[index].uuid as string, manageId: query.manageId as string })
       .then(() => {
         ElMessage.success('删除成功');
         removeAt(index);
@@ -263,36 +263,31 @@ function removeSelectedStatistic(index: number) {
 
 
 // 切换逻辑操作符
-function toggleLogic(index: number) {
+const toggleLogic = (index: number) => {
   const rule = filterRules.value[index]
   rule.connectType = rule.connectType === BooleanEnum.TRUE ? BooleanEnum.FALSE : BooleanEnum.TRUE
 }
 
 
 /**
- * 自定义表单校验规则工厂函数：验证统计项的字段列表是否为空
- * @param idx - 当前统计项的索引
- * @returns 返回一个 Element Plus 的表单校验函数
+ * 验证筛选字段是否已选择
  */
- const validateFieldsNotEmpty = (item: any) => {
+const validateFieldsNotEmpty = (item: FilterRuleConfig) => {
   return (_rule: any, _value: any, callback: any) => {
     if (!item.fieldId) {
-      return callback(new Error('请拖入排序字段'))
+      return callback(new Error('请拖入筛选字段'))
     }
     callback()
   }
 }
 
-
 /**
- * 自定义表单校验规则工厂函数：验证统计项的字段列表是否为空
- * @param idx - 当前统计项的索引
- * @returns 返回一个 Element Plus 的表单校验函数
+ * 验证筛选值是否已输入
  */
- const validateValueNotEmpty = (item: any) => {
+const validateValueNotEmpty = (item: FilterRuleConfig) => {
   return (_rule: any, _value: any, callback: any) => {
     if (!item.data) {
-      return callback(new Error('请输入值'))
+      return callback(new Error('请输入筛选值'))
     }
     callback()
   }
@@ -300,18 +295,21 @@ function toggleLogic(index: number) {
 
 
 const fetchData = async () => {
-  // todo @zhaokun 单选、多选、组织、标签 需要过滤
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
   const filterRes = await LabelApi.getFilterConfList({
     manageId: query.manageId as string
   })
-  filterFields.value = res.filter((item) => item.fieldType === FieldType.RADIO || item.fieldType === FieldType.CHECKBOX || item.fieldType === FieldType.TAG || item.fieldType === FieldType.REGION).map(item => {
-    item.uuid = item.id
-    delete item.id
-    return item
-  })
+
+  const supportedFieldTypes = [FieldType.RADIO, FieldType.CHECKBOX, FieldType.TAG, FieldType.REGION]
+  filterFields.value = res
+    .filter((item) => supportedFieldTypes.includes(item.fieldType))
+    .map(item => ({
+      ...item,
+      uuid: item.id
+    }))
+
   filterRules.value = filterRes.length
   ? await Promise.all(
       filterRes.map(async (item) => {
@@ -330,9 +328,11 @@ const submitForm = () => {
   filterFormRef.value.validate((valid) => {
     if (valid) {
       const submitData = filterRules.value.map((item) => {
+        const { selectedOptions, ...itemWithoutOptions } = item
+        const field = filterFields.value.find((f) => f.uuid === item.fieldId)
         return {
-          ...item,
-          fieldCode: filterFields.value.find((f) => f.id === item.fieldId)?.code,
+          ...itemWithoutOptions,
+          fieldCode: field?.code,
           manageId: query.manageId as string,
         }
       })
@@ -340,6 +340,8 @@ const submitForm = () => {
         ElMessage.success('更新成功')
       }).catch(() => {
         ElMessage.error('更新失败')
+      }).finally(() => {
+        emits('update:tab', false)
       })
     } else {
       console.error('error submit!')

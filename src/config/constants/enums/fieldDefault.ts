@@ -278,4 +278,5 @@ export interface FilterRuleConfig {
   filterType: BooleanEnum.TRUE | BooleanEnum.FALSE
   data: string | undefined
   connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
+  selectedOptions?: any[]
 }
