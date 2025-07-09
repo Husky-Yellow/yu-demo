@@ -15,7 +15,7 @@
               <!-- 输入框 -->
               <el-input
                 v-if="field.fieldType === FieldType.TEXT"
-                v-model="formData[field.code]"
+                v-model.trim="formData[field.code]"
                 :placeholder="field.placeholder || `请输入${field.name}`"
                 :maxlength="field.length"
                 :type="field.fieldConfExtDOList[0].value === '1' ? 'textarea' : 'text'"
@@ -43,7 +43,7 @@
                 v-model="formData[field.code]"
                 :type="getPickerType(field)"
                 :format="getPickerFormat(field)"
-                :value-format="getPickerFormat(field)"
+                value-format="YYYY/MM/DD HH:mm:ss"
                 :placeholder="field.placeholder || `请选择${field.name}`"
               />
               <!-- 时间选择器 -->
@@ -55,7 +55,7 @@
                 start-placeholder="开始时间"
                 end-placeholder="结束时间"
                 :format="getPickerFormat(field)"
-                :value-format="getPickerFormat(field)"
+                value-format="YYYY/MM/DD HH:mm:ss"
                 :placeholder="field.placeholder || `请选择${field.name}`"
               />
               <UploadFile
@@ -208,7 +208,7 @@ const createRequiredRule = (fieldName: string) => ({
 })
 
 // 创建正则验证规则
-const createRegexRule = (regex: string, prompt: string) => ({
+const createRegexRule = (regex: string, prompt: string, required: boolean) => ({
   validator: (_rule: any, value: string, callback: (msg?: string) => void) => {
     if (!value) return callback()
     try {
@@ -218,13 +218,13 @@ const createRegexRule = (regex: string, prompt: string) => ({
       callback('正则表达式有误')
     }
   },
-  trigger: 'blur'
+  trigger: 'blur',
+  required
 } as any)
 
 // 生成表单验证规则
 const generateFormRules = (fields: any[]): FormRules => {
   return fields.reduce((rules: FormRules, field) => {
-
     let ruleArr: any[] = []
 
     // 必填验证
@@ -234,30 +234,29 @@ const generateFormRules = (fields: any[]): FormRules => {
     if(field.fieldType === 1){
       const {required, fieldConfExtObj} = field
       const {regex, prompt = '格式不正确', dataValidation} = fieldConfExtObj
-      // todo 这里 fieldConfExtObj 数据不对了。
       if (dataValidation === '1' && regex) {
-        ruleArr.push(createRegexRule(regex, prompt))
+        ruleArr.push(createRegexRule(regex, prompt, required))
       }
       else if(dataValidation === '3'){
-        ruleArr = [{ required, message: prompt},{
+        ruleArr.push({
           validator: (_rule, value, callback) => {
-            console.log(value)
-            if (!value) {
-              callback(new Error('请输入统一社会信用代码'))
-            } else if (!validateUSCC(value)) {
-              callback(new Error('统一社会信用代码格式不正确'))
+            if(!required && !value) return callback()
+             if (!validateUSCC(value)) {
+              callback(new Error(prompt))
             } else {
               callback()
             }
           },
           trigger: 'blur'
-        }]
+        })
       }
       else {
         const regex = validatePatternMapNumber[dataValidation]
-        ruleArr.push(createRegexRule(regex, prompt))
+        ruleArr.push(createRegexRule(regex, prompt, required))
       }
     }
+    console.log(field.code, field, ruleArr);
+
     if (ruleArr.length) rules[field.code] = ruleArr
     return rules
   }, {})
@@ -269,22 +268,31 @@ const handleSubmit = () => {
     if (valid) {
       const manageId = '1942420981721182210'
       console.log('表单数据:', formData.value)
+      const submitData = {}
       // 处理时间范围字段
       fieldGroups.value.forEach(group => {
         group.fields.forEach((field: any) => {
-          if (field.fieldType === 6) {
+          if (field.fieldType === FieldType.DATE_RANGE) {
             const val = formData.value[field.code]
             if (Array.isArray(val) && val.length === 2) {
               // code 存第一个时间
-              formData.value[field.code] = val[0]
+              submitData[field.code] = val[0]
               // code2 存第二个时间
-              formData.value[`${field.code}2`] = val[1]
+              submitData[`${field.code}2`] = val[1]
             }
+          } else if(field.fieldType === FieldType.CHECKBOX){
+            submitData[field.code] = formData.value[field.code].join(',')
+          }
+          else {
+            submitData[field.code] = formData.value[field.code]
           }
         })
       })
+      console.log(submitData);
+      delete submitData.formLabel;
+
       DataApi.createBusinessData({
-        businessJson: formData.value,
+        businessJson: submitData,
         manageId
       })
         .then((res) => {

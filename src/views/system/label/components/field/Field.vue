@@ -230,6 +230,7 @@ const handleEdit = () => {
 const handleDelete = () => {
   const { id, uuid, code } = multipleSelection.value[0]
   // 多选、单选删掉附属属性, 并删除掉当前项
+  // todo zhaokun 新保存未调接口的都会被删除
   tableData.value = tableData.value.filter((item) =>
     item?.id !== id &&
     item.uuid !== uuid &&

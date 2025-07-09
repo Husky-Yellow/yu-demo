@@ -150,7 +150,7 @@ import {
   BooleanEnum,
 } from '@/config/constants/enums/label'
 import { defaultFieldConfExt } from '@/config/constants/enums/fieldDefault'
-import { convertArrayToObject } from '@/utils'
+import { convertArrayToObject, convertObjectToArray } from '@/utils'
 import { omit } from 'lodash-es'
 // 1. 类型定义
 type FieldConfigRef = {
@@ -267,10 +267,18 @@ const validateChildForm = async () => {
 const handleSubmit = async () => {
   const isRadioOrCheckbox = [FieldType.RADIO, FieldType.CHECKBOX].includes(form.fieldType)
   const isTag = form.fieldType === FieldType.TAG
-  let fieldConfExtDOList = undefined
+  let fieldConfExtDOList: typeof defaultFieldConfExt | undefined = undefined
   if (!isTag) {
     fieldConfExtDOList = await validateChildForm()
     if (!fieldConfExtDOList) return
+  } else {
+    fieldConfExtDOList = convertObjectToArray(JSON.parse(JSON.stringify({ ...defaultFieldConfExt }))).map((item) => ({
+      ...item,
+      type: 1,
+      fieldType: FieldType.TAG,
+      optionsJson: '{}'
+    }));
+
   }
 
   const valid = await (fieldForm.value as any).validate?.()

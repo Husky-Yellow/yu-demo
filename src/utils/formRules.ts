@@ -43,8 +43,6 @@ export const NumberFieldConfigFormRules = {
  * @returns 是否有效
  */
 export const validateUSCC = (code: string): boolean => {
-  debugger
-  console.log(code)
   // 输入检查
   if (typeof code !== 'string' || code.length !== 18) {
     return false
