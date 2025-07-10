@@ -77,3 +77,12 @@ export const getBusinessDataPage = async (
 ): Promise<PageResult<BusinessData[]>> => {
   return await request.post({ url: '/data/business-data/page', data: params })
 }
+
+/**
+ * 批量删除业务数据
+ * @param params 删除参数
+ * @returns 删除结果
+ */
+export const deleteBusinessDataList = async (params: { ids: string[] }): Promise<any> => {
+  return await request.delete({ url: '/data/business-data/delete-list', params })
+}

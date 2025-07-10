@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 import CreateForm from './CreateForm.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFieldComponent } from '@/utils/formatter'
 
 const router = useRouter()
@@ -62,7 +63,7 @@ const props = defineProps<{
   selectedRows: any[]
 }>()
 const form = reactive<Record<string, any>>({})
-const emit = defineEmits(['search'])
+const emit = defineEmits(['search', 'delete'])
 
 const createFormRef = ref<InstanceType<typeof CreateForm>>()
 
@@ -116,10 +117,35 @@ function handleOperate(item: ExhibitionOperate) {
   }
   if (item.operateType === 1) {
     // 打开编辑
+    if (!props.selectedRows.length) {
+      ElMessage.warning('请先选择要编辑的数据')
+      return
+    }
+    router.push({
+      path: '/basic/people/create',
+      query: {
+        id: props.selectedRows[0].id,
+        editType: 1,
+        type: 1
+      }
+    })
   }
   // 删除的话，要判断表格中有没有选中的
   if (item.operateType === 2) {
     // 打开删除
+    if (!props.selectedRows.length) {
+      ElMessage.warning('请先选择要删除的数据')
+      return
+    }
+    // 打开删除
+    ElMessageBox.confirm('确定要删除吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      console.log('删除')
+      emit('delete', props.selectedRows)
+    })
   }
   // console.log('操作', item)
 }

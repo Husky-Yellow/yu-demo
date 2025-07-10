@@ -5,7 +5,7 @@
   </ContentWrap>
   <ContentWrap>
     <!-- 查询 -->
-    <SearchForm :fields="queryConfig" @search="onSearch" :operateConfigList="operateConfigList" :selectedRows="selectedRows" />
+    <SearchForm :fields="queryConfig" @search="onSearch" :operateConfigList="operateConfigList" :selectedRows="selectedRows" @delete="onDelete" />
   </ContentWrap>
   <ContentWrap>
     <!-- 表格区 -->
@@ -14,6 +14,7 @@
       :columns="columns"
       :data="tableData"
       row-key="id"
+      @selection-change="handleSelectionChange"
     >
       <template #actions="{ row }">
         <el-button link type="primary" @click="onAction('view', row)">查看详情</el-button>
@@ -126,6 +127,22 @@ function onAction(action: string, row: any) {
       id: row.id,
     }
   })
+}
+
+const handleSelectionChange = (selection: any[]) => {
+  selectedRows.value = selection
+}
+
+const onDelete = (selection: any[]) => {
+  console.log('删除', selection)
+  // 删除
+  BusinessDataApi.deleteBusinessDataList({
+    ids: selection.map((item) => item.id)
+  }).then(() => {
+    ElMessage.success('删除成功')
+    getList()
+  })
+  getList()
 }
 
 const getList = async () => {

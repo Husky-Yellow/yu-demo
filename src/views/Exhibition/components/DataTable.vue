@@ -6,7 +6,9 @@
     border
     fit
     style="width: 100%"
+    @selection-change="handleSelectionChange"
   >
+    <el-table-column type="selection" width="55" />
     <el-table-column
       v-for="col in columns"
       :key="col.code"
@@ -41,6 +43,8 @@ interface Props {
   loading?: boolean
 }
 
+const emit = defineEmits(['selectionChange'])
+
 const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
@@ -73,5 +77,10 @@ const getFormatter = (col: LabelFieldConfig) => {
     return dateFormatter
   }
   return undefined
+}
+
+const handleSelectionChange = (selection: any[]) => {
+  console.log(selection)
+  emit('selectionChange', selection)
 }
 </script>

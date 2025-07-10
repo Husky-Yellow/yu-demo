@@ -83,6 +83,7 @@
       </template>
 
       <el-form-item>
+        <el-button type="primary" @click="handleSubmit">保存</el-button>
         <el-button type="primary" @click="handleSubmit">选择标签</el-button>
         <el-button @click="handleCancel">添加户籍人口</el-button>
       </el-form-item>
@@ -211,8 +212,8 @@ const generateFormRules = (fields: any[]): FormRules => {
 }
 
 // 处理提交
-const handleSubmit = () => {
-  formRef.value?.validate((valid: boolean) => {
+const handleSubmit = async () => {
+  formRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       //todo zhaokun 这里需要更改
       // const manageId = (route.meta.manageId as string) || '1942420981721182210'
@@ -230,24 +231,36 @@ const handleSubmit = () => {
               businessJson[`${field.code}2`] = val[1]
             }
           } else if (field.fieldType === FieldType.CHECKBOX) {
-            businessJson[field.code] = formData.value[field.code].join(',')
+            businessJson[field.code] = Array.isArray(formData.value[field.code])
+              ? formData.value[field.code].join(',')
+              : ''
           } else {
             businessJson[field.code] = formData.value[field.code]
           }
         })
       })
-      DataApi.createBusinessData({
-        businessJson,
-        manageId
-      })
-        .then((res) => {
-          console.log(res)
-          ElMessage.success('添加成功')
-        })
-        .catch((err) => {
-          console.log(err)
-          ElMessage.error('添加失败')
-        })
+      try {
+        let res;
+        if (route.query.editType && route.query.id) {
+          res = await DataApi.updateBusinessData({
+            businessJson,
+            id: route.query.id as string,
+            manageId
+          });
+          ElMessage.success('更新成功');
+        } else {
+          res = await DataApi.createBusinessData({
+            businessJson,
+            manageId
+          });
+          ElMessage.success('添加成功');
+        }
+        console.log(res);
+      } catch (err) {
+        console.log(err);
+        ElMessage.error(route.query.editType ? '更新失败' : '添加失败');
+      }
+
       // 这里处理提交逻辑
     } else {
       console.log('表单验证失败')
@@ -264,9 +277,18 @@ const init = async () => {
   // const manageId = (route.meta.manageId as string) || '1942420981721182210'
   const manageId = '1942420981721182210'
   const formType = route.query.type === 'people' ? 1 : 2
+  const editType = route.query.editType
+  const id = route.query.id
   const res = await LabelApi.getFieldConfigListByManageId({
     manageId
   })
+  let businessData = {}
+  if (editType) {
+    businessData = await DataApi.getBusinessData({
+      id: id as string,
+      manageId
+    })
+  }
   const flagKey = formType === 1 ? 'addFlag' : 'editFlag'
   const filteredRes = res.filter((item: any) => item[flagKey])
   const formConfData = await LabelApi.getViewFormConf({
@@ -301,7 +323,7 @@ const init = async () => {
     formData.value = {}
     filteredData.forEach((group) => {
       group.fields.forEach((field: any) => {
-        formData.value[field.code] = ''
+        formData.value[field.code] = businessData[field.code] || ''
       })
     })
     // 生成验证规则

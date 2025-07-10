@@ -40,3 +40,13 @@ export const createBusinessData = async (
 export const getBusinessData = async (params: { id: string, manageId: string }): Promise<Record<string, any>> => {
   return await request.get({ url: `/data/business-data/get`, params })
 }
+
+/**
+ * 更新业务数据
+ * @param data 业务数据
+ * @returns 更新结果
+ * @see https://app.apifox.com/link/project/6505154/apis/api-313330883
+ */
+export const updateBusinessData = async (data: BusinessDataSaveReqVO): Promise<unknown> => {
+  return await request.put({ url: '/data/business-data/update', data })
+}
