@@ -6,7 +6,19 @@
         <template #header>
           <div class="flex justify-between">
             <span>详情</span>
-            <el-button type="primary">输入敏感密码</el-button>
+            <el-popover :visible="popoverVisible" :width="400" trigger="click">
+              <template #reference>
+                <el-button type="primary" @click="showSensitivePassword">输入敏感密码</el-button>
+              </template>
+              <el-form :model="form" label-width="auto" style="max-width: 600px">
+                <el-form-item label="密码">
+                  <el-input v-model="form.password" />
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="onSubmit">验证</el-button>
+                </el-form-item>
+              </el-form>
+            </el-popover>
           </div>
         </template>
         <el-form ref="formRef" :model="formData">
@@ -65,6 +77,10 @@ const formRows = ref<FormRow[]>([])
 const fieldOptionsMap = ref(new Map<string, any[]>()) // 下拉框枚举数据
 const tabConfigs = ref<any[]>([]) // 标签展示数据
 const activeTab = ref<string | undefined>(undefined)
+const popoverVisible = ref(false)
+const form = ref({
+  password: ''
+})
 
 const genterFormText = (field: LabelFieldConfig) => {
   const { fieldType, code } = field
@@ -88,6 +104,19 @@ const genterFormText = (field: LabelFieldConfig) => {
   }
   // todo zhaokun 处理数据类型
   if (fieldType === FieldType.TAG) {
+  }
+}
+
+const showSensitivePassword = () => {
+  popoverVisible.value = true
+}
+
+const onSubmit = () => {
+  if (form.value.password === '123456') {
+    popoverVisible.value = false
+    ElMessage.success('密码正确')
+  } else {
+    ElMessage.error('密码错误')
   }
 }
 

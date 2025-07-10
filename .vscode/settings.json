@@ -7,7 +7,7 @@
   "editor.fontLigatures": true,
   "editor.minimap.enabled": true,
   // "editor.minimap.size": "fill",
-  "editor.fontSize": 11,
+  // "editor.fontSize": 11,
   "prettier.printWidth": 100, // 超过最大值换行
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "files.eol": "\n",

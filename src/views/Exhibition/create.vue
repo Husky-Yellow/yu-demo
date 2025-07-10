@@ -217,8 +217,7 @@ const handleSubmit = () => {
       //todo zhaokun 这里需要更改
       // const manageId = (route.meta.manageId as string) || '1942420981721182210'
       const manageId = '1942420981721182210'
-      console.log('表单数据:', formData.value)
-      const submitData = {}
+      const businessJson = {}
       // 处理时间范围字段
       fieldGroups.value.forEach((group) => {
         group.fields.forEach((field: any) => {
@@ -226,26 +225,28 @@ const handleSubmit = () => {
             const val = formData.value[field.code]
             if (Array.isArray(val) && val.length === 2) {
               // code 存第一个时间
-              submitData[field.code] = val[0]
+              businessJson[field.code] = val[0]
               // code2 存第二个时间
-              submitData[`${field.code}2`] = val[1]
+              businessJson[`${field.code}2`] = val[1]
             }
           } else if (field.fieldType === FieldType.CHECKBOX) {
-            submitData[field.code] = formData.value[field.code].join(',')
+            businessJson[field.code] = formData.value[field.code].join(',')
           } else {
-            submitData[field.code] = formData.value[field.code]
+            businessJson[field.code] = formData.value[field.code]
           }
         })
       })
       DataApi.createBusinessData({
-        businessJson: submitData,
+        businessJson,
         manageId
       })
         .then((res) => {
           console.log(res)
+          ElMessage.success('添加成功')
         })
         .catch((err) => {
           console.log(err)
+          ElMessage.error('添加失败')
         })
       // 这里处理提交逻辑
     } else {
