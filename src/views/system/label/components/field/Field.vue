@@ -10,6 +10,8 @@
         />
       </el-col>
       <el-col :span="6" :offset="8">
+        <!-- todo zhaokun怎么判断呢 -->
+        <el-button :disabled="isLoading">添加业务字段</el-button>
         <el-button :disabled="isLoading" @click="openForm">添加基础字段</el-button>
         <el-button :disabled="multipleSelection.length !== 1 || isLoading" type="primary" @click="handleEdit"
           >编辑</el-button
