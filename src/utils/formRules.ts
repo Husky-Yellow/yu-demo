@@ -154,7 +154,7 @@ export const validateUSCC = (code: string): boolean => {
  * // { required: true, message: '请输入姓名', trigger: 'blur' }
  * ```
  */
-export const createRequiredRule = (fieldName: string, required: boolean, trigger: 'blur' | 'change' | 'submit' = 'blur'): ValidationRule => ({
+export const createRequiredRule = (fieldName: string, required: boolean = true, trigger: 'blur' | 'change' | 'submit' = 'blur' ): ValidationRule => ({
   required,
   message: `请输入${fieldName}`,
   trigger
@@ -182,7 +182,7 @@ export interface RegexRuleParams {
  * const phoneRule = createRegexRule('^1[3-9]\\d{9}$', '请输入正确的手机号', true)
  * ```
  */
-export const createRegexRule = (regex: string, prompt: string, required: boolean): ValidationRule => ({
+export const createRegexRule = (regex: RegExp, prompt: string = '格式不正确', required: boolean = true): ValidationRule => ({
   validator: (_rule: unknown, value: string, callback: (error?: Error) => void) => {
     if (!value) {
       return callback()

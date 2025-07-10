@@ -1,14 +1,14 @@
 <template>
   <ContentWrap>
-    <el-check-tag checked>Checked</el-check-tag>
-    <el-card shadow="never" class="w-full mt-2">
-      <template #header>
-        <div class="flex justify-between">
-          <span>详情</span>
-          <el-button type="primary">输入敏感密码</el-button>
-        </div>
-      </template>
-      <div class="detail-page">
+    <!-- <el-check-tag checked>Checked</el-check-tag> -->
+    <div class="flex justify-between gap-2 mt-2">
+      <el-card shadow="never" class="w-5/6">
+        <template #header>
+          <div class="flex justify-between">
+            <span>详情</span>
+            <el-button type="primary">输入敏感密码</el-button>
+          </div>
+        </template>
         <el-form ref="formRef" :model="formData">
           <template v-for="fieldGroup in fieldGroups" :key="fieldGroup.id">
             <el-row :gutter="20">
@@ -19,30 +19,29 @@
                 v-show="isFieldVisible(field)"
               >
                 <el-form-item :label="field.name">
-                  <!-- 输入框 -->
+                  <!-- 图片用 -->
                   {{ genterFormText(field) }}
                 </el-form-item>
               </el-col>
             </el-row>
           </template>
         </el-form>
-        <div class="detail-tabs" v-if="tabConfigs.length > 1">
+      </el-card>
+      <el-card shadow="never" class="w-1/6" v-if="tabConfigs.length > 1">
+        <div class="flex flex-col mb-4" v-for="tab in tabConfigs" :key="tab.value">
           <!-- 点击出现弹窗，弹窗显示对应 显示该人口数据的基础和业务标签（最后层级）
-              点击标签，弹窗展示该标签对应的详情
-              当只存在一个标签时候，不显示该标签栏 -->
+                点击标签，弹窗展示该标签对应的详情
+                当只存在一个标签时候，不显示该标签栏 -->
           <el-button
-            v-for="tab in tabConfigs"
-            :key="tab.value"
             :type="activeTab === tab.value ? 'primary' : 'info'"
-            class="tab-btn"
             @click="activeTab = tab.value"
             block
           >
             {{ tab.label }}
           </el-button>
         </div>
-      </div>
-    </el-card>
+      </el-card>
+    </div>
   </ContentWrap>
 </template>
 
@@ -55,6 +54,7 @@ import { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { FieldType } from '@/config/constants/enums/field'
 import { FormRow } from '@/hooks/web/useFormEditHandlers'
 import { BooleanEnum } from '@/config/constants/enums/label'
+
 defineOptions({ name: 'ExhibitionDetail' })
 
 const route = useRoute()
@@ -62,49 +62,9 @@ const route = useRoute()
 const formData = ref<Record<string, any>>({})
 const fieldGroups = ref<any>(null) // 接口返回来的表单配置 null 为需要调创建
 const formRows = ref<FormRow[]>([])
-const fieldOptionsMap = ref(new Map<string, any[]>())
-
-const tabConfigs = [
-  {
-    label: '户籍人口',
-    value: 'population',
-    fields: [
-      { label: '姓名', prop: 'name', span: 12 },
-      { label: '曾用名', prop: 'oldName', span: 12 },
-      { label: '证件类型', prop: 'idType' },
-      { label: '证件号码', prop: 'idNumber' },
-      { label: '性别', prop: 'gender' },
-      { label: '出生日期', prop: 'birth' },
-      { label: '民族', prop: 'nation' },
-      { label: '籍贯', prop: 'nativePlace' }
-    ]
-  },
-  {
-    label: '信访人员',
-    value: 'petition',
-    fields: [
-      { label: '信访编号', prop: 'petitionId' },
-      { label: '信访内容', prop: 'petitionContent' }
-    ]
-  },
-  {
-    label: '吸毒人员',
-    value: 'drug',
-    fields: [
-      { label: '吸毒编号', prop: 'drugId' },
-      { label: '吸毒史', prop: 'drugHistory' }
-    ]
-  },
-  {
-    label: '困境儿童',
-    value: 'child',
-    fields: [
-      { label: '儿童编号', prop: 'childId' },
-      { label: '困境类型', prop: 'childType' }
-    ]
-  }
-]
-const activeTab = ref('population')
+const fieldOptionsMap = ref(new Map<string, any[]>()) // 下拉框枚举数据
+const tabConfigs = ref<any[]>([]) // 标签展示数据
+const activeTab = ref<string | undefined>(undefined)
 
 const genterFormText = (field: LabelFieldConfig) => {
   const { fieldType, code } = field
@@ -236,8 +196,8 @@ const getDetailConfig = async () => {
     // 解析表单配置
     const rawData = JSON.parse(formConfData.formJson)
     const allowedIds = fieldConfigs
-      .map((item: LabelFieldConfig) => item.id)
-      .filter((id): id is string => Boolean(id))
+      .filter((config) => config.pcViewFlag === BooleanEnum.TRUE && config.id)
+      .map((config) => config.id!)
 
     const filteredData = filterAndMarkGroups(rawData, allowedIds)
 
@@ -269,30 +229,3 @@ onMounted(() => {
   getDetailConfig()
 })
 </script>
-
-<style scoped>
-.detail-page {
-  display: flex;
-  gap: 24px;
-}
-.detail-main {
-  flex: 1;
-}
-.detail-tabs {
-  width: 180px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.tab-btn {
-  margin-bottom: 8px;
-}
-.photo-block {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 16px;
-}
-.detail-form {
-  margin-top: 16px;
-}
-</style>

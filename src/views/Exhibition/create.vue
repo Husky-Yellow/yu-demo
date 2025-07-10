@@ -1,9 +1,7 @@
 <template>
   <ContentWrap>
-    <!-- 动态表单 -->
     <el-form ref="formRef" :model="formData" :rules="formRules">
       <template v-for="fieldGroup in fieldGroups" :key="fieldGroup.id">
-        <!-- 使用行布局，每行最多显示2个字段 -->
         <el-row :gutter="20">
           <el-col
             v-for="field in fieldGroup.fields"
@@ -84,7 +82,6 @@
         </el-row>
       </template>
 
-      <!-- 提交按钮 -->
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">选择标签</el-button>
         <el-button @click="handleCancel">添加户籍人口</el-button>
