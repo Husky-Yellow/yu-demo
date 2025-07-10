@@ -124,6 +124,7 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
+const baseUserInfo = ref<Partial<UserApi.UserResp>>({}) // 存储数据，用于判断密码是否修改
 const formData = ref<Partial<UserApi.UserResp>>({
   id: undefined,
   nickname: undefined,
@@ -178,8 +179,9 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-       const userInfo = await UserApi.getUser(id)
-       formData.value = userInfo
+      const userInfo = await UserApi.getUser(id)
+      formData.value = userInfo
+      baseUserInfo.value = userInfo
     } finally {
       formLoading.value = false
     }
@@ -209,6 +211,13 @@ const submitForm = async () => {
       await UserApi.createUser(data)
       message.success('新增成功')
     } else {
+      // 判断密码有没有修改， 没有修改就删掉 sensitivePwd password
+      if (baseUserInfo.value.password === data.password) {
+        delete data.password
+      }
+      if (baseUserInfo.value.sensitivePwd === data.sensitivePwd) {
+        delete data.sensitivePwd
+      }
       await UserApi.updateUser(data)
       message.success('修改成功')
     }
