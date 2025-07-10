@@ -7,7 +7,7 @@ import { useRenderMenuItem } from './components/useRenderMenuItem'
 import { isUrl } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { LayoutType } from '@/types/layout'
-
+import { removeFirstSegment } from './helper'
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('menu')
@@ -57,11 +57,12 @@ export default defineComponent({
 
     const activeMenu = computed(() => {
       const { meta, path } = unref(currentRoute)
+
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         return meta.activeMenu as string
       }
-      return path
+      return unref(topNav) ? removeFirstSegment(path) : path
     })
 
     const menuSelect = (index: string) => {
@@ -91,7 +92,6 @@ export default defineComponent({
     const renderMenu = () => {
       return (
         <ElMenu
-          defaultOpeneds={['/systemlog']}
           defaultActive={unref(activeMenu)}
           mode={unref(menuMode)}
           collapse={

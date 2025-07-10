@@ -52,3 +52,39 @@ export const hasOneShowingChild = (
     onlyOneChild: unref(onlyOneChild)
   }
 }
+
+
+export const findParentPathsByFullPath = (tree: AppRouteRecordRaw[], fullPath: string) =>   {
+  // 移除基础路径（如 '/basic'）
+  const pathSegments = fullPath.split('/').filter(Boolean)
+  const relativePath = pathSegments.slice(1).join('/') // 'people/label'
+
+  const result: string[] = []
+
+  function dfs(nodes: any[], parentPath = '') {
+    for (const node of nodes) {
+      const currentPath = parentPath ? `${parentPath}/${node.path}` : node.path
+      if (relativePath.startsWith(currentPath + '/') || relativePath === currentPath) {
+        if (relativePath !== currentPath) {
+          result.push(currentPath) // 返回如 'people'
+        }
+        if (node.children?.length) {
+          dfs(node.children, currentPath)
+        }
+      }
+    }
+  }
+
+  dfs(tree)
+  return result
+}
+
+export function removeFirstSegment(path: string): string {
+  const firstSlashIndex = path.indexOf('/');
+  if (firstSlashIndex === -1) return path; // 没有斜杠，返回原样
+
+  const secondSlashIndex = path.indexOf('/', firstSlashIndex + 1);
+  return secondSlashIndex === -1
+    ? path // 只有一个 `/`（如 `/dict`），返回原样
+    : path.slice(secondSlashIndex); // 从第二个 `/` 开始截取
+}

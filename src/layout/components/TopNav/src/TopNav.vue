@@ -25,8 +25,10 @@
 import { usePermissionStore } from '@/store/modules/permission'
 import { useDesign } from '@/hooks/web/useDesign'
 import MenuTitle from './MenuTitle.vue'
+import { useAppStore } from '@/store/modules/app'
 
 const permissionStore = usePermissionStore()
+const appStore = useAppStore()
 const { getPrefixCls } = useDesign()
 const { currentRoute } = useRouter()
 // constants
@@ -38,6 +40,7 @@ const menuClass = computed(() => [
   'h-[var(--top-tool-height)]'
 ])
 const routers = computed(() => permissionStore.getRouters)
+const topNav = computed(() => appStore.getTopNav)
 
 const topLevelRoutes = computed(() =>
   routers.value.filter(route => !route.meta?.hidden)
@@ -59,13 +62,15 @@ const getActiveMenu = () => {
 
   return matchedRoute?.path || '/'
 }
-// methods
+
 const handleMenuSelect = (path: string) => {
   activeMenu.value = path
   usePermissionStore().setShowChildRouter(path)
 }
 onMounted(() => {
   // 刷新后展示对应的子菜单
-  handleMenuSelect(getActiveMenu())
+  if (unref(topNav)) {
+    handleMenuSelect(getActiveMenu())
+  }
 })
 </script>

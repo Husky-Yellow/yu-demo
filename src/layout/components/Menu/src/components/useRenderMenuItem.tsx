@@ -25,8 +25,6 @@ export const useRenderMenuItem = (_menuMode: string) =>
             return (
               <ElMenuItem
                 index={onlyOneChild ? pathResolve(fullPath, onlyOneChild.path) : fullPath}
-                key={onlyOneChild ? pathResolve(fullPath, onlyOneChild.path) : fullPath}
-                data-value={onlyOneChild ? pathResolve(fullPath, onlyOneChild.path) : fullPath}
               >
                 {{
                   default: () => renderMenuTitle(onlyOneChild ? onlyOneChild?.meta : meta)
@@ -35,7 +33,7 @@ export const useRenderMenuItem = (_menuMode: string) =>
             )
           } else {
             return (
-              <ElSubMenu index={fullPath} key={fullPath} data-value={fullPath}>
+              <ElSubMenu index={fullPath}>
                 {{
                   title: () => renderMenuTitle(meta),
                   default: () => renderMenuItem(v.children!, fullPath)
