@@ -21,10 +21,15 @@
                 :type="field.fieldConfExtDOList[0].value === '1' ? 'textarea' : 'text'"
                 :rows="field.fieldConfExtDOList[0].value === '1' ? 2 : 1"
               />
-              <el-input-number v-else-if="field.fieldType === FieldType.NUMBER" v-model="formData[field.code]" />
+              <el-input-number
+                v-else-if="field.fieldType === FieldType.NUMBER"
+                v-model="formData[field.code]"
+              />
               <!-- 下拉框 -->
               <el-select
-                v-else-if="field.fieldType === FieldType.RADIO || field.fieldType === FieldType.CHECKBOX"
+                v-else-if="
+                  field.fieldType === FieldType.RADIO || field.fieldType === FieldType.CHECKBOX
+                "
                 v-model="formData[field.code]"
                 :multiple="field.fieldType === FieldType.CHECKBOX"
                 :placeholder="`请选择${field.name}`"
@@ -67,15 +72,12 @@
                 class="min-w-80px"
               />
 
-              <el-input
-                v-if="field.fieldType === FieldType.TAG"
-                v-model="formData[field.code]"
-              />
+              <el-input v-if="field.fieldType === FieldType.TAG" v-model="formData[field.code]" />
               <el-tree-select
                 v-if="field.fieldType === FieldType.REGION"
                 :data="fieldOptionsMap.get(field.code)"
                 v-model="formData[field.code]"
-                 :render-after-expand="false"
+                :render-after-expand="false"
               />
             </el-form-item>
           </el-col>
@@ -98,11 +100,14 @@ import * as LabelApi from '@/api/system/label'
 import * as DataApi from '@/api/system/data'
 import { FormRules } from 'element-plus'
 import { useDatePicker } from '@/hooks/useDatePicker'
-import { validatePatternMapNumber, validateUSCC } from '@/utils/formRules'
-import { filterAndMarkGroups } from '@/utils/formatter'
 import {
-  FieldType,
-} from '@/config/constants'
+  validatePatternMapNumber,
+  validateUSCC,
+  createRequiredRule,
+  createRegexRule
+} from '@/utils/formRules'
+import { filterAndMarkGroups, getFieldSpan } from '@/utils/formatter'
+import { FieldType } from '@/config/constants/enums/field'
 
 const route = useRoute()
 const router = useRouter()
@@ -114,50 +119,22 @@ const formRef = ref()
 const fieldGroups = ref<any[]>([])
 const formData = ref<any>({})
 const formRules = reactive<FormRules>({})
-  const fieldOptionsMap = ref(new Map<string, any[]>())
+const fieldOptionsMap = ref(new Map<string, any[]>()) // 字段选项
 
 // 身份证不可以编辑
 
 // 获取字段选项
 const fetchFieldOptions = async (field: any) => {
   const { list } = await DictDataApi.getDictDataPage({
-      pageNo: 1,
-      pageSize: 10,
-      dictType: field.fieldConfExtDOList[0].value,
-    })
-    fieldOptionsMap.value.set(field.code, list)
+    pageNo: 1,
+    pageSize: 10,
+    dictType: field.fieldConfExtDOList[0].value
+  })
+  fieldOptionsMap.value.set(field.code, list)
   // 其他类型可按需扩展
 }
 
-// 布局配置常量
-const LAYOUT_CONFIG = {
-  FULL_WIDTH: 24,    // 占满整行
-  HALF_WIDTH: 12,    // 占半行
-  THIRD_WIDTH: 8,    // 占1/3行
-  QUARTER_WIDTH: 6   // 占1/4行
-} as const
-
-// 获取字段占用的列数
-const getFieldSpan = (fieldGroup: any): number => {
-  // 安全获取字段数量
-  const fieldCount = fieldGroup?.fields?.length || 0
-
-  // 布局规则：
-  // - 0个字段：不显示
-  // - 1个字段：占满整行
-  // - 2个字段：每行2个字段
-  // - 3个以上字段：每行2个字段
-  switch (fieldCount) {
-    case 0:
-      return 0
-    case 1:
-      return LAYOUT_CONFIG.FULL_WIDTH
-    default:
-      return LAYOUT_CONFIG.HALF_WIDTH
-  }
-}
-
-// 判断字段是否应该显示
+// 判断字段是否应该显示 todo zhaokun 这里需要测试
 const isFieldVisible = (field: any) => {
   const linkage = field.linkage
   if (!linkage || !linkage.enabled) {
@@ -200,28 +177,6 @@ const isFieldVisible = (field: any) => {
   }
 }
 
-// 创建必填验证规则
-const createRequiredRule = (fieldName: string) => ({
-  required: true,
-  message: `请输入${fieldName}`,
-  trigger: 'blur'
-})
-
-// 创建正则验证规则
-const createRegexRule = (regex: string, prompt: string, required: boolean) => ({
-  validator: (_rule: any, value: string, callback: (msg?: string) => void) => {
-    if (!value) return callback()
-    try {
-      if (!new RegExp(regex).test(value)) return callback(prompt)
-      callback()
-    } catch {
-      callback('正则表达式有误')
-    }
-  },
-  trigger: 'blur',
-  required
-} as any)
-
 // 生成表单验证规则
 const generateFormRules = (fields: any[]): FormRules => {
   return fields.reduce((rules: FormRules, field) => {
@@ -231,17 +186,16 @@ const generateFormRules = (fields: any[]): FormRules => {
     if (field.required) ruleArr.push(createRequiredRule(field.name))
 
     // 自定义正则验证
-    if(field.fieldType === 1){
-      const {required, fieldConfExtObj} = field
-      const {regex, prompt = '格式不正确', dataValidation} = fieldConfExtObj
+    if (field.fieldType === 1) {
+      const { required, fieldConfExtObj } = field
+      const { regex, prompt = '格式不正确', dataValidation } = fieldConfExtObj
       if (dataValidation === '1' && regex) {
         ruleArr.push(createRegexRule(regex, prompt, required))
-      }
-      else if(dataValidation === '3'){
+      } else if (dataValidation === '3') {
         ruleArr.push({
           validator: (_rule, value, callback) => {
-            if(!required && !value) return callback()
-             if (!validateUSCC(value)) {
+            if (!required && !value) return callback()
+            if (!validateUSCC(value)) {
               callback(new Error(prompt))
             } else {
               callback()
@@ -249,14 +203,11 @@ const generateFormRules = (fields: any[]): FormRules => {
           },
           trigger: 'blur'
         })
-      }
-      else {
+      } else {
         const regex = validatePatternMapNumber[dataValidation]
         ruleArr.push(createRegexRule(regex, prompt, required))
       }
     }
-    console.log(field.code, field, ruleArr);
-
     if (ruleArr.length) rules[field.code] = ruleArr
     return rules
   }, {})
@@ -266,11 +217,13 @@ const generateFormRules = (fields: any[]): FormRules => {
 const handleSubmit = () => {
   formRef.value?.validate((valid: boolean) => {
     if (valid) {
+      //todo zhaokun 这里需要更改
+      // const manageId = (route.meta.manageId as string) || '1942420981721182210'
       const manageId = '1942420981721182210'
       console.log('表单数据:', formData.value)
       const submitData = {}
       // 处理时间范围字段
-      fieldGroups.value.forEach(group => {
+      fieldGroups.value.forEach((group) => {
         group.fields.forEach((field: any) => {
           if (field.fieldType === FieldType.DATE_RANGE) {
             const val = formData.value[field.code]
@@ -280,17 +233,13 @@ const handleSubmit = () => {
               // code2 存第二个时间
               submitData[`${field.code}2`] = val[1]
             }
-          } else if(field.fieldType === FieldType.CHECKBOX){
+          } else if (field.fieldType === FieldType.CHECKBOX) {
             submitData[field.code] = formData.value[field.code].join(',')
-          }
-          else {
+          } else {
             submitData[field.code] = formData.value[field.code]
           }
         })
       })
-      console.log(submitData);
-      delete submitData.formLabel;
-
       DataApi.createBusinessData({
         businessJson: submitData,
         manageId
@@ -331,7 +280,6 @@ const init = async () => {
   const allowedIds = filteredRes.map((item: any) => item.id)
   const filteredData = filterAndMarkGroups(rawData, allowedIds)
 
-
   // 设置字段组数据
   // 初始化表单数据
   formData.value = {}
@@ -344,7 +292,7 @@ const init = async () => {
             item.type = item.type == null ? 0 : Number(item.type)
           })
         }
-        if(field.fieldType === FieldType.RADIO || field.fieldType === FieldType.CHECKBOX){
+        if (field.fieldType === FieldType.RADIO || field.fieldType === FieldType.CHECKBOX) {
           fetchFieldOptions(field)
         }
         formData.value[field.code] = ''
@@ -359,13 +307,16 @@ const init = async () => {
       })
     })
     // 生成验证规则
-    const allFields = filteredData.flatMap((group: any) => group.fields).map((field: any) => ({
-      ...field,
-      fieldConfExtDOList: field.fieldConfExtDOList?.map((item: any) => ({
-        ...item,
-        type: item.type == null ? 0 : Number(item.type)
-      })) || []
-    }))
+    const allFields = filteredData
+      .flatMap((group: any) => group.fields)
+      .map((field: any) => ({
+        ...field,
+        fieldConfExtDOList:
+          field.fieldConfExtDOList?.map((item: any) => ({
+            ...item,
+            type: item.type == null ? 0 : Number(item.type)
+          })) || []
+      }))
     Object.assign(formRules, generateFormRules(allFields))
   }
 }

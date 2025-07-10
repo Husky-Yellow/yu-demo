@@ -45,23 +45,23 @@ defineOptions({ name: 'ExhibitionList' })
 const route = useRoute()
 const router = useRouter()
 
-const countConfigDate = ref<any[]>([]) // 统计数据
+const countConfigDate = ref<Record<string, any>[]>([]) // 统计数据
 const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
 const queryConfig = ref<QueryResItem[]>([]) // 搜索表单，
-const tableData = ref<any[]>([]) // 表格数据
+const tableData = ref<Record<string, any>[]>([]) // 表格数据
 const columns = ref<LabelFieldConfig[]>([]) // 表格列配置
-const selectedRows = ref<any[]>([]) // 表格选中行 用于删除
+const selectedRows = ref<Record<string, any>[]>([]) // 表格选中行 用于删除
 
 
-const formModel = reactive<{ [key: string]: any }>({}) // 搜索表单数据
-const loading = ref(true) // 列表的加载中
+const formModel = reactive<Record<string, any>>({}) // 搜索表单数据
+const loading = ref<boolean>(true) // 列表的加载中
 const queryParams = reactive<BusinessDataApi.BusinessDataListRequest>({
   pageNo: 1,
   pageSize: 10,
   manageId: '',
   searchList: []
 })
-const total = ref(0) // 列表的总页数
+const total = ref<number>(0) // 列表的总页数
 
 /**
  * 数据转换函数（增强版）
@@ -112,10 +112,7 @@ const total = ref(0) // 列表的总页数
 
 
 function onSearch(params: any) {
-  // 这里可以根据params进行过滤或请求， 要处理数据
-  console.log('搜索参数', params, queryConfig.value)
   const searchList = transformToSearchList(params, queryConfig.value as any).filter(item => item.value)
-  console.log('searchList', searchList)
   queryParams.searchList = searchList
   getList()
 }
@@ -126,7 +123,7 @@ function onAction(action: string, row: any) {
   router.push({
     path: '/basic/people/detail',
     query: {
-      id: row.id
+      id: row.id,
     }
   })
 }
@@ -139,7 +136,6 @@ const getList = async () => {
       ...queryParams,
     })
     tableData.value = data.list as any[]
-    // console.log('getBusinessDataPage', data)
   } finally {
     loading.value = false
   }
@@ -208,7 +204,7 @@ async function fetchQueryConf(manageId: string) {
 const getCountConfigList = async (manageId) => {
   const countConfigList = await LabelApi.getCountConfigList({ manageId })
 
-  // console.log('获取统计配置列表', countConfigList)
+  // todo zhaokun 这里改成获取接口
   const countData = [{ name: '牡蛎', value: 651 }]
 
   const countDataMap = new Map(countData.map((item) => [item.name, item.value]))
@@ -229,6 +225,7 @@ const getDataFieldConfListByManageId = async (manageId: string) => {
 }
 
 const init = async () => {
+  // todo zhaokun 这里需要更改
   // const manageId = (route.meta.manageId as string) || '1942420981721182210'
   const manageId = '1942420981721182210'
   queryParams.manageId = manageId
@@ -242,13 +239,9 @@ const init = async () => {
   await getCountConfigList(manageId)
   await getDataFieldConfListByManageId(manageId)
   await getList()
-
-
 }
 
 onMounted(async () => {
   await init()
 })
 </script>
-
-<style scoped lang="scss"></style>
