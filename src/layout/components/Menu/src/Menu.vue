@@ -91,6 +91,7 @@ export default defineComponent({
     const renderMenu = () => {
       return (
         <ElMenu
+          defaultOpeneds={['/systemlog']}
           defaultActive={unref(activeMenu)}
           mode={unref(menuMode)}
           collapse={

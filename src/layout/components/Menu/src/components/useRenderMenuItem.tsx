@@ -6,7 +6,7 @@ import { pathResolve } from '@/utils/routerHelper'
 
 const { renderMenuTitle } = useRenderMenuTitle()
 
-export const useRenderMenuItem = () =>
+export const useRenderMenuItem = (_menuMode: string) =>
   // allRouters: AppRouteRecordRaw[] = [],
   {
     const renderMenuItem = (routers: AppRouteRecordRaw[], parentPath = '/') => {
@@ -25,6 +25,8 @@ export const useRenderMenuItem = () =>
             return (
               <ElMenuItem
                 index={onlyOneChild ? pathResolve(fullPath, onlyOneChild.path) : fullPath}
+                key={onlyOneChild ? pathResolve(fullPath, onlyOneChild.path) : fullPath}
+                data-value={onlyOneChild ? pathResolve(fullPath, onlyOneChild.path) : fullPath}
               >
                 {{
                   default: () => renderMenuTitle(onlyOneChild ? onlyOneChild?.meta : meta)
@@ -33,7 +35,7 @@ export const useRenderMenuItem = () =>
             )
           } else {
             return (
-              <ElSubMenu index={fullPath}>
+              <ElSubMenu index={fullPath} key={fullPath} data-value={fullPath}>
                 {{
                   title: () => renderMenuTitle(meta),
                   default: () => renderMenuItem(v.children!, fullPath)
