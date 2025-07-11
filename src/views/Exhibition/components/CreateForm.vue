@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import * as BusinessDataApi from '@/api/system/business-data'
 import { FormRules } from 'element-plus'
 
 const emit = defineEmits(['submit'])
@@ -80,7 +81,19 @@ async function apiCheckIdCard(idCard: string) {
   // 这里用伪代码，实际用你的请求方法
   // return await axios.post('/api/check-idcard', { idCard })
   // 假设返回 { valid: true/false, message: 'xxx' }
-  return { valid: true, message: '' }
+      // const manageId = (route.meta.manageId as string) || '1942420981721182210'
+  const manageId = '1942420981721182210'
+  BusinessDataApi.addCheck({
+    idCard,
+    manageId
+  }).then(res => {
+    console.log('res', res)
+    return res
+  }).catch(e => {
+    console.log('e', e)
+    return { valid: false, message: '校验接口异常' }
+  })
+  // return { valid: true, message: '' }
 }
 
 

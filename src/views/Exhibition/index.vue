@@ -133,16 +133,14 @@ const handleSelectionChange = (selection: any[]) => {
   selectedRows.value = selection
 }
 
-const onDelete = (selection: any[]) => {
-  console.log('删除', selection)
-  // 删除
-  BusinessDataApi.deleteBusinessDataList({
-    ids: selection.map((item) => item.id)
-  }).then(() => {
+const onDelete = (selection: { id: string }[]) => {
+    // const manageId = (route.meta.manageId as string) || '1942420981721182210'
+  const manageId = '1942420981721182210'
+  const idsStr = selection.map(value => `ids=${encodeURIComponent(value.id)}`).join('&')
+  BusinessDataApi.deleteBusinessDataList(`manageId=${manageId}&${idsStr}`).then(() => {
     ElMessage.success('删除成功')
     getList()
   })
-  getList()
 }
 
 const getList = async () => {

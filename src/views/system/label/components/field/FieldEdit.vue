@@ -143,6 +143,7 @@ import LabelFidldConfig from './config/LabelFidldConfig.vue'
 import {
   FieldType,
   FieldTypeLabel,
+  BusinessType,
   BooleanOptions,
   EncFlagOptions
 } from '@/config/constants'
@@ -173,7 +174,7 @@ const defaultForm = () => ({
   name: '', // 字段名称
   remark: '', // 字段说明
   fieldType: FieldType.TEXT, // 字段类型
-  bizType: BooleanEnum.FALSE, // 字段业务类型 0-系统 1-基础
+  bizType: BusinessType.BASIC, // 字段业务类型 0-系统 1-基础 2-业务
   length: undefined, // 字段长度
   encFlag: BooleanEnum.FALSE, // 0-不加密1-加密
   encType: BooleanEnum.FALSE, // 0-全文加密1-证件号码加密2-手机号码加密

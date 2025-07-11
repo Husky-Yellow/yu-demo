@@ -83,6 +83,18 @@ export const getBusinessDataPage = async (
  * @param params 删除参数
  * @returns 删除结果
  */
-export const deleteBusinessDataList = async (params: { ids: string[] }): Promise<any> => {
-  return await request.delete({ url: '/data/business-data/delete-list', params })
+export const deleteBusinessDataList = async (params: string): Promise<any> => {
+  return await request.delete({ url: `/data/business-data/delete-list?${params}` })
 }
+
+/**
+ * 新增校验
+ * @see https://app.apifox.com/link/project/6505154/apis/api-319648551
+ * @param params 新增校验参数
+ * @returns 新增校验结果
+ */
+export const addCheck = async (data: { idCard: string, manageId: string }): Promise<any> => {
+  return await request.post({ url: `/data/business-data/add-check`, data })
+}
+
+

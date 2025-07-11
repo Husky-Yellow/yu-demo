@@ -40,7 +40,7 @@
       :default-expand-all="isExpandAll"
     >
       <el-table-column prop="num" label="标签编号" width="200" />
-      <el-table-column prop="name" label="标签名称" />
+      <el-table-column prop="name" label="标签名称" width="200" align="center" />
       <el-table-column prop="type" label="标签类型" :formatter="formatTagType" />
       <el-table-column
         v-for="config in configList"

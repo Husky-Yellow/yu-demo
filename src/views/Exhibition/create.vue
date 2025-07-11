@@ -84,6 +84,7 @@
 
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">保存</el-button>
+        <!-- 调接口看看有没有业务标签，有的话就展示 -->
         <el-button type="primary" @click="handleSubmit">选择标签</el-button>
         <el-button @click="handleCancel">添加户籍人口</el-button>
       </el-form-item>

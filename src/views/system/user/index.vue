@@ -117,8 +117,8 @@
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
-                   :active-value="CommonStatusEnum.ENABLE"
-          :inactive-value="CommonStatusEnum.DISABLE"
+                :active-value="CommonStatusEnum.ENABLE"
+                :inactive-value="CommonStatusEnum.DISABLE"
                 @change="handleStatusChange(scope.row)"
                 :disabled="!checkPermi(['system:user:update'])"
               />

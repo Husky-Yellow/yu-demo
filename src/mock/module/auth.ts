@@ -244,7 +244,7 @@ export default [
                                     "name": "标签管理",
                                     "path": "list",
                                     "component": "/system/label/index",
-                                    "componentName": "SystemLabelList",
+                                    "componentName": "SystemLabelIndex",
                                     "icon": "ep:add-location",
                                     "visible": true,
                                     "keepAlive": true,

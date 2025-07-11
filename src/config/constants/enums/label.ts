@@ -19,8 +19,8 @@ export enum YesNoEnum {
  * 标签类型枚举
  */
 export enum BooleanEnum {
-  TRUE = 1, // 基础标签
-  FALSE = 0 // 业务标签
+  TRUE = 1, // 基础标签   |
+  FALSE = 0 // 业务标签  | 系统
 }
 
 /**
@@ -66,3 +66,33 @@ export enum OperateType {
   EXPORT = 4
 }
 
+/**
+ * 业务类型枚举
+ * @description 定义系统支持的业务类型
+ */
+export enum BusinessType {
+  /** 系统 */
+  SYSTEM = 0,
+  /** 基础 */
+  BASIC = 1,
+  /** 业务 */
+  BUSINESS = 2,
+}
+
+/**
+ * 业务类型标签映射
+ */
+export const BusinessTypeLabel: Record<BusinessType, string> = {
+  [BusinessType.SYSTEM]: '系统',
+  [BusinessType.BASIC]: '基础',
+  [BusinessType.BUSINESS]: '业务',
+};
+
+/**
+ * 业务类型选项
+ */
+export const BusinessTypeOptions: { label: string; value: BusinessType }[] = [
+  { label: '系统', value: BusinessType.SYSTEM },
+  { label: '基础', value: BusinessType.BASIC },
+  { label: '业务', value: BusinessType.BUSINESS },
+];

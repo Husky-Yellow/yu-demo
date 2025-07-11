@@ -37,8 +37,9 @@
       <el-table-column prop="code" label="Code" align="center">
         <template #default="scope">
           {{ scope.row.code }}
-        </template>
-      </el-table-column>
+            <el-tag type="primary" >{{ BusinessTypeLabel[BusinessType.SYSTEM] }}</el-tag>
+          </template>
+        </el-table-column>
       <el-table-column prop="name" label="字段名称" align="center">
         <template #default="scope">
           <el-button
@@ -68,17 +69,17 @@
       </el-table-column>
       <el-table-column prop="addFlag" label="新增表单" align="center" width="100">
         <template #default="scope">
-          <el-checkbox v-model="scope.row.addFlag" :true-value="1" :false-value="0" label="" />
+          <el-checkbox :disabled="scope.row.bizType === BusinessType.SYSTEM" v-model="scope.row.addFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="editFlag" label="编辑表单" align="center" width="100">
         <template #default="scope">
-          <el-checkbox v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
+          <el-checkbox :disabled="scope.row.bizType === BusinessType.SYSTEM" v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="appViewFlag" label="移动端列表" align="center" width="100">
         <template #default="scope">
-          <div class="cursor-pointer" @click="handleViewFlag(scope.row, 'appViewFlag')">
+          <div class="cursor-pointer" @click="scope.row.bizType === BusinessType.SYSTEM ? null : handleViewFlag(scope.row, 'appViewFlag')">
             <el-icon v-if="scope.row.appViewFlag"><View /></el-icon>
             <el-icon v-else><Hide /></el-icon>
           </div>
@@ -86,7 +87,7 @@
       </el-table-column>
       <el-table-column prop="pcViewFlag" label="管理端列表" align="center"  width="100">
         <template #default="scope">
-          <div class="cursor-pointer" @click="handleViewFlag(scope.row, 'pcViewFlag')">
+          <div class="cursor-pointer" @click="scope.row.bizType === BusinessType.SYSTEM ? null : handleViewFlag(scope.row, 'pcViewFlag')">
             <el-icon v-if="scope.row.pcViewFlag"><View /></el-icon>
             <el-icon v-else><Hide /></el-icon>
           </div>
@@ -112,6 +113,8 @@ import FieldEdit from './FieldEdit.vue'
 import { FieldTypeLabel, FieldType } from '@/config/constants/enums/field'
 import {
   BooleanEnum,
+  BusinessType,
+  BusinessTypeLabel,
 } from '@/config/constants/enums/label'
 import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { omit } from 'lodash-es'
@@ -130,7 +133,7 @@ const tableRef = ref<TableInstance | null>(null)
 const multipleSelection = ref<LabelFieldConfig[]>([])
 const sortable = ref(null)
 const tableData = ref<LabelFieldConfig[]>([])
-const selectable = (row: LabelFieldConfig) => ![BooleanEnum.TRUE].includes(row.bizType) // 系统标签不能选中
+const selectable = (row: LabelFieldConfig) => ![BusinessType.SYSTEM].includes(row.bizType) // 系统标签不能选中
 const isLoading = ref(false) // 是否加载中
 
 // 初始化 Sortable

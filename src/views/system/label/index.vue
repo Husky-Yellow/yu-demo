@@ -17,7 +17,7 @@
   </ContentWrap>
 </template>
 <script lang="ts" setup>
-defineOptions({ name: 'SystemLabel' })
+defineOptions({ name: 'SystemLabelIndex' })
 import router from '@/router'
 import * as LabelApi from '@/api/system/label'
 
