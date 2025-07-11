@@ -9,4 +9,4 @@ auto-*.d.ts
 .history
 
 # Mock 编译文件
-# src/mock/**/*{.mjs,*.bundled_*.mjs,__*.bundled_*.mjs,_*.bundled_*.mjs}
+src/mock/**/*{.mjs,*.bundled_*.mjs,__*.bundled_*.mjs,_*.bundled_*.mjs}
