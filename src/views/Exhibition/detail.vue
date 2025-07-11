@@ -58,9 +58,9 @@
 </template>
 
 <script setup lang="ts">
-import * as LabelApi from '@/api/system/label'
 import * as BusinessDataApi from '@/api/system/business-data'
 import * as DictDataApi from '@/api/system/dict/dict.data'
+import * as ViewFormConfApi from '@/api/system/data/view-form-conf'
 import { dateFormatter, filterAndMarkGroups, getFieldSpan } from '@/utils/formatter'
 import { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { FieldType } from '@/config/constants/enums/field'
@@ -208,7 +208,7 @@ const getDetailConfig = async () => {
     // 并行获取数据，提高性能
     const [fieldConfigs, formConfData, businessData] = await Promise.all([
       FieldConfApi.getFieldConfigListByManageId({ manageId }),
-      LabelApi.getViewFormConf({ manageId, formType: 2 }),
+      ViewFormConfApi.getViewFormConf({ manageId, formType: 2 }),
       BusinessDataApi.getBusinessData({ id: businessId, manageId })
     ])
 

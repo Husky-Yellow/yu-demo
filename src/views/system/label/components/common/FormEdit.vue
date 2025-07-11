@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import * as LabelApi from '@/api/system/label'
+import * as ViewFormConfApi from '@/api/system/data/view-form-conf'
 import * as FieldConfApi from '@/api/system/data/field-conf'
 import draggable from 'vuedraggable'
 import { ElMessageBox, ElMessage } from 'element-plus'
@@ -369,12 +369,12 @@ const submitForm = async () => {
     const id = idMap.value[formType]
     // 这里要区分编辑和新增
     if (!id) {
-      const id = await LabelApi.createViewFormConf(params)
+      const id = await ViewFormConfApi.createViewFormConf(params)
       idMap.value[formType] = id
       ElMessage.success('布局已保存！')
       fetchFormData()
     } else {
-      await LabelApi.updateViewFormConf({ ...params, id })
+      await ViewFormConfApi.updateViewFormConf({ ...params, id })
       ElMessage.success('布局已保存！')
     }
   } catch (err) {
@@ -397,7 +397,7 @@ const fetchFormData = async () => {
   const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
-  const formConfData = await LabelApi.getViewFormConf({
+  const formConfData = await ViewFormConfApi.getViewFormConf({
     manageId: query.manageId as string,
     formType: props.tab.name === 'formEdit' ? activeMode.value : 2,
   })

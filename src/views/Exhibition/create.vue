@@ -97,7 +97,7 @@ defineOptions({ name: 'ExhibitionCreate' })
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import * as BusinessDataApi from '@/api/system/business-data'
 import * as FieldConfApi from '@/api/system/data/field-conf'
-import * as LabelApi from '@/api/system/label'
+import * as ViewFormConfApi from '@/api/system/data/view-form-conf'
 import { FormRules } from 'element-plus'
 import { useDatePicker } from '@/hooks/useDatePicker'
 import {
@@ -293,7 +293,7 @@ const init = async () => {
   }
   const flagKey = formType === 1 ? 'addFlag' : 'editFlag'
   const filteredRes = res.filter((item: any) => item[flagKey])
-  const formConfData = await LabelApi.getViewFormConf({
+  const formConfData = await ViewFormConfApi.getViewFormConf({
     manageId,
     formType: formType
   })
