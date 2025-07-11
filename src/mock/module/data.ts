@@ -636,5 +636,36 @@ export default [
       },
       "msg": ""
   }
-  }
+  },
+  {
+    url: '/data/field-conf/list-base',
+    type: 'post',
+    response: {
+      "code": 0,
+      "data": [
+          {
+              "id": "1943563868319539201",
+              "manageId": "1943559705967841281",
+              "code": "姓名",
+              "name": "name",
+              "remark": "请输入姓名",
+              "fieldType": 1,
+              "bizType": "1",
+              "encType": 0,
+              "length": 20,
+              "encFlag": 0,
+              "addFlag": 0,
+              "editFlag": 0,
+              "appViewFlag": 0,
+              "pcViewFlag": 0,
+              "sort": 8,
+              "version": null,
+              "createTime": 1752216711000,
+              "parentCode": "0",
+              "fieldConfExtDOList": []
+          }
+      ],
+      "msg": ""
+    }
+  },
 ]
