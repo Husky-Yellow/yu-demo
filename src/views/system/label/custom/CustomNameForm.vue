@@ -34,6 +34,7 @@ const DIALOG_TYPE_TITLES: { [key: string]: string } = {
 
 const message = useMessage() // 消息弹窗
 const { query } = useRoute() // 查询参数
+const emit = defineEmits(['success'])
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
@@ -45,21 +46,55 @@ const formData = ref({
   type: BooleanEnum.FALSE,
   parentId: 0,
   labelId: query.lableId,
+  rootId: 0
 })
 const formRules = reactive<FormRules>({
   name: [{ required: true, message: '部门名称不能为空', trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 
+const initializeFormData = (type: 'addChild' | 'create' | 'edit', row: any, query: { lableId?: number }) => {
+  const newRootId = row.rootId === 0 ? row.id : row.rootId;
+  const defaultValues = {
+    rootId: newRootId,
+    labelId: query.lableId,
+    type: BooleanEnum.FALSE
+  };
+
+  switch (type) {
+    case 'addChild':
+      return {
+        ...row,
+        ...defaultValues,
+        name: undefined,
+        id: undefined,
+        parentId: row.id,
+      };
+
+    case 'create':
+      return {
+        ...defaultValues,
+        id: undefined,
+        name: undefined,
+        parentId: 0
+      };
+
+    case 'edit':
+    default:
+      return {
+        ...row,
+        ...defaultValues
+      };
+  }
+};
+
 /** 打开弹窗 */
-const open = async (type: string, row: any) => {
-  // 检查传入的类型是否有效
+const open = async (type: 'addChild' | 'create' | 'edit', row: any) => {
   if (!DIALOG_TYPE_TITLES[type]) {
     console.error(`无效的弹窗类型: ${type}`);
     return;
   }
 
-  // 设置弹窗可见和标题
   dialogVisible.value = true;
   dialogTitle.value = DIALOG_TYPE_TITLES[type];
   formType.value = type;
@@ -68,40 +103,14 @@ const open = async (type: string, row: any) => {
 
   try {
     formLoading.value = true
-    // 根据不同类型设置表单数据
-    switch (type) {
-      case 'addChild':
-        formData.value = {
-          ...row,
-          name: undefined,
-          id: '',
-          parentId: row.id
-        };
-        break;
-      case 'create':
-        formData.value = {
-          id: undefined,
-          name: undefined,
-          parentId: 0,
-          type: BooleanEnum.FALSE,
-          labelId: query.lableId
-        };
-        break;
-      default:
-        formData.value = { ...row };
-    }
+    formData.value = initializeFormData(type, row, query);
   } catch (error) {
     console.error('设置表单数据时出错:', error);
   } finally {
-    // 隐藏表单加载状态
     formLoading.value = false;
   }
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
-
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
-
 
 // 提取表单提交的逻辑到一个单独的函数，提高代码的复用性和可测试性
 const submitFormData = async (formType, data) => {
@@ -161,7 +170,8 @@ const resetForm = () => {
     name: undefined,
     type: BooleanEnum.FALSE,
     parentId: 0,
-    labelId: query.lableId
+    labelId: query.lableId,
+    rootId: 0
   }
   formRef.value?.resetFields()
 }

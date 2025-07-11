@@ -11,7 +11,7 @@
       </el-col>
       <el-col :span="6" :offset="8">
         <!-- todo zhaokun怎么判断呢 -->
-        <el-button :disabled="isLoading">添加业务字段</el-button>
+        <el-button :disabled="isLoading" v-if="showAddBaseButton">添加业务字段</el-button>
         <el-button :disabled="isLoading" @click="openForm">添加基础字段</el-button>
         <el-button :disabled="multipleSelection.length !== 1 || isLoading" type="primary" @click="handleEdit"
           >编辑</el-button
@@ -37,7 +37,7 @@
       <el-table-column prop="code" label="Code" align="center">
         <template #default="scope">
           {{ scope.row.code }}
-            <el-tag type="primary" >{{ BusinessTypeLabel[BusinessType.SYSTEM] }}</el-tag>
+            <el-tag type="primary" >{{ BusinessTypeLabel[scope.row.bizType] }}</el-tag>
           </template>
         </el-table-column>
       <el-table-column prop="name" label="字段名称" align="center">
@@ -69,17 +69,17 @@
       </el-table-column>
       <el-table-column prop="addFlag" label="新增表单" align="center" width="100">
         <template #default="scope">
-          <el-checkbox :disabled="scope.row.bizType === BusinessType.SYSTEM" v-model="scope.row.addFlag" :true-value="1" :false-value="0" label="" />
+          <el-checkbox :disabled="scope.row.bizType === `${BusinessType.SYSTEM}`" v-model="scope.row.addFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="editFlag" label="编辑表单" align="center" width="100">
         <template #default="scope">
-          <el-checkbox :disabled="scope.row.bizType === BusinessType.SYSTEM" v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
+          <el-checkbox :disabled="scope.row.bizType === `${BusinessType.SYSTEM}`" v-model="scope.row.editFlag" :true-value="1" :false-value="0" label="" />
         </template>
       </el-table-column>
       <el-table-column prop="appViewFlag" label="移动端列表" align="center" width="100">
         <template #default="scope">
-          <div class="cursor-pointer" @click="scope.row.bizType === BusinessType.SYSTEM ? null : handleViewFlag(scope.row, 'appViewFlag')">
+          <div class="cursor-pointer" @click="scope.row.bizType === `${BusinessType.SYSTEM}` ? null : handleViewFlag(scope.row, 'appViewFlag')">
             <el-icon v-if="scope.row.appViewFlag"><View /></el-icon>
             <el-icon v-else><Hide /></el-icon>
           </div>
@@ -87,7 +87,7 @@
       </el-table-column>
       <el-table-column prop="pcViewFlag" label="管理端列表" align="center"  width="100">
         <template #default="scope">
-          <div class="cursor-pointer" @click="scope.row.bizType === BusinessType.SYSTEM ? null : handleViewFlag(scope.row, 'pcViewFlag')">
+          <div class="cursor-pointer" @click="scope.row.bizType === `${BusinessType.SYSTEM}` ? null : handleViewFlag(scope.row, 'pcViewFlag')">
             <el-icon v-if="scope.row.pcViewFlag"><View /></el-icon>
             <el-icon v-else><Hide /></el-icon>
           </div>
@@ -135,6 +135,9 @@ const sortable = ref(null)
 const tableData = ref<LabelFieldConfig[]>([])
 const selectable = (row: LabelFieldConfig) => ![BusinessType.SYSTEM].includes(row.bizType) // 系统标签不能选中
 const isLoading = ref(false) // 是否加载中
+const showAddBaseButton = computed(() =>
+  !(query.rootId == null || Number(query.rootId) === 0)
+);
 
 // 初始化 Sortable
 const initSortable = () => {

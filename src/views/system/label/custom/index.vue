@@ -54,7 +54,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="300" fixed="right">
         <template #default="{ row }">
-          <el-button link type="primary" @click="openDetail(row.id)">
+          <el-button link type="primary" @click="openDetail(row.id, row.rootId)">
             配置
           </el-button>
           <el-button link type="primary" @click="handleUpdateName('edit', row)">

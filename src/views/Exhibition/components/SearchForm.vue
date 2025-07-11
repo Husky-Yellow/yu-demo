@@ -110,6 +110,8 @@ function handleReset() {
 }
 
 function handleOperate(item: ExhibitionOperate) {
+  // 基础版直接打开创建页面
+
   // 这里处理表格操作
   if (item.operateType === 0) {
     // 打开第一层弹窗

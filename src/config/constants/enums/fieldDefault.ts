@@ -1,6 +1,6 @@
 import type { FileSize } from './field'
 import type { FieldType } from '@/config/constants/enums/field'
-import { BooleanEnum, OperateType } from '@/config/constants/enums/label'
+import { BooleanEnum, OperateType, BusinessType } from '@/config/constants/enums/label'
 
 /**
  * 文本字段默认配置
@@ -112,7 +112,7 @@ export interface LabelFieldConfig {
    * 字段业务类型
    * @description 0-系统 1-基础
    */
-  bizType: BooleanEnum
+  bizType: BusinessType
   /**
    * 字段长度
    * @description 字段的最大长度限制
