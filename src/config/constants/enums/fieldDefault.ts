@@ -159,43 +159,6 @@ export interface LabelFieldConfig {
    */
   parentCode: string
 }
-
-/**
- * 操作配置接口
- * @description 定义系统操作按钮的配置信息
- */
-export interface OperateConfig {
-  /**
-   * 主键ID
-   * @description 操作配置的唯一标识
-   */
-  id: number
-  /**
-   * 标签管理ID
-   * @description 关联的标签管理记录ID
-   */
-  manageId: number
-  /**
-   * 按钮名称
-   * @description 操作按钮的显示名称
-   */
-  operateName: string
-  /**
-   * 按钮类型
-   * @description 0-添加 1-编辑 2-删除 3-导入 4-导出
-   */
-  operateType: OperateType
-  /**
-   * 是否显示
-   * @description 0-显示 1-不显示
-   */
-  showFlag: BooleanEnum
-  /**
-   * 排序
-   * @description 按钮的显示顺序
-   */
-  sort: number
-}
 /**
  * 操作类型文字映射
  */
@@ -245,7 +208,7 @@ export type QueryTableRow = LabelFieldConfig & QueryResItem
 export type SortItem = {
   id?: string
   uuid: string
-  type: 0 | 1 | 2
+  type: BusinessType
   rule: BooleanEnum
   field?: LabelFieldConfig | null
   fieldId?: string

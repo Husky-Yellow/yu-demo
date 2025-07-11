@@ -106,10 +106,10 @@ import VueDraggable from 'vuedraggable'
 import type { FormInstance } from 'element-plus'
 import { Delete } from '@element-plus/icons-vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
-import * as LabelApi from '@/api/system/label'
 import * as FieldConfApi from '@/api/system/data/field-conf'
 import * as LabelManageApi from '@/api/system/data/label-manage'
 import * as DictDataApi from '@/api/system/dict/dict.data'
+import * as ConfApi from '@/api/system/data/conf'
 import { OperatorOptions, BooleanEnum } from '@/config/constants/enums/label'
 import { FieldType } from '@/config/constants/enums/field'
 import type { LabelFieldConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
@@ -248,7 +248,7 @@ const removeSelectedStatistic = (index: number) => {
   const removeLast = () => items.pop();
 
   if (index !== -1 && items[index]?.uuid) {
-    LabelApi.deleteFilterConfList({ id: items[index].uuid as string, manageId: query.manageId as string })
+    ConfApi.deleteFilterConfList({ id: items[index].uuid as string, manageId: query.manageId as string })
       .then(() => {
         ElMessage.success('删除成功');
         removeAt(index);
@@ -300,7 +300,7 @@ const fetchData = async () => {
   const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
-  const filterRes = await LabelApi.getFilterConfList({
+  const filterRes = await ConfApi.getFilterConfList({
     manageId: query.manageId as string
   })
 
@@ -338,7 +338,7 @@ const submitForm = () => {
           manageId: query.manageId as string,
         }
       })
-      LabelApi.updateFilterConfList(submitData).then(() => {
+      ConfApi.updateFilterConfList(submitData).then(() => {
         ElMessage.success('更新成功')
       }).catch(() => {
         ElMessage.error('更新失败')

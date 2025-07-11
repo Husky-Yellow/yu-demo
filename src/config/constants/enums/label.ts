@@ -96,3 +96,12 @@ export const BusinessTypeOptions: { label: string; value: BusinessType }[] = [
   { label: '基础', value: BusinessType.BASIC },
   { label: '业务', value: BusinessType.BUSINESS },
 ];
+
+/**
+ * 表单类型枚举
+ */
+export enum ViewFormType {
+  EDIT = 0,    // 编辑
+  CREATE = 1,  // 新增
+  DETAIL = 2,  // 详情
+}

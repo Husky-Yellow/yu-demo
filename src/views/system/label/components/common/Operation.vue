@@ -10,23 +10,22 @@
 </template>
 
 <script setup lang="ts">
-import * as LabelApi from '@/api/system/label'
 import { ElMessage } from 'element-plus'
 import DraggableTable from '@/components/Draggable/sortTable.vue'
 import { ElInput, ElSwitch } from 'element-plus'
 import type { TableColumn } from '@/components/Draggable/sortTable.vue'
-import type { OperateConfig } from '@/config/constants/enums/fieldDefault'
+import * as OperateConfApi from '@/api/system/data/operate-conf'
 import { OperateTypeText } from '@/config/constants/enums/fieldDefault'
 import { BooleanEnum } from '@/config/constants/enums/label'
 import { generateOperationMock } from '@/utils/constants'
 
 const { query } = useRoute()
-const tableData = ref<OperateConfig[]>([])
+const tableData = ref<OperateConfApi.OperateConfig[]>([])
 const emits = defineEmits(['update:tab'])
 
 // 名称输入组件
 const NameInputComponent = markRaw(defineComponent({
-  props: { row: { type: Object as () => OperateConfig, required: true } },
+  props: { row: { type: Object as () => OperateConfApi.OperateConfig, required: true } },
   emits: ['update'],
   setup(props, { emit }) {
     return () => h(ElInput, {
@@ -40,7 +39,7 @@ const NameInputComponent = markRaw(defineComponent({
 
 // 显示开关组件
 const VisibilitySwitchComponent = markRaw(defineComponent({
-  props: { row: { type: Object as () => OperateConfig, required: true } },
+  props: { row: { type: Object as () => OperateConfApi.OperateConfig, required: true } },
   emits: ['update'],
   setup(props, { emit }) {
     return () => h(ElSwitch, {
@@ -53,14 +52,14 @@ const VisibilitySwitchComponent = markRaw(defineComponent({
 }))
 
 // 表格列配置
-const columns = computed<TableColumn<OperateConfig>[]>(() => [
+const columns = computed<TableColumn<OperateConfApi.OperateConfig>[]>(() => [
   { type: 'index', label: '序号', width: 80, align: 'center' },
   {
     prop: 'operateType',
     label: '按钮类型',
     align: 'center',
     width: 120,
-    render: (scope: { row: OperateConfig }) => OperateTypeText[scope.row.operateType]
+    render: (scope: { row: OperateConfApi.OperateConfig }) => OperateTypeText[scope.row.operateType]
   },
   {
     prop: 'operateName',
@@ -87,15 +86,15 @@ const handleSortEnd = (oldIndex: number, newIndex: number) => {
 }
 
 // 更新行数据
-const updateRowData = (updatedRow: OperateConfig) => {
+const updateRowData = (updatedRow: OperateConfApi.OperateConfig) => {
   const index = tableData.value.findIndex(item => item.operateType === updatedRow.operateType)
   if (index !== -1) tableData.value[index] = updatedRow
 }
 
 // 获取数据
 const getDataFieldConfListByManageId = async () => {
-  const res = await LabelApi.getOperateConfigList({ manageId: query.manageId as string })
-  tableData.value = res.length ? res : (generateOperationMock(query.manageId as string) as unknown as OperateConfig[])
+  const res = await OperateConfApi.getOperateConfigList({ manageId: query.manageId as string })
+  tableData.value = res.length ? res : (generateOperationMock(query.manageId as string) as unknown as OperateConfApi.OperateConfig[])
 }
 
 // 提交表单
@@ -111,7 +110,7 @@ const submitForm = () => {
     return
   }
 
-  LabelApi.updateOperateConfigList(submitData)
+  OperateConfApi.updateOperateConfigList(submitData)
     .then(() => {
       ElMessage.success('配置已保存')
       getDataFieldConfListByManageId()
