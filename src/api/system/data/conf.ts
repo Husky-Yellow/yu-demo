@@ -1,5 +1,42 @@
 import request from '@/config/axios'
-import type { FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
+import { BooleanEnum } from '@/config/constants/enums/label'
+
+export interface FilterRuleConfig {
+  /**
+   * 主键ID
+   * @description 过滤配置的唯一标识
+   */
+  id?: string
+  /**
+   * 字段ID
+   * @description 关联的字段ID
+   */
+  uuid: string
+  /**
+   * 字段ID
+   * @description 关联的字段ID
+   */
+  fieldId: string | null
+  /**
+   * 过滤类型
+   */
+  filterType: BooleanEnum.TRUE | BooleanEnum.FALSE
+  /**
+   * 数据
+   * @description 过滤配置的数据
+   */
+  data: string | undefined
+  /**
+   * 连接类型
+   */
+  connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
+  /**
+   * 选中的选项
+   * @description 过滤配置的选中的选项
+   */
+  selectedOptions?: any[]
+}
+
 
 /**
  * 删除过滤配置列表

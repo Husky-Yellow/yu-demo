@@ -1,6 +1,24 @@
 import request from '@/config/axios'
 import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
-import type { StatisticItem } from '@/config/constants/enums/fieldDefault'
+import { FieldType } from '@/config/constants/enums/field'
+import { BooleanEnum } from '@/config/constants/enums/label'
+
+export interface StatisticField extends Partial<LabelFieldConfig> {
+  filterType?: number;
+  data?: string;
+}
+/** 单个统计项的定义 */
+export interface StatisticItem {
+  id?: string
+  uuid: string
+  name: string
+  fieldId?: string
+  type?: FieldType;
+  data?: string;
+  bizType?: BooleanEnum;
+  filterType?: number;
+  fields:StatisticField[] // 推荐
+}
 
 
 /**

@@ -1,6 +1,7 @@
 import type { FileSize } from './field'
 import type { FieldType } from '@/config/constants/enums/field'
 import { BooleanEnum, OperateType, BusinessType } from '@/config/constants/enums/label'
+import * as QueryConfApi from '@/api/system/data/query-conf'
 
 /**
  * 文本字段默认配置
@@ -188,61 +189,3 @@ export type LabelDragField = LabelFieldConfig & {
     condition: 'equals' | 'not_equals'
   }
 }
-
-
-export type QueryResItem = {
-  id?: string
-  manageId: string
-  field?: LabelFieldConfig[] // 临时存储
-  fieldCodes?: string // 字段编码  提交的时候逗号隔开
-  fieldIds?: string // 字段id  提交的时候逗号隔开
-  queryType: number // 查询类型 0-搜索 1-单选 2-多选 3-日期区间 4-日期
-  defaultValue: any // 默认值
-  hint: string // 提示文字
-  sort: number // 排序
-}
-
-export type QueryTableRow = LabelFieldConfig & QueryResItem
-
-
-export type SortItem = {
-  id?: string
-  uuid: string
-  type: BusinessType
-  rule: BooleanEnum
-  field?: LabelFieldConfig | null
-  fieldId?: string
-  sort?: number
-  manageId: string
-}
-
-
-export interface StatisticField extends Partial<LabelFieldConfig> {
-  filterType?: number;
-  data?: string;
-}
-/** 单个统计项的定义 */
-export interface StatisticItem {
-  id?: string
-  uuid: string
-  name: string
-  fieldId?: string
-  type?: FieldType;
-  data?: string;
-  bizType?: BooleanEnum;
-  filterType?: number;
-  fields:StatisticField[] // 推荐
-}
-
-export interface FilterRuleConfig {
-  id?: string
-  uuid: string
-  fieldId: string | null
-  filterType: BooleanEnum.TRUE | BooleanEnum.FALSE
-  data: string | undefined
-  connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
-  selectedOptions?: any[]
-}
-
-
-

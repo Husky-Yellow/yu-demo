@@ -137,18 +137,14 @@ import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
 import { FieldType } from '@/config/constants/enums/field'
-import type { LabelFieldConfig, StatisticItem, StatisticField } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { generateUUID } from '@/utils'
 import { handleTree2, defaultProps } from '@/utils/tree'
 
 // 类型定义
-interface ExtendedStatisticField extends StatisticField {
+interface ExtendedStatisticField extends CountConfApi.StatisticField {
   selectedOptions?: Array<{ label: string; value: string | number }>
   bizType?: any // 允许任意类型，避免类型冲突
-}
-
-interface ExtendedStatisticItem extends StatisticItem {
-  fields: ExtendedStatisticField[]
 }
 
 // 响应式数据
@@ -156,7 +152,7 @@ const { query } = useRoute()
 const emits = defineEmits(['update:tab'])
 const statisticConfigFields = ref<LabelFieldConfig[]>([])
 const deptList = ref<Tree[]>([])
-const statistics = ref<ExtendedStatisticItem[]>([{
+const statistics = ref<CountConfApi.StatisticItem[]>([{
   uuid: generateUUID(),
   name: '',
   fields: []
@@ -202,7 +198,7 @@ const getStatisticNameRules = (idx: number): FormItemRule[] => [
 ]
 
 // 字段操作
-const cloneField = (field: StatisticField): ExtendedStatisticField | false => {
+const cloneField = (field: CountConfApi.StatisticField): ExtendedStatisticField | false => {
   if (isFieldUsed(field.uuid as string)) {
     return false
   }
@@ -325,7 +321,7 @@ const submitForm = () => {
             data: field?.data ?? '',
             sort: index,
           }
-        }) as unknown as StatisticItem[]
+        }) as unknown as CountConfApi.StatisticItem[]
 
         await CountConfApi.updateCountConfigList(submitData)
         ElMessage.success('统计配置更新成功')

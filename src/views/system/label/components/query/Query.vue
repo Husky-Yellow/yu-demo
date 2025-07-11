@@ -150,7 +150,6 @@
 <script setup lang="ts">
 import Sortable from 'sortablejs'
 import type { ElTable } from 'element-plus'
-import * as LabelApi from '@/api/system/label'
 import * as FieldConfApi from '@/api/system/data/field-conf'
 import * as LabelManageApi from '@/api/system/data/label-manage'
 import * as QueryConfApi from '@/api/system/data/query-conf'
@@ -158,7 +157,7 @@ import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldSelectDialog from '../common/FieldSelectDialog.vue'
 import SubFieldSelectDialog from './SubFieldSelectDialog.vue'
 import QueryPreview from './QueryPreview.vue'
-import type { LabelFieldConfig, QueryTableRow, QueryResItem } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { FieldType } from '@/config/constants/enums/field'
 import { handleTree2, defaultProps } from '@/utils/tree'
 
@@ -181,13 +180,13 @@ const emits = defineEmits(['update:tab'])
 // 所有字段
 const allFields = shallowRef<LabelFieldConfig[]>([])
 // 表格数据
-const tableData = ref<QueryTableRow[]>([])
+const tableData = ref<QueryConfApi.QueryTableRow[]>([])
 const deptList = ref<Tree[]>([])
 const showDialog = ref<boolean>(false)
 const showSubFieldDialog = ref<boolean>(false)
 const showPreviewDialog = ref<boolean>(false)
-const currentRow = ref<QueryTableRow | null>(null) // 当前行
-const selectedRowKeys = ref<QueryTableRow[]>([])
+const currentRow = ref<QueryConfApi.QueryTableRow | null>(null) // 当前行
+const selectedRowKeys = ref<QueryConfApi.QueryTableRow[]>([])
 const tableRef = ref<InstanceType<typeof ElTable>>()
 const sortable = ref(null)
 const isLoading = ref(false) // 是否加载中
@@ -251,11 +250,11 @@ function removeSelected() {
   })
 }
 
-function onSelectionChange(rows: QueryTableRow[]) {
+function onSelectionChange(rows: QueryConfApi.QueryTableRow[]) {
   selectedRowKeys.value = rows
 }
 
-function openSubFieldDialog(row: QueryTableRow) {
+function openSubFieldDialog(row: QueryConfApi.QueryTableRow) {
   currentRow.value = row
   showSubFieldDialog.value = true
 }
@@ -335,7 +334,7 @@ const fetchData = async () => {
     // defaultValue: item.queryType === 1 || item.queryType === 2 ? item.defaultValue.split(',') : item.defaultValue,
     field,
   }
-  }) as QueryTableRow[]
+  }) as QueryConfApi.QueryTableRow[]
 
 }
 
@@ -349,7 +348,7 @@ onMounted(() => {
 const submitForm = async () => {
   isLoading.value = true
   emits('update:tab', true)
-  const submitData: QueryResItem[] = tableData.value.map((row, index) => {
+  const submitData: QueryConfApi.QueryResItem[] = tableData.value.map((row, index) => {
     return {
       fieldIds: row.field?.map(f => f.uuid!).join(',') || '',
       fieldCodes: row.field?.map(f => f.code).join(',') || '',

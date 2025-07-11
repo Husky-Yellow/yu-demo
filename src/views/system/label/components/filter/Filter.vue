@@ -112,7 +112,7 @@ import * as DictDataApi from '@/api/system/dict/dict.data'
 import * as ConfApi from '@/api/system/data/conf'
 import { OperatorOptions, BooleanEnum } from '@/config/constants/enums/label'
 import { FieldType } from '@/config/constants/enums/field'
-import type { LabelFieldConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { generateUUID } from '@/utils'
 import { handleTree2, defaultProps } from '@/utils/tree'
 
@@ -133,7 +133,7 @@ const defaultItem =  {
     selectedOptions: []
   }
 // 右侧规则列表
-const filterRules = ref<FilterRuleConfig[]>([
+const filterRules = ref<ConfApi.FilterRuleConfig[]>([
   {
     ...defaultItem
   }
@@ -209,7 +209,7 @@ const getEnumOptions = async (row) => {
   return []
 }
 
-const setClickIndex = (rule: FilterRuleConfig) => {
+const setClickIndex = (rule: ConfApi.FilterRuleConfig) => {
   clickIndex.value = filterRules.value.findIndex((item) => item.uuid === rule.uuid)
 }
 
@@ -274,7 +274,7 @@ const toggleLogic = (index: number) => {
 /**
  * 验证筛选字段是否已选择
  */
-const validateFieldsNotEmpty = (item: FilterRuleConfig) => {
+const validateFieldsNotEmpty = (item: ConfApi.FilterRuleConfig) => {
   return (_rule: any, _value: any, callback: any) => {
     if (!item.fieldId) {
       return callback(new Error('请拖入筛选字段'))
@@ -286,7 +286,7 @@ const validateFieldsNotEmpty = (item: FilterRuleConfig) => {
 /**
  * 验证筛选值是否已输入
  */
-const validateValueNotEmpty = (item: FilterRuleConfig) => {
+const validateValueNotEmpty = (item: ConfApi.FilterRuleConfig) => {
   return (_rule: any, _value: any, callback: any) => {
     if (!item.data) {
       return callback(new Error('请输入筛选值'))

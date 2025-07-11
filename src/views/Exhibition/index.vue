@@ -40,7 +40,7 @@ import * as OperateConfApi from '@/api/system/data/operate-conf'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
-import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
+import { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { OperateTypeEnum } from '@/utils/constants'
 import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 
@@ -50,9 +50,9 @@ defineOptions({ name: 'ExhibitionList' })
 const route = useRoute()
 const router = useRouter()
 
-const countConfigDate = ref<Record<string, any>[]>([]) // 统计数据
+const countConfigDate = ref<CountConfApi.StatisticItem[]>([]) // 统计数据
 const operateConfigList = ref<ExhibitionOperate[]>([]) // 搜索表单操作列表
-const queryConfig = ref<QueryResItem[]>([]) // 搜索表单，
+const queryConfig = ref<QueryConfApi.QueryResItem[]>([]) // 搜索表单，
 const tableData = ref<Record<string, any>[]>([]) // 表格数据
 const columns = ref<LabelFieldConfig[]>([]) // 表格列配置
 const selectedRows = ref<Record<string, any>[]>([]) // 表格选中行 用于删除

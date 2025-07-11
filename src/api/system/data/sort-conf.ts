@@ -1,5 +1,18 @@
 import request from '@/config/axios'
-import type { SortItem } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import { BusinessType, BooleanEnum } from '@/config/constants/enums/label'
+
+export type SortItem = {
+  id?: string
+  uuid: string
+  type: BusinessType
+  rule: BooleanEnum
+  field?: LabelFieldConfig | null
+  fieldId?: string
+  sort?: number
+  manageId: string
+}
+
 
 /**
  * 创建排序配置 弃用

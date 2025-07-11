@@ -80,7 +80,7 @@ import * as SortConfApi from '@/api/system/data/sort-conf'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import type { LabelFieldConfig, SortItem } from '@/config/constants/enums/fieldDefault'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { generateUUID } from '@/utils'
 
 const { query } = useRoute() // 查询参数
@@ -88,7 +88,7 @@ const { query } = useRoute() // 查询参数
 // 左侧可选字段
 const sortFields = ref<LabelFieldConfig[]>([])
 
-const formModel = ref<{ sortItems: SortItem[] }>({
+const formModel = ref<{ sortItems: SortConfApi.SortItem[] }>({
   sortItems: [
     {
       uuid: generateUUID(),
@@ -176,7 +176,7 @@ function removeField(sortIndex: number) {
  * @param idx - 当前统计项的索引
  * @returns 返回一个 Element Plus 的表单校验函数
  */
-const validateFieldsNotEmpty = (item: SortItem) => {
+const validateFieldsNotEmpty = (item: SortConfApi.SortItem) => {
   return (_rule: any, _value: any, callback: any) => {
     if (!item.field) {
       return callback(new Error('请拖入排序字段'))
@@ -196,7 +196,7 @@ const submitForm = () => {
         rule: item.rule,
         type: item.type,
         id: item?.id || ''
-      })) as SortItem[]
+      })) as SortConfApi.SortItem[]
       SortConfApi.updateSortConfList(submitData).then(() => {
         ElMessage.success('排序配置更新成功')
         fetchData()
