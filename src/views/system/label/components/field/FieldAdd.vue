@@ -70,7 +70,6 @@ const handleSubmit = async () => {
       manageId: query.manageId as string
     }
   })
-  console.log('data',data)
   emits('update:data', data, handleClose)
 }
 

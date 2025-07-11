@@ -639,7 +639,7 @@ export default [
   },
   {
     url: '/data/field-conf/list-base',
-    type: 'post',
+    type: 'GET',
     response: {
       "code": 0,
       "data": [
