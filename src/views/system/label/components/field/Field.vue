@@ -10,9 +10,8 @@
         />
       </el-col>
       <el-col :span="6" :offset="8">
-        <!-- todo zhaokun怎么判断呢 -->
-        <el-button :disabled="isLoading" v-if="showAddBaseButton">添加业务字段</el-button>
-        <el-button :disabled="isLoading" @click="openForm">添加基础字段</el-button>
+        <el-button :disabled="isLoading" v-if="showAddBaseButton" @click="openBaseForm">选择基础字段</el-button>
+        <el-button :disabled="isLoading" @click="openForm"> {{ isBaseTag ? '添加基础字段' : '添加列表字段' }}</el-button>
         <el-button :disabled="multipleSelection.length !== 1 || isLoading" type="primary" @click="handleEdit"
           >编辑</el-button
         >
@@ -100,6 +99,7 @@
       </el-table-column>
     </el-table>
     <FieldEdit ref="formRef" @update:data="updateData" />
+    <FieldAdd ref="baseFormRef" @update:data="updateData" />
   </ContentWrap>
 </template>
 
@@ -110,6 +110,7 @@ import type { TableInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
 import { generateUUID } from '@/utils'
 import FieldEdit from './FieldEdit.vue'
+import FieldAdd from './FieldAdd.vue'
 import { FieldTypeLabel, FieldType } from '@/config/constants/enums/field'
 import {
   BooleanEnum,
@@ -130,14 +131,15 @@ const message = useMessage() // 消息弹窗
 const emits = defineEmits(['update:tab'])
 
 const tableRef = ref<TableInstance | null>(null)
+const formRef = ref()
+const baseFormRef = ref()
 const multipleSelection = ref<LabelFieldConfig[]>([])
 const sortable = ref(null)
 const tableData = ref<LabelFieldConfig[]>([])
 const selectable = (row: LabelFieldConfig) => ![BusinessType.SYSTEM].includes(row.bizType) // 系统标签不能选中
 const isLoading = ref(false) // 是否加载中
-const showAddBaseButton = computed(() =>
-  !(query.rootId == null || Number(query.rootId) === 0)
-);
+const showAddBaseButton = computed(() => !(query.rootId == null || Number(query.rootId) === 0)); // 是否显示选择基础字段按钮
+const isBaseTag = computed(() => String(query.type) === String(BooleanEnum.FALSE)); // 是否是基础标签
 
 // 初始化 Sortable
 const initSortable = () => {
@@ -179,6 +181,10 @@ const handleRowClick = (row: LabelFieldConfig) => {
   formRef.value.open('show', row, tableData.value)
 }
 
+const openBaseForm = () => {
+  baseFormRef.value.open()
+}
+
 const getDataFieldConfListByManageId = async () => {
   isLoading.value = true
   try {
@@ -197,20 +203,6 @@ const getDataFieldConfListByManageId = async () => {
     isLoading.value = false
   }
 }
-
-// 生命周期钩子
-onMounted(() => {
-  initSortable()
-  getDataFieldConfListByManageId()
-})
-
-onBeforeUnmount(() => {
-  // 销毁 Sortable 实例
-  if (sortable.value) {
-    ;(sortable.value as any).destroy()
-    sortable.value = null
-  }
-})
 
 // 监听数据变化
 watch(
@@ -287,11 +279,23 @@ const saveTableData = async () => {
 }
 
 /** 添加/修改操作 */
-const formRef = ref()
 const openForm = () => {
   multipleSelection.value = []
   formRef.value.open('add', undefined, tableData.value)
 }
+// 生命周期钩子
+onMounted(() => {
+  initSortable()
+  getDataFieldConfListByManageId()
+})
+
+onBeforeUnmount(() => {
+  // 销毁 Sortable 实例
+  if (sortable.value) {
+    ;(sortable.value as any).destroy()
+    sortable.value = null
+  }
+})
 defineExpose({ saveTableData })
 </script>
 

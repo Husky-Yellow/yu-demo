@@ -324,3 +324,14 @@ export const deleteQueryConfList = async (params: string) => {
 export const deleteCountConfigList = async (params: { id: string, manageId: string }) => {
   return await request.delete({ url: '/data/count-conf/delete', params })
 }
+
+/**
+ * 基础字段列表
+ * @param params
+ * @param params.manageId - 管理ID
+ * @returns {Promise<any>} 基础字段列表
+ * @see https://app.apifox.com/link/project/6505154/apis/api-305076057
+ */
+export const getBaseFieldList = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
+  return await request.get({ url: '/data/field-conf/list-base', params })
+}

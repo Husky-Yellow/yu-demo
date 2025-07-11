@@ -83,8 +83,8 @@ export const useLabelManagement = (initialLabelId?: string) => {
   /**
    * 打开详情页面
    */
-  const openDetail = (id: number, rootId: number) => {
-    push(`/system/label/customDetail?lableId=${query.lableId}&type=${query.type}&manageId=${id}&rootId=${rootId}`)
+  const openDetail = (id: number, rootId: number, type: string) => {
+    push(`/system/label/customDetail?lableId=${query.lableId}&type=${query.type}&manageId=${id}&rootId=${rootId}&type=${type}`)
   }
 
   return {

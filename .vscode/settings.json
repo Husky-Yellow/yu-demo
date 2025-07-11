@@ -34,7 +34,8 @@
     "res": true,
     "screenshots": true,
     "yarn-error.log": true,
-    "**/.yarn": true
+    "**/.yarn": true,
+    "**/src/mock/**/*{.mjs,__*.bundled_*.mjs,_*.bundled_*.mjs,bundled_*.mjs}": true
   },
   "files.exclude": {
     "**/.cache": true,
@@ -47,7 +48,8 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "**/src/mock/**/*{.mjs,__*.bundled_*.mjs,_*.bundled_*.mjs,bundled_*.mjs}": true
   },
   "files.watcherExclude": {
     "**/.git/objects/**": true,
@@ -57,7 +59,8 @@
     "**/tmp/**": true,
     "**/bower_components/**": true,
     "**/dist/**": true,
-    "**/yarn.lock": true
+    "**/yarn.lock": true,
+    "**/src/mock/**/*{.mjs,__*.bundled_*.mjs,_*.bundled_*.mjs,bundled_*.mjs}": true
   },
   "stylelint.enable": true,
   "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass"],

@@ -43,7 +43,7 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
   name: undefined,
-  type: BooleanEnum.FALSE,
+  type: BooleanEnum.TRUE,
   parentId: 0,
   labelId: query.lableId,
   rootId: 0
@@ -58,7 +58,7 @@ const initializeFormData = (type: 'addChild' | 'create' | 'edit', row: any, quer
   const defaultValues = {
     rootId: newRootId,
     labelId: query.lableId,
-    type: BooleanEnum.FALSE
+    type: BooleanEnum.TRUE
   };
 
   switch (type) {
@@ -168,7 +168,7 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     name: undefined,
-    type: BooleanEnum.FALSE,
+    type: BooleanEnum.TRUE,
     parentId: 0,
     labelId: query.lableId,
     rootId: 0
