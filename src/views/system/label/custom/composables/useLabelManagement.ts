@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { handleTree2 } from '@/utils/tree'
-import * as LabelApi from '@/api/system/label'
+import * as LabelManageApi from '@/api/system/data/label-manage'
 import type { BooleanEnum } from '@/config/constants/enums/label'
 
 // 类型定义
@@ -52,7 +52,7 @@ export const useLabelManagement = (initialLabelId?: string) => {
   const getList = async () => {
     loading.value = true
     try {
-      const { list: listData, total: totalCount } = await LabelApi.getLabelManagePage(queryParams)
+      const { list: listData, total: totalCount } = await LabelManageApi.getLabelManagePage(queryParams)
       list.value = handleTree2(listData)
       total.value = totalCount
     } catch (error) {

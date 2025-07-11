@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 import { ElTree } from 'element-plus'
-import * as LabelApi from '@/api/system/label'
+import * as LabelManageApi from '@/api/system/data/label-manage'
 import { defaultProps, handleTree2 } from '@/utils/tree'
 defineOptions({ name: 'LabelFidldConfig' })
 
@@ -27,7 +27,7 @@ const treeRef = ref<InstanceType<typeof ElTree>>()
 
 /** 获得部门树 */
 const getTree = async () => {
-  const res = await LabelApi.getLabelManageTree({
+  const res = await LabelManageApi.getLabelManageTree({
     labelId: query.lableId as string
   })
   deptList.value = handleTree2(res)

@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import TextFieldConfig from './config/TextFieldConfig.vue'
 import NumberFieldConfig from './config/NumberFieldConfig.vue'
 import RadioFieldConfig from './config/RadioFieldConfig.vue'
@@ -330,7 +330,7 @@ const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: an
 
   // 获取数据源
   const dataSource = row?.id
-    ? await LabelApi.getFieldConfigDetail({ 'id': row.id as string })
+    ? await FieldConfApi.getFieldConfigDetail({ 'id': row.id as string })
     : row
   if (dataSource) {
     const isRadioOrCheckbox = dataSource.fieldType === FieldType.RADIO || dataSource.fieldType === FieldType.CHECKBOX

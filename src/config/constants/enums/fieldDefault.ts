@@ -280,3 +280,6 @@ export interface FilterRuleConfig {
   connectType: BooleanEnum.TRUE | BooleanEnum.FALSE
   selectedOptions?: any[]
 }
+
+
+

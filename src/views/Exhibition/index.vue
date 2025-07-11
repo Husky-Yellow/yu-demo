@@ -33,7 +33,10 @@
 
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
+import * as QueryConfApi from '@/api/system/data/query-conf'
 import * as BusinessDataApi from '@/api/system/business-data'
+import * as CountConfApi from '@/api/system/data/count-conf'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
@@ -158,7 +161,7 @@ const getList = async () => {
 
 async function fetchFieldConfig(manageId: string) {
   try {
-    return await LabelApi.getFieldConfigList({ manageId })
+    return await FieldConfApi.getFieldConfigList({ manageId })
   } catch (e) {
     console.error('字段配置获取失败', e)
     return []
@@ -167,7 +170,7 @@ async function fetchFieldConfig(manageId: string) {
 
 async function fetchQueryConf(manageId: string) {
   try {
-    const queryConfList = await LabelApi.getQueryConfList({ manageId })
+    const queryConfList = await QueryConfApi.getQueryConfList({ manageId })
 
     // 预构建字段映射和批量处理
     const fieldMap = new Map<string, LabelFieldConfig>()
@@ -216,8 +219,8 @@ async function fetchQueryConf(manageId: string) {
   }
 }
 
-const getCountConfigList = async (manageId) => {
-  const countConfigList = await LabelApi.getCountConfigList({ manageId })
+const getCountConfigList = async (manageId: string) => {
+  const countConfigList = await CountConfApi.getCountConfigList({ manageId })
 
   // todo zhaokun 这里改成获取接口
   const countData = [{ name: '牡蛎', value: 651 }]

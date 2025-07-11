@@ -151,6 +151,9 @@
 import Sortable from 'sortablejs'
 import type { ElTable } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
+import * as LabelManageApi from '@/api/system/data/label-manage'
+import * as QueryConfApi from '@/api/system/data/query-conf'
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldSelectDialog from '../common/FieldSelectDialog.vue'
 import SubFieldSelectDialog from './SubFieldSelectDialog.vue'
@@ -239,7 +242,7 @@ function removeSelected() {
 
     if (ids.length > 0) {
       const idsStr = ids.map(value => `ids=${encodeURIComponent(value)}`).join('&')
-      LabelApi.deleteQueryConfList(`manageId=${query.manageId as string}&${idsStr}`)
+      QueryConfApi.deleteQueryConfList(`manageId=${query.manageId as string}&${idsStr}`)
         .then(filterTable)
         .catch(() => ElMessage.error('删除失败'))
     } else {
@@ -305,17 +308,17 @@ const tableRowClassName = ({
 }
 /** 获得部门树 */
 const getTree = async () => {
-  const res = await LabelApi.getLabelManageTree({
+  const res = await LabelManageApi.getLabelManageTree({
     labelId: query.lableId as string
   })
   deptList.value = handleTree2(res)
 }
 
 const fetchData = async () => {
-  const res = await LabelApi.getFieldConfigListByManageId({
+  const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
-  const queryConfList = await LabelApi.getQueryConfList({
+  const queryConfList = await QueryConfApi.getQueryConfList({
     manageId: query.manageId as string
   })
   allFields.value = res.map(item => {
@@ -358,7 +361,7 @@ const submitForm = async () => {
       id: row.id,
     }
   })
-  LabelApi.updateQueryConfList(submitData).then(() => {
+  QueryConfApi.updateQueryConfList(submitData).then(() => {
     ElMessage.success('更新成功')
     fetchData()
   }).catch(() => {
@@ -378,7 +381,7 @@ const getEnumOptions = async (row) => {
     return deptList.value
   }
   // 单选、多选需要获取字典
-  const res = await LabelApi.getFieldConfigDetail({ 'id': row.uuid as string })
+  const res = await FieldConfApi.getFieldConfigDetail({ 'id': row.uuid as string })
   const val = res.fieldConfExtDOList?.[0]?.value
   if(val){
     const data = await DictDataApi.getDictDataPage({

@@ -1,46 +1,68 @@
 import request from '@/config/axios'
-import type { LabelFieldConfig, OperateConfig, QueryResItem, SortItem, StatisticItem, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
+import type { OperateConfig, FilterRuleConfig } from '@/config/constants/enums/fieldDefault'
 
-/**
- * 获取标签管理分页数据
- * @param {PageParam} params - 分页查询参数
- * @returns {Promise<PageResult<any>>} 标签管理分页数据
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076048
- */
-export const getLabelManagePage = async (params: PageParam) => {
-  return await request.get({ url: '/data/label-manage/page', params })
+
+
+export interface LabelItem {
+  /**
+   * 节点ID
+   */
+  id: string;
+
+  /**
+   * 标签ID
+   */
+  labelId: string;
+
+  /**
+   * 父节点ID，0表示根节点
+   */
+  parentId: number;
+
+  /**
+   * 根节点ID，null表示当前节点就是根节点
+   */
+  rootId: string | null;
+
+  /**
+   * 链路信息
+   */
+  linkMsg: string | null;
+
+  /**
+   * 编号/代码
+   */
+  num: string;
+
+  /**
+   * 名称
+   */
+  name: string;
+
+  /**
+   * 类型
+   * 0 - 基础标签
+   * 1 - 业务标签
+   */
+  type: 0 | 1;
+
+  /**
+   * 标记位
+   * 8位二进制字符串表示各种状态标记
+   */
+  flag: string;
+
+  /**
+   * 创建时间（时间戳，毫秒）
+   */
+  createTime: number;
+
+  /**
+   * 子节点列表
+   */
+  children: LabelItem[] | null;
 }
 
-/**
- * 获取标签管理树形数据
- * @param {Object} params - 查询参数
- * @param {string} params.manageId - 管理ID
- * @returns {Promise<any>} 标签管理树形数据
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076048
- */
-export const getLabelManageTree = async (params?: { labelId?: string }) => {
-  return await request.get({ url: '/data/label-manage/tree', params })
-}
-
-/**
- * 更新标签管理信息
- * @param {any} data - 标签管理更新数据
- * @returns {Promise<any>} 更新结果
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076046
- */
-export const updateLabelManage = async (data: LabelFieldConfig[]) => {
-  return await request.put({ url: '/data/label-manage/update', data })
-}
-
-/**
- * 创建标签管理信息
- * @param {any} data - 标签管理创建数据
- * @returns {Promise<any>} 创建结果
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076045
- */
-export const createLabelManage = async (data: LabelFieldConfig[]) => {
-  return await request.post({ url: '/data/label-manage/create', data })
-}
 
 /**
  * 获取标签配置列表
@@ -50,27 +72,6 @@ export const createLabelManage = async (data: LabelFieldConfig[]) => {
  */
 export const getLabelConfigList = async (params: PageParam) => {
   return await request.get({ url: '/data/label-conf/list', params })
-}
-
-/**
- * 根据管理ID获取字段配置列表
- * @param {Object} params - 查询参数
- * @param {string} params.manageId - 管理ID
- * @returns {Promise<any>} 字段配置列表
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076064
- */
-export const getFieldConfigListByManageId = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
-  return await request.get({ url: '/data/field-conf/list-by-manage-id', params })
-}
-
-/**
- * 删除排序配置列表
- * @param params
- * @param params.id - 排序配置ID
- * @returns {Promise<any>} 删除结果
- */
-export const deleteSortConfList = async (params: { id: string, manageId: string }) => {
-  return await request.delete({ url: '/data/sort-conf/delete', params })
 }
 
 /**
@@ -105,67 +106,6 @@ export const getFilterConfList = async (params: { manageId: string }): Promise<F
 }
 
 /**
- * 根据管理ID获取统计配置列表
- * @param {Object} params - 查询参数
- * @param {string} params.manageId - 管理ID
- * @returns {Promise<any>} 统计配置列表
- * @see https://app.apifox.com/link/project/6505154/apis/api-313182051
- */
-export const getCountConfigListByManageId = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
-  return await request.get({ url: '/data/count-conf/list-fieId', params })
-}
-
-/**
- * 获取统计配置列表
- * @param {Object} params - 查询参数
- * @param {string} params.manageId - 管理ID
- * @returns {Promise<any>} 统计配置列表
- * @see https://app.apifox.com/link/project/6505154/apis/api-313182051
- */
-export const getCountConfigList = async (params: { manageId: string }): Promise<StatisticItem[]> => {
-  return await request.get({ url: '/data/count-conf/list', params })
-}
-
-/**
- * 更新统计配置列表
- * @param {any} data - 统计配置数据列表
- * @returns {Promise<any>} 更新结果
- * @see https://app.apifox.com/link/project/6505154/apis/api-313182051
- */
-export const updateCountConfigList = async (data: StatisticItem[]) => {
-  return await request.put({ url: '/data/count-conf/update-list', data })
-}
-
-/**
- * 创建标签配置列表（已弃用）
- * @deprecated 自 v2.3.0 起弃用，请使用 updateFieldConfigList 函数
- * @param {LabelFieldConfig[]} data - 标签配置数据列表
- * @returns {Promise<any>} 创建结果
- */
-export const createFieldConfigList = async (data: LabelFieldConfig[]) => {
-  return await request.post({ url: '/data/field-conf/create-list', data })
-}
-
-/**
- * 更新标签配置列表
- * @param {LabelFieldConfig[]} data - 标签配置数据列表
- * @returns {Promise<any>} 更新结果
- */
-export const updateFieldConfigList = async (data: LabelFieldConfig[]) => {
-  return await request.put({ url: '/data/field-conf/update-list', data })
-}
-
-/**
- * 获取标签配置列表
- * @param {manageId} params - 分页查询参数
- * @returns {Promise<LabelFieldConfig[]>} 标签配置列表
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076064
- */
-export const getFieldConfigList = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
-  return await request.get({ url: '/data/field-conf/list', params })
-}
-
-/**
  * 获取操作配置列表
  * @param {Object} params - 查询参数
  * @param {string} params.manageId - 管理ID
@@ -184,19 +124,6 @@ export const getOperateConfigList = async (params: { manageId: string }): Promis
  */
 export const updateOperateConfigList = async (data: OperateConfig[]) => {
   return await request.put({ url: '/data/operate-conf/update-list', data })
-}
-
-/**
- * 获取字段配置详情
- * @param {Object} params - 查询参数
- * @param {string} params.id - 管理ID
- * @returns {Promise<any>} 字段配置详情
- * @see hhttps://app.apifox.com/link/project/6505154/apis/api-305076069
- */
-export const getFieldConfigDetail = async (params: {
-  'id': string
-}): Promise<LabelFieldConfig> => {
-  return await request.get({ url: '/data/field-conf/get', params })
 }
 
 
@@ -241,97 +168,3 @@ export const createViewFormConf = async (data: { manageId: string, formType: 0 |
 }
 
 
-/**
- * 创建排序配置
- * @param data
- * @param data.manageId - 管理ID
- * @param data.sortJson - 排序配置
- * @returns {Promise<any>} 排序配置
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076038
- */
-export const createSortConf = async (data: { manageId: string, sortJson: string }) => {
-  return await request.post({ url: '/data/sort-conf/create', data })
-}
-
-/**
- * 获取排序配置
- * @param data
- * @param data.manageId - 管理ID
- * @returns {Promise<any>} 排序配置
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076037
- */
-export const getSortConfList = async (params: { manageId: string }): Promise<SortItem[]> => {
-  return await request.get({ url: '/data/sort-conf/list', params })
-}
-
-/**
- * 更新排序配置
- * @param data
- * @param data.manageId - 管理ID
- * @param data.sortJson - 排序配置
- * @returns {Promise<any>} 排序配置
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076036
- */
-export const updateSortConfList = async (data: SortItem[]) => {
-  return await request.put({ url: '/data/sort-conf/update-list', data })
-}
-
-/**
- * 获取查询配置列表
- * @param data
- * @param data.manageId - 管理ID
- * @returns {Promise<any>} 查询配置列表
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076035
- */
-export const getQueryConfList = async (params: { manageId: string }): Promise<QueryResItem[]> => {
-  return await request.get({ url: '/data/query-conf/list', params })
-}
-
-
-/**
- * 更新查询配置列表
- * @param data
- * @param data.manageId - 管理ID
- * @param data.queryJson - 查询配置
- * @returns {Promise<any>} 更新结果
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076034
- */
-export const updateQueryConfList = async (data: QueryResItem[]) => {
-  return await request.put({ url: '/data/query-conf/update-list', data })
-}
-
-
-/**
- * 删除查询配置列表
- * @param data
- * @param data.manageId - 管理ID
- * @param data.queryJson - 查询配置
- * @returns {Promise<any>} 删除结果
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076059
- */
-export const deleteQueryConfList = async (params: string) => {
-  return await request.delete({ url: `/data/query-conf/delete-list?${params}` })
-}
-
-
-/**
- * 删除统计配置列表
- * @param data
- * @param data.id - 统计配置ID
- * @returns {Promise<any>} 删除结果
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076058
- */
-export const deleteCountConfigList = async (params: { id: string, manageId: string }) => {
-  return await request.delete({ url: '/data/count-conf/delete', params })
-}
-
-/**
- * 基础字段列表
- * @param params
- * @param params.manageId - 管理ID
- * @returns {Promise<any>} 基础字段列表
- * @see https://app.apifox.com/link/project/6505154/apis/api-305076057
- */
-export const getBaseFieldList = async (params: { manageId: string }): Promise<LabelFieldConfig[]> => {
-  return await request.get({ url: '/data/field-conf/list-base', params })
-}

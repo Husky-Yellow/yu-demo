@@ -1,7 +1,7 @@
 import { Ref, ComputedRef } from 'vue'
-import { FieldType, TextTypeOptions } from '@/config/constants/enums/field'
+import { FieldType } from '@/config/constants/enums/field'
 import { LabelDragField } from '@/config/constants/enums/fieldDefault'
-import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import { convertArrayToObject } from '@/utils'
 
 
@@ -71,7 +71,7 @@ export function useFormEditHandlers({
     if (!fieldId) return
     const field = availableFields.value.find((f) => f.id === fieldId)
     // 获取字段详情
-    const detail = await LabelApi.getFieldConfigDetail({ 'id': fieldId as string })
+    const detail = await FieldConfApi.getFieldConfigDetail({ 'id': fieldId as string })
     // todo zhaokun 如果是单选、多选、则需要特殊处理 再调词典查询接口
     if (detail.fieldType === FieldType.RADIO || detail.fieldType === FieldType.CHECKBOX) {
       // const data = await DictTypeApi.getDictDataPage({

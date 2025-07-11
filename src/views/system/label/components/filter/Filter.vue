@@ -107,6 +107,8 @@ import type { FormInstance } from 'element-plus'
 import { Delete } from '@element-plus/icons-vue'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
+import * as LabelManageApi from '@/api/system/data/label-manage'
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import { OperatorOptions, BooleanEnum } from '@/config/constants/enums/label'
 import { FieldType } from '@/config/constants/enums/field'
@@ -185,7 +187,7 @@ const getEnumOptions = async (row) => {
     return deptList.value
   }
   // 单选、多选需要获取字典
-  const res = await LabelApi.getFieldConfigDetail({ 'id': row.uuid as string })
+  const res = await FieldConfApi.getFieldConfigDetail({ 'id': row.uuid as string })
   filterFields.value.forEach((item) => {
     if(item.uuid === row.uuid){
       item = {
@@ -220,7 +222,7 @@ const removeField = (ruleIndex: number) => {
 
 /** 获得部门树 */
 const getTree = async () => {
-  const res = await LabelApi.getLabelManageTree({
+  const res = await LabelManageApi.getLabelManageTree({
     labelId: query.lableId as string
   })
   deptList.value = handleTree2(res)
@@ -295,7 +297,7 @@ const validateValueNotEmpty = (item: FilterRuleConfig) => {
 
 
 const fetchData = async () => {
-  const res = await LabelApi.getFieldConfigListByManageId({
+  const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
   const filterRes = await LabelApi.getFilterConfList({

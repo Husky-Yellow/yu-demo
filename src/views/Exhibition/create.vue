@@ -95,8 +95,9 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExhibitionCreate' })
 import * as DictDataApi from '@/api/system/dict/dict.data'
+import * as BusinessDataApi from '@/api/system/business-data'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import * as LabelApi from '@/api/system/label'
-import * as DataApi from '@/api/system/data'
 import { FormRules } from 'element-plus'
 import { useDatePicker } from '@/hooks/useDatePicker'
 import {
@@ -243,14 +244,14 @@ const handleSubmit = async () => {
       try {
         let res;
         if (route.query.editType && route.query.id) {
-          res = await DataApi.updateBusinessData({
+          res = await BusinessDataApi.updateBusinessData({
             businessJson,
             id: route.query.id as string,
             manageId
           });
           ElMessage.success('更新成功');
         } else {
-          res = await DataApi.createBusinessData({
+          res = await BusinessDataApi.createBusinessData({
             businessJson,
             manageId
           });
@@ -280,12 +281,12 @@ const init = async () => {
   const formType = route.query.type === 'people' ? 1 : 2
   const editType = route.query.editType
   const id = route.query.id
-  const res = await LabelApi.getFieldConfigListByManageId({
+  const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId
   })
   let businessData = {}
   if (editType) {
-    businessData = await DataApi.getBusinessData({
+    businessData = await BusinessDataApi.getBusinessData({
       id: id as string,
       manageId
     })

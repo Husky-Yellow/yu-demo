@@ -130,7 +130,9 @@ import {
 } from '@element-plus/icons-vue'
 import { ElInput, ElButton, ElSelect, ElOption, ElTreeSelect } from 'element-plus'
 import type { FormInstance, FormItemRule } from 'element-plus'
-import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
+import * as LabelManageApi from '@/api/system/data/label-manage'
+import * as CountConfApi from '@/api/system/data/count-conf'
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { OperatorOptions } from '@/config/constants/enums/label'
@@ -216,7 +218,7 @@ const removeSelectedStatistic = async (index: number) => {
 
   if (item?.id) {
     try {
-      await LabelApi.deleteCountConfigList({ id: item.id, manageId: query.manageId as string })
+      await CountConfApi.deleteCountConfigList({ id: item.id, manageId: query.manageId as string })
       ElMessage.success('删除成功')
       statistics.value.splice(index, 1)
 
@@ -268,7 +270,7 @@ const validateFieldsNotEmpty = (idx: number) => {
 // 数据获取
 const getTree = async () => {
   try {
-    const res = await LabelApi.getLabelManageTree({
+    const res = await LabelManageApi.getLabelManageTree({
       labelId: query.lableId as string
     })
     deptList.value = handleTree2(res)
@@ -286,7 +288,7 @@ const getEnumOptions = async (field: ExtendedStatisticField) => {
 
     // 单选、多选需要获取字典
     if (isSelectField(field.fieldType)) {
-      const res = await LabelApi.getFieldConfigDetail({ id: field.uuid as string })
+      const res = await FieldConfApi.getFieldConfigDetail({ id: field.uuid as string })
       const val = res.fieldConfExtDOList?.[0]?.value
       if (val) {
         const data = await DictDataApi.getDictDataPage({
@@ -325,7 +327,7 @@ const submitForm = () => {
           }
         }) as unknown as StatisticItem[]
 
-        await LabelApi.updateCountConfigList(submitData)
+        await CountConfApi.updateCountConfigList(submitData)
         ElMessage.success('统计配置更新成功')
         await fetchData()
 
@@ -343,8 +345,8 @@ const submitForm = () => {
 const fetchData = async () => {
   try {
     const [fieldConfigRes, countConfigList] = await Promise.all([
-      LabelApi.getFieldConfigListByManageId({ manageId: query.manageId as string }),
-      LabelApi.getCountConfigList({ manageId: query.manageId as string })
+      FieldConfApi.getFieldConfigListByManageId({ manageId: query.manageId as string }),
+      CountConfApi.getCountConfigList({ manageId: query.manageId as string })
     ])
 
     // 处理字段配置

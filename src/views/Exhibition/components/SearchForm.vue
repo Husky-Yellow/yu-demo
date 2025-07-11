@@ -41,9 +41,10 @@ import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
 import CreateForm from './CreateForm.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getFieldComponent } from '@/utils/formatter'
+import * as LabelManageApi from '@/api/system/data/label-manage'
 
 const router = useRouter()
-
+const route = useRoute()
 interface SearchField {
   id?: string
   manageId: string
@@ -66,9 +67,10 @@ const form = reactive<Record<string, any>>({})
 const emit = defineEmits(['search', 'delete'])
 
 const createFormRef = ref<InstanceType<typeof CreateForm>>()
+const labelType = ref<number>(0) // 标签类型
 
-initForm()
-watch(() => props.fields, initForm, { deep: true })
+
+
 
 function getComponentProps(field: SearchField) {
   const queryTypePropsMap = {
@@ -110,8 +112,14 @@ function handleReset() {
 }
 
 function handleOperate(item: ExhibitionOperate) {
-  // 基础版直接打开创建页面
-
+  // 基础版直接打开创建页面 判断基础版
+  // /data/label-manage/get
+  if (labelType.value === 1) {
+    // 基础版
+    if (item.operateType === 0) {
+      createFormRef.value?.open('people')
+    }
+  }
   // 这里处理表格操作
   if (item.operateType === 0) {
     // 打开第一层弹窗
@@ -163,4 +171,16 @@ function handleSubmit(data: any) {
     }
   })
 }
+
+const getLabelManage = async () => {
+      // const manageId = (route.meta.manageId as string) || '1942420981721182210'
+  const manageId = '1942420981721182210'
+  const res = await LabelManageApi.getLabelManage({ id: manageId })
+  labelType.value = res.type as number
+}
+
+onMounted(() => {
+  initForm()
+  getLabelManage()
+})
 </script>

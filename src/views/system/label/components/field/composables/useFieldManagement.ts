@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import Sortable from 'sortablejs'
 import type { TableInstance } from 'element-plus'
-import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import { generateUUID } from '@/utils'
 import { BooleanEnum } from '@/config/constants/enums/label'
 import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
@@ -47,7 +47,7 @@ export const useFieldManagement = (manageId: string) => {
   const getDataFieldConfListByManageId = async (): Promise<void> => {
     isLoading.value = true
     try {
-      const res = await LabelApi.getFieldConfigList({ manageId })
+      const res = await FieldConfApi.getFieldConfigList({ manageId })
       tableData.value = (res || []).map(item => ({
         ...item,
         uuid: item.id ? item.id : generateUUID()
@@ -109,7 +109,7 @@ export const useFieldManagement = (manageId: string) => {
     isLoading.value = true
 
     try {
-      await LabelApi.updateFieldConfigList(data)
+      await FieldConfApi.updateFieldConfigList(data)
       message.success('保存成功')
       await getDataFieldConfListByManageId()
       return true

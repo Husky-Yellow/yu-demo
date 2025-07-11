@@ -10,7 +10,7 @@ function param2Obj(url: string) {
 const modules = import.meta.glob('./module/*.ts', { eager: true });
 export const mocks = Object.values(modules).flatMap((mod: any) => mod.default || mod);
 
-export function mockXHR() {
+export function mockXHR(...args) {
   Mock.XHR.prototype.proxy_send = Mock.XHR.prototype.send
   Mock.XHR.prototype.send = function() {
     if (this.custom.xhr) {
@@ -19,7 +19,7 @@ export function mockXHR() {
         this.custom.xhr.responseType = this.responseType
       }
     }
-    this.proxy_send(...arguments)
+    this.proxy_send(...args)
   }
 
   function XHR2ExpressReqWrap(respond: any) {
@@ -29,7 +29,7 @@ export function mockXHR() {
         const { body, type, url } = options
         result = respond({
           method: type,
-          body: JSON.parse(body),
+          body: body ? JSON.parse(body) : {},
           query: param2Obj(url)
         })
       } else {

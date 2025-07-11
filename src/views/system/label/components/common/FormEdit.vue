@@ -169,6 +169,7 @@
 
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import draggable from 'vuedraggable'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { Rank, Delete, Plus } from '@element-plus/icons-vue'
@@ -287,7 +288,7 @@ const oneClickLayout = async () => {
 
     const details = await Promise.all(
       availableFields.value.map(field =>
-        LabelApi.getFieldConfigDetail({ id: field.id as string })
+      FieldConfApi.getFieldConfigDetail({ id: field.id as string })
       )
     )
 
@@ -393,7 +394,7 @@ const fetchFormData = async () => {
   isDraggingNewField.value = false
   loading.value = true
 
-  const res = await LabelApi.getFieldConfigListByManageId({
+  const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
   const formConfData = await LabelApi.getViewFormConf({

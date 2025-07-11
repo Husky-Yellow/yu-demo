@@ -59,13 +59,14 @@
 
 <script setup lang="ts">
 import * as LabelApi from '@/api/system/label'
-import * as DataApi from '@/api/system/data'
+import * as BusinessDataApi from '@/api/system/business-data'
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import { dateFormatter, filterAndMarkGroups, getFieldSpan } from '@/utils/formatter'
 import { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { FieldType } from '@/config/constants/enums/field'
 import { FormRow } from '@/hooks/web/useFormEditHandlers'
 import { BooleanEnum } from '@/config/constants/enums/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 
 defineOptions({ name: 'ExhibitionDetail' })
 
@@ -206,9 +207,9 @@ const getDetailConfig = async () => {
 
     // 并行获取数据，提高性能
     const [fieldConfigs, formConfData, businessData] = await Promise.all([
-      LabelApi.getFieldConfigListByManageId({ manageId }),
+      FieldConfApi.getFieldConfigListByManageId({ manageId }),
       LabelApi.getViewFormConf({ manageId, formType: 2 }),
-      DataApi.getBusinessData({ id: businessId, manageId })
+      BusinessDataApi.getBusinessData({ id: businessId, manageId })
     ])
 
     if (!formConfData) {

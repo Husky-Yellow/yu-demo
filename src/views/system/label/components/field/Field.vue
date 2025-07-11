@@ -108,6 +108,7 @@ import Sortable from 'sortablejs'
 import { View, Hide } from '@element-plus/icons-vue'
 import type { TableInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import { generateUUID } from '@/utils'
 import FieldEdit from './FieldEdit.vue'
 import FieldAdd from './FieldAdd.vue'
@@ -188,7 +189,7 @@ const openBaseForm = () => {
 const getDataFieldConfListByManageId = async () => {
   isLoading.value = true
   try {
-    const res = await LabelApi.getFieldConfigList({
+    const res = await FieldConfApi.getFieldConfigList({
       manageId: query.manageId as string
     })
     tableData.value = (res || []).map(item => {
@@ -258,7 +259,6 @@ const updateData = (data: LabelFieldConfig | LabelFieldConfig[], callback?: () =
   } else {
     tableData.value.push({ ...data });
   }
-  console.log('tableData',tableData.value)
   callback?.()
 }
 
@@ -274,7 +274,7 @@ const saveTableData = async () => {
   }, ['uuid']))
   handleSelectionChange([])
   isLoading.value = true
-  await LabelApi.updateFieldConfigList(data).then(() => {
+  await FieldConfApi.updateFieldConfigList(data).then(() => {
     message.success('保存成功')
     getDataFieldConfListByManageId()
   }).catch(() => {

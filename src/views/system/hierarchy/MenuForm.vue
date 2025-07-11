@@ -140,6 +140,7 @@ import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as MenuApi from '@/api/system/menu'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 import * as LabelApi from '@/api/system/label'
+import * as LabelManageApi from '@/api/system/data/label-manage'
 import { CommonStatusEnum, SystemMenuTypeEnum } from '@/utils/constants'
 import { defaultProps, handleTree, handleTree2 } from '@/utils/tree'
 
@@ -283,7 +284,7 @@ const resetForm = () => {
 const labelList = ref<any[]>([])
 const getLabelList = async () => {
   try {
-    const data = await LabelApi.getLabelManageTree()
+    const data = await LabelManageApi.getLabelManageTree()
     labelList.value = data
   } finally {
   }

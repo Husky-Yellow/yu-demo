@@ -75,7 +75,8 @@ import VueDraggable from 'vuedraggable'
 import {
   Delete,
 } from '@element-plus/icons-vue'
-import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
+import * as SortConfApi from '@/api/system/data/sort-conf'
 import FieldPoolItem from '../common/FieldPoolItem.vue'
 import { ElButton, ElRadioGroup, ElRadio, ElSelect, ElOption } from 'element-plus'
 import type { FormInstance } from 'element-plus'
@@ -132,7 +133,7 @@ const removeSelectedStatistic = (index: number) => {
   const removeLast = () => items.pop();
 
   if (index !== -1 && items[index]?.id) {
-    LabelApi.deleteSortConfList({ id: items[index].id as string, manageId: query.manageId as string })
+    SortConfApi.deleteSortConfList({ id: items[index].id as string, manageId: query.manageId as string })
       .then(() => {
         ElMessage.success('删除成功');
         removeAt(index);
@@ -146,30 +147,6 @@ const removeSelectedStatistic = (index: number) => {
     removeLast();
   }
 }
-
-// function removeLastSortItem() {
-//   const idx = clickIndex.value;
-//   const items = formModel.value.sortItems;
-//   if (items.length <= 1) return;
-
-//   const removeAt = (index: number) => items.splice(index, 1);
-//   const removeLast = () => items.pop();
-
-//   if (idx !== -1 && items[idx]?.id) {
-//     LabelApi.deleteSortConfList({ id: items[idx].id as string })
-//       .then(() => {
-//         ElMessage.success('删除成功');
-//         removeAt(idx);
-//       })
-//       .catch(() => {
-//         ElMessage.error('删除失败');
-//       });
-//   } else if (idx !== -1) {
-//     removeAt(idx);
-//   } else {
-//     removeLast();
-//   }
-// }
 
 // 开始拖拽时保存字段数据
 function onDragStart(evt: any) {
@@ -220,7 +197,7 @@ const submitForm = () => {
         type: item.type,
         id: item?.id || ''
       })) as SortItem[]
-      LabelApi.updateSortConfList(submitData).then(() => {
+      SortConfApi.updateSortConfList(submitData).then(() => {
         ElMessage.success('排序配置更新成功')
         fetchData()
       })
@@ -234,11 +211,11 @@ const submitForm = () => {
 }
 
 const fetchData = async () => {
-  const res = await LabelApi.getFieldConfigListByManageId({
+  const res = await FieldConfApi.getFieldConfigListByManageId({
     manageId: query.manageId as string
   })
   sortFields.value = res
-  const sortConfList = await LabelApi.getSortConfList({
+  const sortConfList = await SortConfApi.getSortConfList({
     manageId: query.manageId as string
   })
   if (sortConfList.length > 0) {

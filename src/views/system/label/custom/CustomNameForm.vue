@@ -18,7 +18,7 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
-import * as LabelApi from '@/api/system/label'
+import * as LabelManageApi from '@/api/system/data/label-manage'
 import { SUCCESS_MESSAGES } from '@/utils/constants'
 import { FormRules } from 'element-plus'
 import { BooleanEnum } from '@/config/constants/enums/label'
@@ -115,9 +115,9 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 // 提取表单提交的逻辑到一个单独的函数，提高代码的复用性和可测试性
 const submitFormData = async (formType, data) => {
   if (formType === 'create' || formType === 'addChild') {
-    return await LabelApi.createLabelManage(data);
+    return await LabelManageApi.createLabelManage(data);
   }
-  return await LabelApi.updateLabelManage(data);
+  return await LabelManageApi.updateLabelManage(data);
 };
 
 const submitForm = async () => {
