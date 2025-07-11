@@ -1,7 +1,6 @@
 import type { FileSize } from './field'
 import type { FieldType } from '@/config/constants/enums/field'
 import { BooleanEnum, OperateType, BusinessType } from '@/config/constants/enums/label'
-import * as QueryConfApi from '@/api/system/data/query-conf'
 
 /**
  * 文本字段默认配置

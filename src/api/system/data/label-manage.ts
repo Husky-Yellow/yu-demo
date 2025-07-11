@@ -132,9 +132,9 @@ export const createLabelManage = async (data: LabelFieldConfig[]) => {
  * 获得标签管理
  * @param params
  * @param params.id - 管理ID
- * @returns {Promise<LabelItem>} 标签管理
+ * @returns {Promise<LabelFieldConfig>} 标签管理
  * @see https://app.apifox.com/link/project/6505154/apis/api-320477387
  */
-export const getLabelManage = async (params: { id: string }): Promise<LabelItem> => {
+export const getLabelManage = async (params: { id: string }): Promise<LabelFieldConfig> => {
   return await request.get({ url: '/data/label-manage/get', params })
 }
