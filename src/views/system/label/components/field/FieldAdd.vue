@@ -8,7 +8,7 @@
       <el-table
         v-loading="isLoading"
         ref="tableRef"
-        :data="tableData.filter(item => item.parentCode === '0')"
+        :data="tableData"
         stripe
         class="field-sortable-table-container"
         row-key="uuid"
@@ -38,88 +38,63 @@
 </template>
 
 <script setup lang="ts">
-import {
-  FieldType,
-} from '@/config/constants'
-import {
-  BooleanEnum,
-} from '@/config/constants/enums/label'
-import { defaultFieldConfExt } from '@/config/constants/enums/fieldDefault'
 import type { TableInstance } from 'element-plus'
 import * as LabelApi from '@/api/system/label'
+import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
+import { omit } from 'lodash-es'
+import { generateUUID } from '@/utils'
+
 defineOptions({ name: 'SystemLabelFieldAdd' })
-
-const isLoading = ref(false)
-const tableRef = ref<TableInstance>()
-const multipleSelection = ref<any[]>([])  // 多选
-const selectable = (row: any) => ![BooleanEnum.TRUE].includes(row.bizType) // 系统标签不能选中
-
-
-const handleSelectionChange = (selection: any[]) => {
-  multipleSelection.value = selection
-}
 
 const { query } = useRoute() // 查询参数
 const emits = defineEmits(['update:data'])
 
-// 表单引用
-const fieldForm = ref(null)
+const isLoading = ref<boolean>(false)
+const tableRef = ref<TableInstance>()
+const multipleSelection = ref<LabelFieldConfig[]>([])  // 多选
+const selectable = ref<(row: LabelFieldConfig) => boolean>(() => true); // 系统标签不能选中
 // 弹窗显示状态
 const dialogVisible = ref(false)
+const tableData = ref<LabelFieldConfig[]>([])
 
-// 表单初始值
-const defaultForm = () => ({
-  manageId: query.manageId as string,
-  code: '', // 字段值
-  name: '', // 字段名称
-  remark: '', // 字段说明
-  fieldType: FieldType.TEXT, // 字段类型
-  bizType: BooleanEnum.FALSE, // 字段业务类型 0-系统 1-基础
-  length: undefined, // 字段长度
-  encFlag: BooleanEnum.FALSE, // 0-不加密1-加密
-  encType: BooleanEnum.FALSE, // 0-全文加密1-证件号码加密2-手机号码加密
-  addFlag: BooleanEnum.FALSE, // 是否新增表单;0-否 1-是
-  editFlag: BooleanEnum.FALSE, // 是否编辑表单;0-否 1-是
-  appViewFlag: BooleanEnum.FALSE, // 是否移动端展示;0-否 1-是
-  pcViewFlag: BooleanEnum.FALSE, // 是否PC端展示;0-否 1-是
-  parentCode: "0", // 父级字段编码 当单选、多选时、额外的对象是有这个值
-  fieldConfExt: { ...defaultFieldConfExt }
-})
-const tableData = ref<any[]>([])
-// 响应式表单数据
-const form = reactive(defaultForm())
+const handleSelectionChange = (selection: LabelFieldConfig[]) => {
+  multipleSelection.value = selection
+}
 
 // 提交表单
 const handleSubmit = async () => {
-
-
-  handleClose()
-}
-
-// 重置表单
-const resetForm = () => {
-  const defaultValues = defaultForm()
-  Object.keys(form).forEach(key => {
-    delete form[key]
+  const data = multipleSelection.value.map(item => {
+    return {
+      ...omit(item, ['id', 'manageId']),
+      uuid: generateUUID(),
+      manageId: query.manageId as string
+    }
   })
-  Object.assign(form, defaultValues)
-  form.fieldConfExt = { ...defaultFieldConfExt }
-  ;(fieldForm.value as any)?.resetFields()
+  console.log('data',data)
+  emits('update:data', data, handleClose)
 }
 
 // 关闭弹窗
 const handleClose = () => {
-  resetForm()
+  multipleSelection.value = []
   dialogVisible.value = false
 }
 
 // 打开弹窗（支持回显）
-const open = async (type: 'add' | 'edit' | 'show', row?: any, openTableData?: any) => {
-  console.log(type, row, openTableData);
+const open = async (openTableData: LabelFieldConfig[]) => {
   dialogVisible.value = true
+  isLoading.value = true
+  selectable.value = (row: LabelFieldConfig) => {
+    return openTableData.some(
+      (item: any) =>
+        item.code === row.code ||
+        item.name === row.name
+    );
+  };
   const res = await LabelApi.getBaseFieldList({ manageId: query.rootId as string })
-  console.log('res',res)
-  tableData.value = res
+  tableData.value = res.filter(item => item.parentCode === '0')
+
+  isLoading.value = false
 }
 
 defineExpose({ open })

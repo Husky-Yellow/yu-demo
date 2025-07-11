@@ -182,7 +182,7 @@ const handleRowClick = (row: LabelFieldConfig) => {
 }
 
 const openBaseForm = () => {
-  baseFormRef.value.open()
+  baseFormRef.value.open(unref(tableData.value.filter(item => item.parentCode === '0')) )
 }
 
 const getDataFieldConfListByManageId = async () => {
@@ -238,7 +238,12 @@ const handleDelete = () => {
   )
 }
 
-const updateData = (data) => {
+const updateData = (data: LabelFieldConfig | LabelFieldConfig[], callback?: () => void) => {
+   if (Array.isArray(data)) {
+    data.forEach(item => updateData(item));
+    callback?.()
+    return;
+  }
   if (!data.uuid && !data.id) {
     data.uuid = generateUUID();
   }
@@ -253,6 +258,8 @@ const updateData = (data) => {
   } else {
     tableData.value.push({ ...data });
   }
+  console.log('tableData',tableData.value)
+  callback?.()
 }
 
 const handleViewFlag = (row: LabelFieldConfig, flag: string) => {
