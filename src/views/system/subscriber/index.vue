@@ -89,7 +89,7 @@ import * as UserApi from '@/api/system/user'
 import { handleTree } from '@/utils/tree'
 import SubscriberTable from './components/SubscriberTable.vue'
 import SubForm from './components/SubForm.vue'
-import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS } from '@/config/constants'
+import { USER_STATUS_OPTIONS, POST_STATUS_OPTIONS } from '@/config/constants/enums/user'
 import { CommonStatusEnum } from '@/utils/constants'
 
 const total = ref(0) // 列表的总页数

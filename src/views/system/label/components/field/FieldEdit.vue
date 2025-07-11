@@ -143,10 +143,12 @@ import LabelFidldConfig from './config/LabelFidldConfig.vue'
 import {
   FieldType,
   FieldTypeLabel,
+  EncFlagOptions
+} from '@/config/constants/enums/field'
+import {
   BusinessType,
   BooleanOptions,
-  EncFlagOptions
-} from '@/config/constants'
+} from '@/config/constants/enums/label'
 import {
   BooleanEnum,
 } from '@/config/constants/enums/label'

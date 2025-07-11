@@ -32,17 +32,18 @@
 </template>
 
 <script setup lang="ts">
-import * as LabelApi from '@/api/system/label'
 import * as FieldConfApi from '@/api/system/data/field-conf'
 import * as QueryConfApi from '@/api/system/data/query-conf'
 import * as BusinessDataApi from '@/api/system/business-data'
 import * as CountConfApi from '@/api/system/data/count-conf'
+import * as OperateConfApi from '@/api/system/data/operate-conf'
 import StatisticCards from './components/StatisticCards.vue'
 import SearchForm from './components/SearchForm.vue'
 import DataTable from './components/DataTable.vue'
 import { LabelFieldConfig, QueryResItem } from '@/config/constants/enums/fieldDefault'
 import { OperateTypeEnum } from '@/utils/constants'
 import { ExhibitionOperate } from '@/config/constants/enums/exhibition'
+
 
 defineOptions({ name: 'ExhibitionList' })
 
@@ -235,7 +236,7 @@ const getCountConfigList = async (manageId: string) => {
 }
 
 const getDataFieldConfListByManageId = async (manageId: string) => {
-  const res = await LabelApi.getOperateConfigList({ manageId })
+  const res = await OperateConfApi.getOperateConfigList({ manageId })
   operateConfigList.value = res.filter((item) => item.showFlag === 1).map((item) => ({
     ...item,
     type: OperateTypeEnum[item.operateType]

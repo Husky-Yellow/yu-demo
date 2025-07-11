@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import type { TableInstance } from 'element-plus'
-import * as LabelApi from '@/api/system/label'
+import * as FieldConfApi from '@/api/system/data/field-conf'
 import type { LabelFieldConfig } from '@/config/constants/enums/fieldDefault'
 import { omit } from 'lodash-es'
 import { generateUUID } from '@/utils'
@@ -90,7 +90,7 @@ const open = async (openTableData: LabelFieldConfig[]) => {
         item.name === row.name
     );
   };
-  const res = await LabelApi.getBaseFieldList({ manageId: query.rootId as string })
+  const res = await FieldConfApi.getBaseFieldList({ manageId: query.rootId as string })
   tableData.value = res.filter(item => item.parentCode === '0')
 
   isLoading.value = false
